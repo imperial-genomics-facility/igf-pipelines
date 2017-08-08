@@ -53,8 +53,8 @@ sub pipeline_analyses {
     -logic_name => 'find_seqrun_files',
     -module => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
     -flow_into => {
-      '2->A' => [ 'transfer_seqrun_file' ],
-      'A->1' => { 'calculate_exp_and_run_from_samplesheet' => { 'samplesheet' => '#samplesheet#'}},
+      '2->A' => ['transfer_seqrun_file'],
+      'A->1' => ['find_seqrun_lanes'],
     },
   };
   
@@ -73,21 +73,21 @@ sub pipeline_analyses {
       1 => [ '?accu_name=file_md5&accu_address={file}&accu_input_variable=md5_value' ],
     }, 
   };
-
-  push @pipeline, {
-    -logic_name => 'calculate_exp_and_run_from_samplesheet',
-    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
-    -flow_into => {
-      1 => [ 'find_seqrun_lanes' ],
-    },
-  };
   
   push @pipeline, {
     -logic_name => 'find_seqrun_lanes',
     -module => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
     -flow_into => {
-      '2->A' => [ 'run_bcl2fastq' ],
+      '2->A' => [ 'prepare_samplesheet' ],
       'A->1' => [ 'generate_fastqc_report' ],
+    },
+  };
+  
+  push @pipeline, {
+    -logic_name => 'prepare_samplesheet',
+    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+    -flow_into => {
+      1 => { 'run_bcl2fastq' => {'samplesheet'=>'#samplesheet#', 'lane' => '#lane#'}},
     },
   };
   
@@ -95,7 +95,23 @@ sub pipeline_analyses {
     -logic_name => 'run_bcl2fastq',
     -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
     -flow_into => {
-      1 => {'collect_fastq' => {'fastq_file' => '#fastq_file#' }},
+      1 => [ 'check_undetermined_barcodes' ],
+    },
+  };
+  
+  push @pipeline, {
+    -logic_name => 'check_undetermined_barcodes',
+    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+    -flow_into => {
+      1 => {'calculate_exp_and_run_from_samplesheet' => {'fastq_file' => '#fastq_file#' }},
+    },
+  };
+  
+  push @pipeline, {
+    -logic_name => 'calculate_exp_and_run_from_samplesheet',
+    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+    -flow_into => {
+      1 => [ 'collect_fastq' ],
     },
   };
   
