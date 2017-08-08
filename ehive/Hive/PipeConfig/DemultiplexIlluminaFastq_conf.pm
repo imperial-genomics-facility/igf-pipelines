@@ -20,8 +20,16 @@ sub pipeline_analyses {
     -logic_name => 'find_new_sequencing_runs',
     -module => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
     -flow_into => {
-      '2->A' => [ 'find_customer_information' ],
+      '2->A' => [ 'mark_sequencing_running' ],
       'A->1' => [ 'mark_sequencing_complete' ],
+    },
+  };
+  
+  push @pipeline, {
+    -logic_name => 'mark_sequencing_running',
+    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+    -flow_into => {
+      1 => [ 'find_customer_information' ],
     },
   };
   
