@@ -45,33 +45,41 @@ sub pipeline_analyses {
     -logic_name => 'file_md5_pre_transfer',
     -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
     -flow_into => {
-      1 => [ 'transfer_seqrun_dir' ],
+      1 => [ 'find_seqrun_files' ],
     },
   };
   
   push @pipeline, {
-    -logic_name => 'transfer_seqrun_dir',
-    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
-    -flow_into => {
-      1 => [ 'find_seqrun_files_in_hpc' ],
-    },
-  };
-  
-  push @pipeline, {
-    -logic_name => 'find_seqrun_files_in_hpc',
+    -logic_name => 'find_seqrun_files',
     -module => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
     -flow_into => {
-      '2->A' => [ 'file_md5_post_transfer' ],
-      'A->1' => [ 'find_seqrun_lanes' ],
+      '2->A' => [ 'transfer_seqrun_file' ],
+      'A->1' => { 'calculate_exp_and_run_from_samplesheet' => { 'samplesheet' => '#samplesheet#'}},
     },
   };
   
+  push @pipeline, {
+    -logic_name => 'transfer_seqrun_file',
+    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+    -flow_into => {
+      1 => [ 'file_md5_post_transfer' ],
+    },
+  };
+    
   push @pipeline, {
     -logic_name => 'file_md5_post_transfer',
     -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
     -flow_into => {
       1 => [ '?accu_name=file_md5&accu_address={file}&accu_input_variable=md5_value' ],
     }, 
+  };
+
+  push @pipeline, {
+    -logic_name => 'calculate_exp_and_run_from_samplesheet',
+    -module => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+    -flow_into => {
+      1 => [ 'find_seqrun_lanes' ],
+    },
   };
   
   push @pipeline, {
