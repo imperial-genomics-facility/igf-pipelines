@@ -4,6 +4,7 @@ from igf_data.igfdb.igfTables import Seqrun
 from igf_data.igfdb.seqrunadaptor import SeqrunAdaptor
 from igf_data.igfdb.collectionadaptor import CollectionAdaptor
 from igf_data.igfdb.fileadaptor import FileAdaptor
+from igf_data.illumina.runinfo_xml import RunInfo_xml
 
 def find_new_seqrun_dir(path, dbconfig):
   '''
@@ -105,7 +106,14 @@ def prepare_seqrun_for_db(seqrun_name, seqrun_path):
   '''
   A method for preparing seqrun data for database
   '''
+  runinfo_file=os.path.join(seqrun_path,'RunInfo.xml')
+  runinfo_data=RunInfo_xml(xml_file=runinfo_file)
+  platform_name=runinfo_data.get_platform_number()
+  reads_stats=runinfo_data.get_reads_stats()
+  
   seqrun_data=dict()
+  seqrun_data['seqrun_igf_id']=seqrun_name
+  seqrun_data['platform_igf_id']=platform_name
   return seqrun_data
 
 
