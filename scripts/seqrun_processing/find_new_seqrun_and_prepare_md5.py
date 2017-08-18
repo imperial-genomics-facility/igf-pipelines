@@ -106,15 +106,29 @@ def prepare_seqrun_for_db(seqrun_name, seqrun_path):
   '''
   A method for preparing seqrun data for database
   '''
-  runinfo_file=os.path.join(seqrun_path,'RunInfo.xml')
-  runinfo_data=RunInfo_xml(xml_file=runinfo_file)
-  platform_name=runinfo_data.get_platform_number()
-  reads_stats=runinfo_data.get_reads_stats()
+  try:
+    runinfo_file=os.path.join(seqrun_path,'RunInfo.xml')
+    runinfo_data=RunInfo_xml(xml_file=runinfo_file)
+    platform_name=runinfo_data.get_platform_number()
+    reads_stats=runinfo_data.get_reads_stats()
   
-  seqrun_data=dict()
-  seqrun_data['seqrun_igf_id']=seqrun_name
-  seqrun_data['platform_igf_id']=platform_name
-  return seqrun_data
+    seqrun_data=dict()
+    seqrun_data['seqrun_igf_id']=seqrun_name
+    seqrun_data['platform_igf_id']=platform_name
+   
+    for read_id in reads_stats.keys():
+      if reads_stats[read_id]['isindexedread'] == 'Y':
+        # its index
+        seqrun_data['index{0}'.format(read_id)]=reads_stats[read_id]['numcycles']
+      elif  reads_stats[read_id]['isindexedread'] == 'N':
+        # its read
+        seqrun_data['read{0}'.format(read_id)]=reads_stats[read_id]['numcycles']
+      else:
+        raise ValueError('unknown value for isindexedread: {0}'.format(reads_stats[read_id]['isindexedread']))
+
+    return seqrun_data
+  except:
+    raise
 
 
 def load_seqrun_files_to_db(seqrun_info, seqrun_md5_info, dbconfig file_type='ILLUMINA_BCL_MD5'):
