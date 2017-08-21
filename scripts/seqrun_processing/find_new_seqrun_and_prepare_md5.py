@@ -9,7 +9,7 @@ args=parser.parse_args()
 
 seqrun_path=args.seqrun_path
 md5_path=args.md5_path
-dbconfig_path=args.dbconfig_path=
+dbconfig_path=args.dbconfig_path
 
 new_seqruns=find_new_seqrun_dir(seqrun_path, dbconfig_path)
 new_seqrun_files_and_md5=calculate_file_md5(seqrun_info=new_seqruns, md5_out=md5_path)
