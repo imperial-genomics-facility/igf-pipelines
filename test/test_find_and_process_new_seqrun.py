@@ -58,7 +58,15 @@ class Find_seqrun_test1(unittest.TestCase):
     valid_seqrun_dir=find_new_seqrun_dir(path=self.path,dbconfig=self.dbconfig)
     new_seqrun_and_md5=calculate_file_md5(seqrun_info=valid_seqrun_dir, md5_out=self.md5_out_path, seqrun_path=self.path) 
     load_seqrun_files_to_db(seqrun_info=valid_seqrun_dir, seqrun_md5_info=new_seqrun_and_md5, dbconfig=self.dbconfig)
-
+    dbparam = None
+    with open(self.dbconfig, 'r') as json_data:
+      dbparam = json.load(json_data)
+    sra=SeqrunAdaptor(**dbparam)
+    sra.start_session()
+    sra_data=sra.fetch_seqrun_records_igf_id(seqrun_igf_id='seqrun1')
+    sra.close_session()
+    self.assertEqual(sra_data.flowcell_id, 'HXXXXXXXX')
+  
 if __name__=='__main__':
   unittest.main()
 

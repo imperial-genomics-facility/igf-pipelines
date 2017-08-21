@@ -111,11 +111,13 @@ def prepare_seqrun_for_db(seqrun_name, seqrun_path):
     runinfo_data=RunInfo_xml(xml_file=runinfo_file)
     platform_name=runinfo_data.get_platform_number()
     reads_stats=runinfo_data.get_reads_stats()
+    flowcell_id=runinfo_data.get_flowcell_name()
   
     seqrun_data=dict()
     seqrun_data['seqrun_igf_id']=seqrun_name
     seqrun_data['platform_igf_id']=platform_name
-   
+    seqrun_data['flowcell_id']=flowcell_id
+
     for read_id in reads_stats.keys():
       if reads_stats[read_id]['isindexedread'] == 'Y':
         # its index
