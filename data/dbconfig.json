@@ -1,1 +1,1 @@
-{"dbhost":"0.0.0.0","dbuser":"igf","dbpass":"igf123","dbname":"igfdb","driver":"mysql","connector":"pymysql"}
+{"dbname":"find_seqrun.db","driver":"sqlite"}
