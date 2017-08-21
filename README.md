@@ -1,2 +1,3 @@
-# igf-pipelines
-A repository of EnsEMBL Hive based pipelines for Imperial BRC Genomics Facility team
+# igf-pipelines [![Documentation Status](https://readthedocs.org/projects/igf-pipelines/badge/?version=latest)](http://igf-pipelines.readthedocs.io/en/latest/?badge=latest)
+
+http://igf-pipelines.readthedocs.io/
