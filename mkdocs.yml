@@ -1,0 +1,3 @@
+site_name: IGF Pipelines
+pages:
+    - 'Introduction': 'index.md' 
