@@ -16,7 +16,7 @@ def find_new_seqrun_dir(path, dbconfig):
   return valid_seqrun_dir
 
 
-def check_finished_seqrun_dir(seqrun_dir, seqrun_path, required_files=['RTAComplete.txt','SampleSheet.csv']):
+def check_finished_seqrun_dir(seqrun_dir, seqrun_path, required_files=['RTAComplete.txt','SampleSheet.csv','RunInfo.xml']):
   '''
   A method for checking complete sequencing run directory
   '''
@@ -55,7 +55,7 @@ def check_seqrun_dir_in_db(all_seqrun_dir,dbconfig):
   return new_runs
 
 
-def calculate_file_md5(seqrun_info, md5_out, file_suffix='md5.json'):
+def calculate_file_md5(seqrun_info, md5_out, seqrun_path, file_suffix='md5.json'):
   '''
   A method for file md5 calculation for all the sequencing run files
   Output is a lists of dictionary
@@ -71,7 +71,7 @@ def calculate_file_md5(seqrun_info, md5_out, file_suffix='md5.json'):
           file_path=os.path.join(root_path,file_name)
           if os.path.exists(file_path):
             file_md5=calculate_file_checksum(filepath=file_path)
-            file_rel_path=os.path.relpath(file_path, start=path)
+            file_rel_path=os.path.relpath(file_path, start=seqrun_path)
             file_list_with_md5[file_rel_path]=file_md5 
 
     with open(output_json_file, 'w') as output_json:
@@ -153,7 +153,7 @@ def load_seqrun_files_to_db(seqrun_info, seqrun_md5_info, dbconfig, file_type='I
     seqrun_md5_file_data.append({'file_path':seqrun_md5_file,'location':'ORWELL','md5':file_md5, 'size':file_size})
     seqrun_file_collection.append({'name':seqrun_name, 'type':file_type, 'file_path':seqrun_md5_file})
     
-  base=BaseAdaptor(**dbparams)
+  base=BaseAdaptor(**dbparam)
   base.start_session()
   
   try:
@@ -177,7 +177,7 @@ def load_seqrun_files_to_db(seqrun_info, seqrun_md5_info, dbconfig, file_type='I
     base.commit_session()
   except:
     base.rollback_session()
-    raise1
+    raise
   finally:
     base.close_session()
 
@@ -191,7 +191,7 @@ if __name__=='__main__':
 
   dbconfig='/home/vmuser/git_code/igf-pipelines/data/dbconfig.json'
   new_seqrun=find_new_seqrun_dir(path, dbconfig)
-  new_seqrun_and_md5=calculate_file_md5(seqrun_info=new_seqrun, md5_out=md5_out_path)
+  new_seqrun_and_md5=calculate_file_md5(seqrun_info=new_seqrun, seqrun_path=path, md5_out=md5_out_path)
   load_seqrun_files_to_db(seqrun_info=new_seqrun, seqrun_md5_info=new_seqrun_and_md5, dbconfig=dbconfig)
   
 
