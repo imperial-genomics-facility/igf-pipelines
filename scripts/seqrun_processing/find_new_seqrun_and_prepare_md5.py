@@ -30,7 +30,9 @@ try:
 
     for seqrun_name in new_seqruns.keys():
       message='found new sequencing run {0}'.format(seqrun_name)
-      asana_obj.comment_asana_task(task_name=seqrun_name, comment=message)
+      res=asana_obj.comment_asana_task(task_name=seqrun_name, comment=message)
+      slack_obj.post_message_to_channel(message,reaction='pass')
+      message='New asana task created for seqrun {0}, url: https://app.asana.com/0/{1}/{2}'.format(seqrun_name, asana_project_id, res['target']['id'])
       slack_obj.post_message_to_channel(message,reaction='pass')
   else:
     slack_obj.post_message_to_channel(message='No new sequencing run found',reaction='sleep')
