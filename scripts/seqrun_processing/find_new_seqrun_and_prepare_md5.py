@@ -24,10 +24,10 @@ asana_obj=IGF_asana(asana_config=asana_config, asana_project_id=asana_project_id
 
 try:
   new_seqruns=find_new_seqrun_dir(seqrun_path, dbconfig_path)
-  new_seqrun_files_and_md5=calculate_file_md5(seqrun_info=new_seqruns, md5_out=md5_path,seqrun_path=seqrun_path)
-  load_seqrun_files_to_db(seqrun_info=new_seqruns, seqrun_md5_info=new_seqrun_files_and_md5, dbconfig=dbconfig_path)
-
   if len(new_seqruns.keys()) > 0:
+    new_seqrun_files_and_md5=calculate_file_md5(seqrun_info=new_seqruns, md5_out=md5_path,seqrun_path=seqrun_path)
+    load_seqrun_files_to_db(seqrun_info=new_seqruns, seqrun_md5_info=new_seqrun_files_and_md5, dbconfig=dbconfig_path)
+
     for seqrun_name in new_seqruns.keys():
       message='found new sequencing run {0}'.format(seqrun_name)
       asana_obj.comment_asana_task(task_name=seqrun_name, comment=message)
