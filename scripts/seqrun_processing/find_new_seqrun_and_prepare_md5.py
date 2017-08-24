@@ -29,7 +29,7 @@ try:
   if len(new_seqruns.keys()) > 0:
     new_seqrun_files_and_md5=calculate_file_md5(seqrun_info=new_seqruns, md5_out=md5_path,seqrun_path=seqrun_path)
     load_seqrun_files_to_db(seqrun_info=new_seqruns, seqrun_md5_info=new_seqrun_files_and_md5, dbconfig=dbconfig_path)
-    seed_pipeline_table_for_new_seqrun(seqrun_info=new_seqruns, pipeline_name=pipeline_name, dbconfig=dbconfig_path)
+    seed_pipeline_table_for_new_seqrun(pipeline_name=pipeline_name, dbconfig=dbconfig_path)
 
     for seqrun_name in new_seqruns.keys():
       message='found new sequencing run {0}'.format(seqrun_name)
