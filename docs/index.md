@@ -2,4 +2,4 @@
 Documentation for pipelines and scripts used by IGF team for sequencing data processing.
 
 ## Scripts
-  * [Lists of scripts](docs/scripts/index.md)
+  * [Find new sequencing run](find_new_seqrun_and_prepare_md5.md)
