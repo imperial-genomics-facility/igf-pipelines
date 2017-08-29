@@ -1,6 +1,7 @@
 site_name: IGF Pipelines
 pages:
     - 'Introduction': 'index.md' 
-    - 'Find new sequencing run': 'scripts/find_new_seqrun_and_prepare_md5.md'
+    - 'Scripts': 'scripts/index.md'
+      - 'Find new sequencing run': 'scripts/find_new_seqrun_and_prepare_md5.md'
 formats:
     - pdf
