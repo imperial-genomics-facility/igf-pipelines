@@ -15,32 +15,31 @@ find_new_seqrun_and_prepare_md5.py [-h] -p SEQRUN_PATH
                                         -n PIPELINE_NAME
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -p /--seqrun_path      SEQRUN_PATH     :  Seqrun directory path
-  -m /--md5_path         MD5_PATH        :  Seqrun md5 output dir
-  -d /--dbconfig_path    DBCONFIG_PATH   :  Database configuration json file
-  -s /--slack_config     SLACK_CONFIG    :  Slack configuration json file
-  -a /--asana_config     ASANA_CONFIG    :  Asana configuration json file
-  -i /--asana_project_id ASANA_PROJECT_ID:  Asana project id
-  -n /--pipeline_name    PIPELINE_NAME   :  IGF pipeline name
-
+  -h, --help              show this help message and exit
+  -p /--seqrun_path       Seqrun directory path
+  -m /--md5_path          Seqrun md5 output dir
+  -d /--dbconfig_path     Database configuration json file
+  -s /--slack_config      Slack configuration json file
+  -a /--asana_config      Asana configuration json file
+  -i /--asana_project_id  Asana project id
+  -n /--pipeline_name     IGF pipeline name
 </code></pre>
 
 ## Input file format
 
 ### DB config
-<code>
+<pre><code>
 {"dbname":"DBNAME","driver":"sqlite"}
-</code>
+</code></pre>
 
 ### Asana config
-<code>
+<pre><code>
 { "asana_personal_token" : "XYZ" },
-</code>
+</code></pre>
 
 ### Slack config
-<code>
+<pre><code>
 {"slack_token" : "ZYX", 
  "slack_channel" : "C001", 
  "slack_bot_id" : "U007"}
-</code>
+</code></pre>
