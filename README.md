@@ -4,5 +4,3 @@
 
 http://igf-pipelines.readthedocs.io/
 
-## Scripts
-[Lists of scripts](docs/scripts/index.md)
