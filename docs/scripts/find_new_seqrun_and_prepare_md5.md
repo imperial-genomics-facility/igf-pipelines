@@ -5,17 +5,17 @@ This script is for identifiying new finished sequencing runs in the server. It w
 Also this script will mark the new sequencing run as ready for processing (seeded) for a specific pipeline.
 
 ## Usage
-<pre><code>
-find_new_seqrun_and_prepare_md5.py [-h] -p SEQRUN_PATH 
+<pre><code>find_new_seqrun_and_prepare_md5.py [-h] -p SEQRUN_PATH 
                                         -m MD5_PATH    
                                         -d DBCONFIG_PATH 
                                         -s SLACK_CONFIG 
                                         -a ASANA_CONFIG 
                                         -i ASANA_PROJECT_ID 
                                         -n PIPELINE_NAME
+</code></pre>
 
-optional arguments:
-  -h, --help              show this help message and exit
+## Options
+<pre><code>  -h, --help              show this help message and exit
   -p /--seqrun_path       Seqrun directory path
   -m /--md5_path          Seqrun md5 output dir
   -d /--dbconfig_path     Database configuration json file
@@ -28,18 +28,15 @@ optional arguments:
 ## Input file format
 
 ### DB config
-<pre><code>
-{"dbname":"DBNAME","driver":"sqlite"}
+<pre><code> {"dbname":"DBNAME","driver":"sqlite"}
 </code></pre>
 
 ### Asana config
-<pre><code>
-{ "asana_personal_token" : "XYZ" },
+<pre><code>  { "asana_personal_token" : "XYZ" },
 </code></pre>
 
 ### Slack config
-<pre><code>
-{"slack_token" : "ZYX", 
+<pre><code>  {"slack_token" : "ZYX", 
  "slack_channel" : "C001", 
  "slack_bot_id" : "U007"}
 </code></pre>
