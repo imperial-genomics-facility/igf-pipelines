@@ -6,4 +6,4 @@ pages:
 formats:
     - pdf
 theme: bootstrap
-
+requirements_file: requirements.txt
