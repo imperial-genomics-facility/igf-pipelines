@@ -5,3 +5,5 @@ pages:
       - 'Find new sequencing runs in server': 'scripts/find_new_seqrun_and_prepare_md5.md'
 formats:
     - pdf
+theme: bootstrap
+
