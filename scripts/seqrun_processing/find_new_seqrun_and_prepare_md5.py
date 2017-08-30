@@ -11,6 +11,7 @@ parser.add_argument('-s','--slack_config', required=True, help='Slack configurat
 parser.add_argument('-a','--asana_config', required=True, help='Asana configuration json file')
 parser.add_argument('-i','--asana_project_id', required=True, help='Asana project id')
 parser.add_argument('-n','--pipeline_name', required=True, help='IGF pipeline name')
+parser.add_argument('-e','--exclude_path', action='append', default=[], help='List of sub directories excluded from the search')
 args=parser.parse_args()
 
 seqrun_path=args.seqrun_path
@@ -20,6 +21,7 @@ slack_config=args.slack_config
 asana_config=args.asana_config
 asana_project_id=args.asana_project_id
 pipeline_name=args.pipeline_name
+exclude_path=args.exclude_path
 
 slack_obj=IGF_slack(slack_config=slack_config)
 asana_obj=IGF_asana(asana_config=asana_config, asana_project_id=asana_project_id)
@@ -27,7 +29,7 @@ asana_obj=IGF_asana(asana_config=asana_config, asana_project_id=asana_project_id
 try:
   new_seqruns=find_new_seqrun_dir(seqrun_path, dbconfig_path)
   if len(new_seqruns.keys()) > 0:
-    new_seqrun_files_and_md5=calculate_file_md5(seqrun_info=new_seqruns, md5_out=md5_path,seqrun_path=seqrun_path)
+    new_seqrun_files_and_md5=calculate_file_md5(seqrun_info=new_seqruns, md5_out=md5_path, seqrun_path=seqrun_path, exclude_dir=exclude_path)
     load_seqrun_files_to_db(seqrun_info=new_seqruns, seqrun_md5_info=new_seqrun_files_and_md5, dbconfig=dbconfig_path)
     seed_pipeline_table_for_new_seqrun(pipeline_name=pipeline_name, dbconfig=dbconfig_path)
 
