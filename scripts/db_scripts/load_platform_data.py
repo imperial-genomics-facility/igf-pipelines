@@ -20,7 +20,7 @@ try:
   if update_data:
     raise NotImplementedError('methods notavailable for updaing existing data')
   else:
-    load_new_platform_data(data=platform_data)
+    load_new_platform_data(data_file=platform_data, dbconfig=dbconfig_path)
 except:
   message='Failed to load data to platform table, error: {0}'.format(e)
   slack_obj.post_message_to_channel(message,reaction='fail')
