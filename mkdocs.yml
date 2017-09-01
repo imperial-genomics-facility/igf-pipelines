@@ -6,5 +6,6 @@ pages:
   - Database operations: 
       - 'Clean and rebuild database': 'scripts/clean_and_rebuild_database.md'
       - 'Load platform data to database': 'scripts/load_platform_data.md'
+      - 'Load pipeline data to database': 'scripts/load_pipeline_data.md'
 formats:
     - pdf

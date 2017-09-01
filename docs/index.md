@@ -7,3 +7,4 @@ Documentation for pipelines and scripts used by IGF team for sequencing data pro
 ## DB scripts
   * [Clean and rebuild database](scripts/clean_and_rebuild_database.md)
   * [Load platform data](scripts/load_platform_data.md)
+  * [Load pipeline data](scripts/load_pipeline_data.md)
