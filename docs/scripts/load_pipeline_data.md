@@ -1,4 +1,4 @@
-# Load platform data to db
+# Load pipeline data to db
 
 A script for loading pipeline data to database
 
