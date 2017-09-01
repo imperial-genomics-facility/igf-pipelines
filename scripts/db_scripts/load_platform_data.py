@@ -1,4 +1,5 @@
 import argparse
+from igf_data.task_tracking.igf_slack import IGF_slack
 from igf_data.utils.platformutils import load_new_platform_data
 
 parser=argparse.ArgumentParser()
