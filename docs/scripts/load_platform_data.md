@@ -14,4 +14,8 @@ A script for loading platform data to database
 </code></pre>
 
 ## Platform data json file
-<pre><code>{ "platform_igf_id":"ILM4K_001", "model_name":"HISEQ4000","vendor_name":"ILLUMINA","software_name":"RTA","software_version":"RTA2"}</code></pre>
+<pre><code>{ "platform_igf_id":"ILM4K_001", 
+  "model_name":"HISEQ4000",
+  "vendor_name":"ILLUMINA",
+  "software_name":"RTA",
+  "software_version":"RTA2"}</code></pre>
