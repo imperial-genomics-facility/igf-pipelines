@@ -18,4 +18,5 @@ A script for loading platform data to database
   "model_name":"HISEQ4000",
   "vendor_name":"ILLUMINA",
   "software_name":"RTA",
-  "software_version":"RTA2"}</code></pre>
+  "software_version":"RTA2"
+}</code></pre>
