@@ -29,7 +29,12 @@ asana_obj=IGF_asana(asana_config=asana_config, asana_project_id=asana_project_id
 try:
   new_seqruns=find_new_seqrun_dir(seqrun_path, dbconfig_path)
   if len(new_seqruns.keys()) > 0:
+    message='found {0} new sequence runs, calculating md5'.format(len(new_seqruns.keys()))
+    slack_obj.post_message_to_channel(message,reaction='pass')
+
     new_seqrun_files_and_md5=calculate_file_md5(seqrun_info=new_seqruns, md5_out=md5_path, seqrun_path=seqrun_path, exclude_dir=exclude_path)
+    slack_obj.post_message_to_channel(message='finished md5 calculation, loading seqrun to db',reaction='pass')
+
     load_seqrun_files_to_db(seqrun_info=new_seqruns, seqrun_md5_info=new_seqrun_files_and_md5, dbconfig=dbconfig_path)
     seed_pipeline_table_for_new_seqrun(pipeline_name=pipeline_name, dbconfig=dbconfig_path)
 
