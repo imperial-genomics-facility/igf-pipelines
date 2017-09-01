@@ -21,7 +21,7 @@ try:
   if update_data:
     raise NotImplementedError('methods notavailable for updaing existing data')
   else:
-    load_new_pipeline_data(data_file=platform_data, dbconfig=dbconfig_path)
+    load_new_pipeline_data(data_file=pipeline_data, dbconfig=dbconfig_path)
 except Exception as e:
   message='Failed to load data to pipeline table, error: {0}'.format(e)
   slack_obj.post_message_to_channel(message,reaction='fail')
