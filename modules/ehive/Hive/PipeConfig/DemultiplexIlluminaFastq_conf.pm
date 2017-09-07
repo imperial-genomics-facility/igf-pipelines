@@ -18,7 +18,7 @@ sub pipeline_analyses {
   
   push @pipeline, {
     -logic_name => 'find_new_sequencing_runs',
-    -module => 'ehive.runnable.jobfactory.pipeseedfactory',
+    -module => 'ehive.runnable.jobfactory.PipeseedFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
   };
