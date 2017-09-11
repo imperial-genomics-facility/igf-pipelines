@@ -41,7 +41,8 @@ sub pipeline_analyses {
       'seqrun_id_label'=> $self->o('seqrun_id_label'),
     },
     -flow_into => {
-      2 => ['seqrun_transfer_factory'],    
+      '2->A' => ['seqrun_transfer_factory'],
+      'A->1' => ['check_seqrun_file'],
     },
   };
   push @pipeline, {
@@ -70,7 +71,30 @@ sub pipeline_analyses {
       'seqrun_local_dir' => $self->o('seqrun_local_dir'),
       'checksum_type' => $self->o('checksum_type'),
     },
+    -flow_into => {
+      1 => [ '?accu_name=seqrun_file&accu_address={seqrun_igf_id}&accu_input_variable=seqrun_file_name' ],
+    },
   };
+  push @pipeline, {
+    -logic_name  => 'check_seqrun_file',
+    -module      => 'ehive.runnable.IGFBaseProcess',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -parameters => {
+    }, 
+    -flow_into => {
+      1 => ['check_samplesheet'],
+    },
+  };
+  push @pipeline, {
+    -logic_name  => 'check_samplesheet',
+    -module      => 'ehive.runnable.IGFBaseProcess',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -parameters  => {
+    },
+  };
+};
   
  
   return \@pipeline
