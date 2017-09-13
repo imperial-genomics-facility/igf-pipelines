@@ -111,8 +111,22 @@ sub pipeline_analyses {
       -language    => 'python3',
       -meadow_type => 'LOCAL',
       -flow_into   => {
-          2 => ['prepare_samplesheet_for_demultiplexing'],
+          2 => ['find_sample_index_length_factory'],
       },
+  };
+  push @pipeline, {
+      -logic_name  => 'find_sample_index_length_factory',
+      -module      => 'ehive.runnable.jobfactory.SamplesheetFilterAndIndexFactory',
+      -language    => 'python3',
+      -meadow_type => 'LOCAL',
+      -parameters  => {
+        'base_work_dir' => $self->o('base_work_dir'),
+        },
+      -flow_into   => {
+          2 => ['calculate_bases_mask'],
+      },
+      
+      
   };
 };
   
