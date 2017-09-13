@@ -105,6 +105,15 @@ sub pipeline_analyses {
           2 => ['find_flowcell_lane_factory']
       },
   };
+  push @pipeline, {
+      -logic_name  => 'find_flowcell_lane_factory',
+      -module      => 'ehive.runnable.jobfactory.SampleSheetFlowcellFactory',
+      -language    => 'python3',
+      -meadow_type => 'LOCAL',
+      -flow_into   => {
+          2 => ['prepare_samplesheet_for_demultiplexing'],
+      },
+  };
 };
   
  
