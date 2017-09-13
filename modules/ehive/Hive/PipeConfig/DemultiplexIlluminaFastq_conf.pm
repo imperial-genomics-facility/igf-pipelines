@@ -96,6 +96,15 @@ sub pipeline_analyses {
         'base_work_dir' => $self->o('base_work_dir'),
     },
   };
+  push @pipeline, {
+      -logic_name  => 'find_project_factory',
+      -module      => 'ehive.runnable.jobfactory.SampleSheetProjectFactory',
+      -language    => 'python3',
+      -meadow_type => 'LOCAL',
+      -flow_into =>{
+          2 => ['find_flowcell_lane_factory']
+      },
+  };
 };
   
  
