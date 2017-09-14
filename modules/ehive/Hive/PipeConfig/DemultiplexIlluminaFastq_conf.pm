@@ -125,8 +125,15 @@ sub pipeline_analyses {
       -flow_into   => {
           2 => ['calculate_bases_mask'],
       },
-      
-      
+  };
+  push @pipeline, {
+      -logic_name   => 'calculate_bases_mask',
+      -module       => 'ehive.runnable.process.CalculateBasesMask',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['run_bcl2fastq']
+      },
   };
 };
   
