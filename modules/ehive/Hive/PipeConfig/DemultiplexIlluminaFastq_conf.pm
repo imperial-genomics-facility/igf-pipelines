@@ -135,6 +135,15 @@ sub pipeline_analyses {
           1 => ['run_bcl2fastq']
       },
   };
+  puh @pipeline, {
+      -logic_name   => 'run_bcl2fastq',
+      -module       => 'ehive.runnable.process.RunBcl2Fastq',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['check_demultiplexing_barcode'],
+      },
+  };
 };
   
  
