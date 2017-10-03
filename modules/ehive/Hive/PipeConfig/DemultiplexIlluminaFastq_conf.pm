@@ -135,7 +135,7 @@ sub pipeline_analyses {
           1 => ['run_bcl2fastq']
       },
   };
-  puh @pipeline, {
+  push @pipeline, {
       -logic_name   => 'run_bcl2fastq',
       -module       => 'ehive.runnable.process.RunBcl2Fastq',
       -language     => 'python3',
@@ -143,6 +143,18 @@ sub pipeline_analyses {
       -flow_into    => {
           1 => ['check_demultiplexing_barcode'],
       },
+  };
+  push @pipeline, {
+      -logic_name   => 'check_demultiplexing_barcode',
+      -module       => 'ehive.runnable.process.CheckIndexStats',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_work_dir' => $self->o('base_work_dir'),
+        },
+      -flow_into => {
+      1 => [ '?accu_name=fastq_files&accu_address={seqrun_igf_id}&accu_input_variable=fastq_dir' ],
+        },
   };
 };
   
