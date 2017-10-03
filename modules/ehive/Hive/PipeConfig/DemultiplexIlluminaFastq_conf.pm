@@ -153,7 +153,7 @@ sub pipeline_analyses {
         'base_work_dir' => $self->o('base_work_dir'),
         },
       -flow_into => {
-      1 => [ '?accu_name=fastq_files&accu_address={seqrun_igf_id}&accu_input_variable=fastq_dir' ],
+      1 => [ '?accu_name=fastq_files&accu_address={fastq_dir}&accu_input_variable=barcode_qc_stats' ],
         },
   };
 };
