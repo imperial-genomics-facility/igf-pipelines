@@ -114,7 +114,8 @@ sub pipeline_analyses {
       -language    => 'python3',
       -meadow_type => 'LOCAL',
       -flow_into   => {
-          2 => ['find_sample_index_length_factory'],
+          '2->A' => ['find_sample_index_length_factory'],
+          'A->1' => ['validate_all_lanes_for_project],
       },
   };
   push @pipeline, {
@@ -158,6 +159,12 @@ sub pipeline_analyses {
       -flow_into => {
       1 => [ '?accu_name=fastq_files&accu_address={fastq_dir}&accu_input_variable=barcode_qc_stats' ],
         },
+  };
+  push @pipeline, {
+      -logic_name   => 'validate_all_lanes_for_project',
+      -module       => 'ehive.runnable.process.ValidateAllLanesForProject',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
   };
 };
   
