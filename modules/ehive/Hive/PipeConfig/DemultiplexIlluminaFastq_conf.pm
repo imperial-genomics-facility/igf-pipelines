@@ -95,6 +95,9 @@ sub pipeline_analyses {
         'seqrun_local_dir' => $self->o{'seqrun_local_dir'},
         'base_work_dir' => $self->o('base_work_dir'),
     },
+  -flow_into => {
+      1 => ['find_project_factory'],
+    },
   };
   push @pipeline, {
       -logic_name  => 'find_project_factory',
