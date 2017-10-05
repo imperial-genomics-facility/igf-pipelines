@@ -166,9 +166,6 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
   };
-};
-  
- 
   return \@pipeline
 }
 
