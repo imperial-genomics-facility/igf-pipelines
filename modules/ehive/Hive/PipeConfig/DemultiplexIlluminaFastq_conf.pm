@@ -106,7 +106,7 @@ sub pipeline_analyses {
       -meadow_type => 'LOCAL',
       -flow_into =>{
           '2->A' => ['find_flowcell_lane_factory']
-          'A->1' => ['mark_seqrun_complete'],
+          'A->1' => ['mark_seqrun_status_in_seed_table'],
       },
   };
   push @pipeline, {
@@ -166,26 +166,46 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.ValidateAllLanesForProject',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
-      -flow_into    => {
-          '2->A' => {'project_known_fastqdir_factory' => {'project_fastq' => '#project_fastq#'}},
-          'A->1' => ['run_multiqc_for_know_fastq'],
-          '2->B' => {'project_undetermined_fastqdir_factory' => {'project_fastq' => '#project_fastq#'}},
-          'B->1' => ['run_multiqc_for_undetermined_fastq'],
+      -flow_into   => {
+          1 => WHEN( 
+                 '#project_fastq#' => { 'project_fastqdir_factory' => INPUT_PLUS(),},
+                 ELSE { 'mark_seqrun_failed' => INPUT_PLUS(),},
+           ),
       },
   };
 
   push @pipeline, {
-      -logic_name   => 'project_known_fastqdir_factory',
+      -logic_name   => 'mark_seqrun_failed',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+  };
+
+  push @pipeline, {
+      -logic_name   => 'project_fastqdir_factory',
       -module       => '',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
-          1 => ['collect_fastq_to_db_collection']
+          '2->A' => ['collect_fastq_to_db_collection' ],
+          'A->1' => ['run_multiqc_for_know_fastq'],
+          '2->B' => ['undetermined_fastq_factory'],
+          'B->1' => ['run_multiqc_for_undetermined_fastq'],
       },
   };
   
   push @pipeline, {
       -logic_name   => 'collect_fastq_to_db_collection',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['upload_fastq_dir_to_irods']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'upload_fastq_dir_to_irods',
       -module       => '',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
@@ -275,16 +295,6 @@ sub pipeline_analyses {
   };
 
   push @pipeline, {
-      -logic_name   => 'project_undetermined_fastqdir_factory',
-      -module       => '',
-      -language     => 'python3',
-      -meadow_type  => 'LOCAL',
-      -flow_into    => {
-          1 => ['undetermined_fastq_factory']
-      },
-  };
-
-  push @pipeline, {
       -logic_name   => 'undetermined_fastq_factory',
       -module       => '',
       -language     => 'python3',
@@ -310,9 +320,10 @@ sub pipeline_analyses {
       -module       => '',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
-      1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
-            '?accu_name=undetermined_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
-           ],
+      -flow_into    => {
+           1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
+                 '?accu_name=undetermined_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
+                ],
       },
   };
 
@@ -343,14 +354,15 @@ sub pipeline_analyses {
       -meadow_type  => 'LOCAL',
   };
 
+
   push @pipeline, {
-      -logic_name   => 'mark_seqrun_complete',
+      -logic_name   => 'mark_seqrun_status_in_seed_table',
       -module       => '',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
   };
 
-  return \@pipeline
+  return \@pipeline;
 }
 
 1;
