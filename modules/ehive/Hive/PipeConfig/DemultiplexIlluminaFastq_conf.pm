@@ -105,7 +105,8 @@ sub pipeline_analyses {
       -language    => 'python3',
       -meadow_type => 'LOCAL',
       -flow_into =>{
-          2 => ['find_flowcell_lane_factory']
+          '2->A' => ['find_flowcell_lane_factory']
+          'A->1' => ['mark_seqrun_complete'],
       },
   };
   push @pipeline, {
@@ -115,7 +116,7 @@ sub pipeline_analyses {
       -meadow_type => 'LOCAL',
       -flow_into   => {
           '2->A' => ['find_sample_index_length_factory'],
-          'A->1' => ['validate_all_lanes_for_project],
+          'A->1' => ['validate_all_lanes_for_project'],
       },
   };
   push @pipeline, {
@@ -157,7 +158,7 @@ sub pipeline_analyses {
         'base_work_dir' => $self->o('base_work_dir'),
         },
       -flow_into => {
-      1 => [ '?accu_name=project_fastq&accu_address={fastq_dir}&accu_input_variable=barcode_qc_stats' ],
+          1 => [ '?accu_name=project_fastq&accu_address={fastq_dir}&accu_input_variable=barcode_qc_stats' ],
         },
   };
   push @pipeline, {
@@ -165,7 +166,190 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.ValidateAllLanesForProject',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          '2->A' => {'project_known_fastqdir_factory' => {'project_fastq' => '#project_fastq#'}},
+          'A->1' => ['run_multiqc_for_know_fastq'],
+          '2->B' => {'project_undetermined_fastqdir_factory' => {'project_fastq' => '#project_fastq#'}},
+          'B->1' => ['run_multiqc_for_undetermined_fastq'],
+      },
   };
+
+  push @pipeline, {
+      -logic_name   => 'project_known_fastqdir_factory',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['collect_fastq_to_db_collection']
+      },
+  };
+  
+  push @pipeline, {
+      -logic_name   => 'collect_fastq_to_db_collection',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['known_fastq_factory']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'known_fastq_factory',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          '2->A' => ['run_fastqc_for_known_fastq']
+          'A->1' => ['collect_qc_data_for_known_fastq'],
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'run_fastqc_for_known_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_fastqc_results_to_remote']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'copy_fastqc_results_to_remote',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['run_fastqscreen_for_known_fastq']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'run_fastqscreen_for_known_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_fastqscreen_results_to_remote']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'copy_fastqscreen_results_to_remote',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
+                '?accu_name=known_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
+               ],
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'collect_qc_data_for_known_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['?accu_name=qc_known&accu_address={fastq_dir}&accu_input_variable=qc_outputs',]
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'run_multiqc_for_know_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_known_multiqc_to_remote']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'copy_known_multiqc_to_remote',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+  };
+
+  push @pipeline, {
+      -logic_name   => 'project_undetermined_fastqdir_factory',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['undetermined_fastq_factory']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'undetermined_fastq_factory',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          '2->A' => ['run_fastqc_for_undetermined_fastq']
+          'A->1' => ['collect_qc_data_for_undetermined_fastq'],
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'run_fastqc_for_undetermined_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['run_fastqscreen_for_undetermined_fastq']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'run_fastqscreen_for_undetermined_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
+            '?accu_name=undetermined_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
+           ],
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'collect_qc_data_for_undetermined_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['?accu_name=qc_undetermined&accu_address={fastq_dir}&accu_input_variable=qc_outputs',]
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'run_multiqc_for_undetermined_fastq',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_undetermined_multiqc_to_remote']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'copy_undetermined_multiqc_to_remote',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+  };
+
+  push @pipeline, {
+      -logic_name   => 'mark_seqrun_complete',
+      -module       => '',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+  };
+
   return \@pipeline
 }
 
