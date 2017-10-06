@@ -1,6 +1,5 @@
 =head1 NAME
     ehive::Hive::PipeConfig::DemultiplexIlluminaFastq_conf
-
 =cut
 
 package ehive::Hive::PipeConfig::DemultiplexIlluminaFastq_conf;
@@ -23,6 +22,8 @@ sub default_options {
     'seqrun_md5_type' => undef,
     'seqrun_local_dir' => undef,
     'checksum_type' => undef,
+    'base_work_dir' => undef,
+    'seqrun_user' => undef,
   };
 }
 
@@ -105,7 +106,7 @@ sub pipeline_analyses {
       -language    => 'python3',
       -meadow_type => 'LOCAL',
       -flow_into =>{
-          '2->A' => ['find_flowcell_lane_factory']
+          '2->A' => ['find_flowcell_lane_factory'],
           'A->1' => ['mark_seqrun_status_in_seed_table'],
       },
   };
@@ -220,7 +221,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
-          '2->A' => ['run_fastqc_for_known_fastq']
+          '2->A' => ['run_fastqc_for_known_fastq'],
           'A->1' => ['collect_qc_data_for_known_fastq'],
       },
   };
@@ -300,7 +301,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
-          '2->A' => ['run_fastqc_for_undetermined_fastq']
+          '2->A' => ['run_fastqc_for_undetermined_fastq'],
           'A->1' => ['collect_qc_data_for_undetermined_fastq'],
       },
   };
