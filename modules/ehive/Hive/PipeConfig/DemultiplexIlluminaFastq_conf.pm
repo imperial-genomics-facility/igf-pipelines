@@ -183,7 +183,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'project_fastqdir_factory',
-      -module       => '',
+      -module       => 'ehive.runnable.process.ProjectFastqdirFactory',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
