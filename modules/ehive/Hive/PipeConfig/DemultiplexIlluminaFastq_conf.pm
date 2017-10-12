@@ -197,7 +197,7 @@ sub pipeline_analyses {
   
   push @pipeline, {
       -logic_name   => 'collect_fastq_to_db_collection',
-      -module       => '',
+      -module       => 'ehive.runnable.process.CollectFastqToDbCollection',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
