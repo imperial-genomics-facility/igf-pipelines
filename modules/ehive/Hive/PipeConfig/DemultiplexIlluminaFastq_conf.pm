@@ -217,9 +217,12 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'known_fastq_factory',
-      -module       => '',
+      -module       => 'ehive.runnable.jobfactory.FastqFileFactory',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'filter_keyword' => 'Undetermined*',
+        },
       -flow_into    => {
           '2->A' => ['run_fastqc_for_known_fastq'],
           'A->1' => ['collect_qc_data_for_known_fastq'],
@@ -297,9 +300,12 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'undetermined_fastq_factory',
-      -module       => '',
+      -module       => 'ehive.runnable.jobfactory.FastqFileFactory',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'required_keyword' => 'Undetermined*',
+        },
       -flow_into    => {
           '2->A' => ['run_fastqc_for_undetermined_fastq'],
           'A->1' => ['collect_qc_data_for_undetermined_fastq'],
