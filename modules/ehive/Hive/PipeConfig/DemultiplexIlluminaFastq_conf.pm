@@ -207,7 +207,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'upload_fastq_dir_to_irods',
-      -module       => '',
+      -module       => 'ehive.runnable.process.UploadFastqToIrods',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
