@@ -231,7 +231,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqc_for_known_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
@@ -251,7 +251,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqscreen_for_known_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.RunFastqscreen',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
@@ -314,7 +314,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqc_for_undetermined_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
@@ -324,7 +324,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqscreen_for_undetermined_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.RunFastqscreen',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
