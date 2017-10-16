@@ -241,9 +241,13 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_fastqc_results_to_remote',
-      -module       => '',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'known',
+        'label'=>'fastqc',
+        },
       -flow_into    => {
           1 => ['run_fastqscreen_for_known_fastq']
       },
@@ -261,9 +265,13 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_fastqscreen_results_to_remote',
-      -module       => '',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'known',
+        'label'=>'fastqscreen',
+        },
       -flow_into    => {
           1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
                 '?accu_name=known_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
