@@ -177,9 +177,12 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'mark_seqrun_failed',
-      -module       => '',
+      -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'status' => 'FAILED*',
+        },
   };
 
   push @pipeline, {
@@ -377,13 +380,14 @@ sub pipeline_analyses {
         },
   };
 
-
   push @pipeline, {
       -logic_name   => 'mark_seqrun_status_in_seed_table',
-      -module       => '',
+      -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
-      
+      -parameters  => {
+        'status' => 'COMPLETED',
+        },
   };
 
   return \@pipeline;
