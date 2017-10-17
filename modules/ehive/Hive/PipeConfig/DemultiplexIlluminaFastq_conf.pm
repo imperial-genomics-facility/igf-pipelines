@@ -291,7 +291,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_multiqc_for_know_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
@@ -301,9 +301,13 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_known_multiqc_to_remote',
-      -module       => '',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'known',
+        'label'=>'multiqc',
+        },
   };
 
   push @pipeline, {
@@ -354,7 +358,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_multiqc_for_undetermined_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
@@ -364,9 +368,13 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_undetermined_multiqc_to_remote',
-      -module       => '',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'undetermined',
+        'label'=>'multiqc',
+        },
   };
 
 
@@ -375,6 +383,7 @@ sub pipeline_analyses {
       -module       => '',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      
   };
 
   return \@pipeline;
