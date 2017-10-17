@@ -284,7 +284,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'collect_qc_data_for_known_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
@@ -351,7 +351,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'collect_qc_data_for_undetermined_fastq',
-      -module       => '',
+      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -flow_into    => {
