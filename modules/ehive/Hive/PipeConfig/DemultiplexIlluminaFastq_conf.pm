@@ -63,7 +63,7 @@ sub pipeline_analyses {
   };
   push @pipeline, {
     -logic_name  => 'transfer_seqrun_file',
-    -module      => 'ehive.runnable.proccess.TransferAndCheckRemoteFile',
+    -module      => 'ehive.runnable.proccess.TransferAndCheckRemoteBclFile',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -parameters => {
