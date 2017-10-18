@@ -20,6 +20,8 @@ sub default_options {
       %{$self->SUPER::default_options},
       pbs_queue => 'pqcgi',
       user_email => '/dev/null',
+      igf_slack => 1,
+      igf_asana => 1,
    };
 }
 
