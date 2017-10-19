@@ -14,16 +14,16 @@ sub default_options {
   my ($self) = @_;
   return {
     %{ $self->SUPER::default_options() },
-    'pipeline_name' => 'DemultiplexIlluminaFastq',
-    'seed_id_label' => undef,
-    'seqrun_id_label' => undef,
-    'seqrun_source' => undef,
-    'seqrun_server' => undef,
-    'seqrun_md5_type' => undef,
+    'pipeline_name'  => 'DemultiplexIlluminaFastq',
+    'seed_id_label'  => undef,
+    'seqrun_id_label'=> undef,
+    'seqrun_source'  => undef,
+    'seqrun_server'  => undef,
+    'seqrun_md5_type'  => undef,
     'seqrun_local_dir' => undef,
     'checksum_type' => undef,
     'base_work_dir' => undef,
-    'seqrun_user' => undef,
+    'seqrun_user'   => undef,
   };
 }
 
