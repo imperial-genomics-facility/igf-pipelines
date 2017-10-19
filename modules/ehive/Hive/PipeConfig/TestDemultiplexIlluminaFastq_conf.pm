@@ -85,7 +85,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -parameters  => {
-        'seqrun_local_dir' => $self->o{'seqrun_local_dir'},
+        'seqrun_local_dir' => $self->o('seqrun_local_dir'),
         'base_work_dir' => $self->o('base_work_dir'),
     },
   };
