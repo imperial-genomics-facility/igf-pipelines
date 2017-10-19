@@ -34,7 +34,7 @@ sub pipeline_wide_parameters {
     return {
         %{$self->SUPER::pipeline_wide_parameters},            # here we inherit anything from the base class
         'dbconfig'     => $self->o('dbconfig'),
-        'log_slack'    => $self->o('igf_slack'),
+        'log_slack'    => $self->o('log_slack'),
         'slack_config' => $self->o('slack_config'),
         'log_asana'    => $self->o('log_asana'),
         'asana_config' => $self->o('asana_config'),
