@@ -18,13 +18,29 @@ sub default_options {
   
   return {
       %{$self->SUPER::default_options},
-      pbs_queue => 'pqcgi',
-      user_email => '/dev/null',
-      igf_slack => 1,
-      igf_asana => 1,
+      pbs_queue        => 'pqcgi',
+      user_email       => '/dev/null',
+      log_slack        => 1,
+      log_asana        => 1,
+      dbconfig         => undef,
+      asana_config     => undef,
+      slack_config     => undef,
+      asana_project_id => undef,
    };
 }
 
+sub pipeline_wide_parameters {
+    my ($self) = @_;
+    return {
+        %{$self->SUPER::pipeline_wide_parameters},            # here we inherit anything from the base class
+        'dbconfig'     => $self->o('dbconfig'),
+        'log_slack'    => $self->o('igf_slack'),
+        'slack_config' => $self->o('slack_config'),
+        'log_asana'    => $self->o('log_asana'),
+        'asana_config' => $self->o('asana_config'),
+        'asana_project_id' => $self->o('asana_project_id'),
+    };
+}
 
 sub resource_classes {
     my ($self) = @_;
