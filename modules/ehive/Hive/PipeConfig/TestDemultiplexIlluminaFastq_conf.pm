@@ -20,6 +20,7 @@ sub default_options {
     'checksum_type' => undef,
     'base_work_dir' => undef,
     'seqrun_user'   => undef,
+    'seqrun_local_dir' => undef
   };
 }
 
