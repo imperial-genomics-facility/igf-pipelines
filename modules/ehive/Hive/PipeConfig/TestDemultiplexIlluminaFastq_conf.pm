@@ -38,8 +38,6 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -parameters  =>{
       'pipeline_name' => $self->o('pipeline_name'),
-      'seed_id_label' => $self->o('seed_id_label'),
-      'seqrun_id_label'=> $self->o('seqrun_id_label'),
     },
     -flow_into => {
       2 => ['seqrun_transfer_factory'],
