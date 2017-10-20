@@ -16,8 +16,6 @@ sub default_options {
     %{ $self->SUPER::default_options() },
     'pipeline_name'  => 'DemultiplexIlluminaFastq',
     'seqrun_source'  => undef,
-    'seqrun_server'  => undef,
-    'seqrun_md5_type'  => undef,
     'seqrun_local_dir' => undef,
     'checksum_type' => undef,
     'base_work_dir' => undef,
@@ -49,9 +47,7 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -parameters  => {
       'seqrun_source' => $self->o('seqrun_source'),
-      'seqrun_server' => $self->o('seqrun_server'),
       'seqrun_user'   => $self->o('seqrun_user'),
-      'seqrun_md5_type' => $self->o('seqrun_md5_type'),
     },
     -flow_into => {
       '2->A' => ['transfer_seqrun_file'],
