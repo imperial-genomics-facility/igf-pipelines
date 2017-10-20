@@ -62,7 +62,6 @@ sub pipeline_analyses {
     -meadow_type => 'PBSPro',
     -parameters => {
       'seqrun_source' => $self->o('seqrun_source'),
-      'seqrun_server' => $self->o('seqrun_server'),
       'seqrun_local_dir' => $self->o('seqrun_local_dir'),
       'checksum_type' => $self->o('checksum_type'),
     },
