@@ -15,8 +15,6 @@ sub default_options {
   return {
     %{ $self->SUPER::default_options() },
     'pipeline_name'  => 'DemultiplexIlluminaFastq',
-    'seed_id_label'  => undef,
-    'seqrun_id_label'=> undef,
     'seqrun_source'  => undef,
     'seqrun_server'  => undef,
     'seqrun_md5_type'  => undef,
