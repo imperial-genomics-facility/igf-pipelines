@@ -60,6 +60,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.TransferAndCheckRemoteBclFile',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
+    -rc_name     => '500Mb',
     -parameters => {
       'seqrun_source' => $self->o('seqrun_source'),
       'seqrun_local_dir' => $self->o('seqrun_local_dir'),
