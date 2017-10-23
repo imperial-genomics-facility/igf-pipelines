@@ -17,10 +17,8 @@ sub default_options {
     'pipeline_name'  => 'DemultiplexIlluminaFastq',
     'seqrun_source'  => undef,
     'seqrun_local_dir' => undef,
-    'checksum_type' => undef,
     'base_work_dir' => undef,
     'seqrun_user'   => undef,
-    'seqrun_local_dir' => undef
   };
 }
 
@@ -63,9 +61,10 @@ sub pipeline_analyses {
     -meadow_type => 'PBSPro',
     -rc_name     => '500Mb',
     -parameters => {
-      'seqrun_source' => $self->o('seqrun_source'),
+      'seqrun_source'    => $self->o('seqrun_source'),
+      'seqrun_user'      => $self->o('seqrun_user'),
       'seqrun_local_dir' => $self->o('seqrun_local_dir'),
-      'checksum_type' => $self->o('checksum_type'),
+      'checksum_type'    => $self->o('checksum_type'),
     },
     -flow_into => {
       1 => [ '?accu_name=seqrun_file&accu_address={seqrun_igf_id}&accu_input_variable=seqrun_file_name' ],
