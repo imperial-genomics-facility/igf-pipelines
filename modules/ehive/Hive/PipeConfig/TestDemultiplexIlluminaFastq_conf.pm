@@ -20,7 +20,7 @@ sub default_options {
     'seqrun_server'    => undef,
     'base_work_dir'    => undef,
     'seqrun_user'      => undef,
-    'checksum_type'    => 'md5'
+    'checksum_type'    => 'md5',
   };
 }
 
