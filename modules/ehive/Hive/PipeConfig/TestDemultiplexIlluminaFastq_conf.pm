@@ -63,6 +63,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '500Mb',
+    -analysis_capacity => 10,
     -parameters => {
       'seqrun_source'    => $self->o('seqrun_source'),
       'seqrun_user'      => $self->o('seqrun_user'),
