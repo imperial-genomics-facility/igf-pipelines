@@ -49,7 +49,7 @@ sub pipeline_analyses {
     -parameters  => {
       'seqrun_source' => $self->o('seqrun_source'),
       'seqrun_user'   => $self->o('seqrun_user'),
-      'seqrun_server' => $self->('seqrun_server'),
+      'seqrun_server' => $self->o('seqrun_server'),
     },
     -flow_into => {
       '2->A' => ['transfer_seqrun_file'],
@@ -66,7 +66,7 @@ sub pipeline_analyses {
     -parameters => {
       'seqrun_source'    => $self->o('seqrun_source'),
       'seqrun_user'      => $self->o('seqrun_user'),
-      'seqrun_server'    => $self->('seqrun_server'),
+      'seqrun_server'    => $self->o('seqrun_server'),
       'seqrun_local_dir' => $self->o('seqrun_local_dir'),
       'checksum_type'    => $self->o('checksum_type'),
     },
