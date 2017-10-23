@@ -19,6 +19,7 @@ sub default_options {
     'seqrun_local_dir' => undef,
     'base_work_dir' => undef,
     'seqrun_user'   => undef,
+    'checksum_type' => 'md5'
   };
 }
 
