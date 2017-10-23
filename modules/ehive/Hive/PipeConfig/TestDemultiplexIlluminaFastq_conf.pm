@@ -91,15 +91,22 @@ sub pipeline_analyses {
   };
   
   push @pipeline, {
-      -logic_name  => 'find_project_factory',
-      -module      => 'ehive.runnable.jobfactory.SampleSheetProjectFactory',
-      -language    => 'python3',
-      -meadow_type => 'LOCAL',
-      -parameters  => {
-        'seqrun_local_dir' => $self->o('seqrun_local_dir'),
-        'base_work_dir' => $self->o('base_work_dir'),
+    -logic_name  => 'find_project_factory',
+    -module      => 'ehive.runnable.jobfactory.SampleSheetProjectFactory',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -flow_into => {
+      2 => ['find_flowcell_lane_factory'],
     },
   };
+
+  push @pipeline, {
+    -logic_name  => 'find_flowcell_lane_factory',
+    -module      => 'ehive.runnable.jobfactory.SampleSheetFlowcellFactory',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+  };
+
   return \@pipeline;
 }
 
