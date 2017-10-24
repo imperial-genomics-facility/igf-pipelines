@@ -159,7 +159,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters  => {
-        'base_work_dir' => $self->o('base_work_dir'),
+        'seqrun_local_dir' => $self->o('seqrun_local_dir'),
         },
       -flow_into => {
           1 => [ '?accu_name=project_fastq&accu_address={fastq_dir}&accu_input_variable=barcode_qc_stats' ],
