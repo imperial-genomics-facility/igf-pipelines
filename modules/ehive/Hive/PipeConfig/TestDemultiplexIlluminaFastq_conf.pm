@@ -14,15 +14,18 @@ sub default_options {
   my ($self) = @_;
   return {
     %{ $self->SUPER::default_options() },
-    'pipeline_name'    => 'DemultiplexIlluminaFastq',
-    'seqrun_source'    => undef,
-    'seqrun_local_dir' => undef,
-    'seqrun_server'    => undef,
-    'base_work_dir'    => undef,
-    'seqrun_user'      => undef,
-    'checksum_type'    => 'md5',
-    'read_offset'      => 1,
-    'index_offset'     => 0,
+    'pipeline_name'     => 'DemultiplexIlluminaFastq',
+    'seqrun_source'     => undef,
+    'seqrun_local_dir'  => undef,
+    'seqrun_server'     => undef,
+    'base_work_dir'     => undef,
+    'seqrun_user'       => undef,
+    'checksum_type'     => 'md5',
+    'read_offset'       => 1,
+    'index_offset'      => 0,
+    'bcl2fastq_module'  => 'bcl2fastq/2.18',
+    'bcl2fastq_exe'     => 'bcl2fastq',
+    'bcl2fastq_options' => '{"-r":1,"-w":1,"-p":1,"--barcode-mismatches":1,"--auto-set-to-zero-barcode-mismatches":"" }',
   };
 }
 
@@ -137,6 +140,14 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunBcl2Fastq',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'seqrun_local_dir'  => $self->o('seqrun_local_dir'),
+        'base_work_dir'     => $self->o('base_work_dir'),
+        'base_fastq_dir'    => $self->o('base_fastq_dir'),
+        'bcl2fastq_module'  => $self->o('bcl2fastq_module'),
+        'bcl2fastq_exe'     => $self->o('bcl2fastq_exe'),
+        'bcl2fastq_options' => $self->o('bcl2fastq_options'),
+        },
       -flow_into    => {
           1 => ['check_demultiplexing_barcode'],
       },
