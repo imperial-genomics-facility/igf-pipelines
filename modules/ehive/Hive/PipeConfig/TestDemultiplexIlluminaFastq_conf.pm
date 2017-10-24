@@ -95,18 +95,77 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.jobfactory.SampleSheetProjectFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
-    -flow_into => {
-      2 => ['find_flowcell_lane_factory'],
-    },
+    -flow_into   => {
+          '2->A' => ['find_sample_index_length_factory'],
+          'A->1' => ['mark_seqrun_status_in_seed_table'],
+      },
   };
 
   push @pipeline, {
-    -logic_name  => 'find_flowcell_lane_factory',
-    -module      => 'ehive.runnable.jobfactory.SampleSheetFlowcellFactory',
-    -language    => 'python3',
-    -meadow_type => 'LOCAL',
+      -logic_name  => 'find_sample_index_length_factory',
+      -module      => 'ehive.runnable.jobfactory.SamplesheetFilterAndIndexFactory',
+      -language    => 'python3',
+      -meadow_type => 'LOCAL',
+      -parameters  => {
+        'base_work_dir' => $self->o('base_work_dir'),
+        },
+      -flow_into   => {
+          '2->A' => ['calculate_bases_mask'],
+          'A->1' => ['validate_all_lanes_for_project'],
+      },
   };
 
+  push @pipeline, {
+      -logic_name   => 'calculate_bases_mask',
+      -module       => 'ehive.runnable.process.CalculateBasesMask',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['run_bcl2fastq']
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'run_bcl2fastq',
+      -module       => 'ehive.runnable.process.RunBcl2Fastq',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['check_demultiplexing_barcode'],
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'check_demultiplexing_barcode',
+      -module       => 'ehive.runnable.process.CheckIndexStats',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_work_dir' => $self->o('base_work_dir'),
+        },
+      -flow_into => {
+          1 => [ '?accu_name=project_fastq&accu_address={fastq_dir}&accu_input_variable=barcode_qc_stats' ],
+        },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'validate_all_lanes_for_project',
+      -module       => 'ehive.runnable.process.ValidateAllLanesForProject',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+  };
+  
+  push @pipeline, {
+      -logic_name   => 'mark_seqrun_status_in_seed_table',
+      -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'status' => 'COMPLETED',
+        },
+  };
+
+  
   return \@pipeline;
 }
 
