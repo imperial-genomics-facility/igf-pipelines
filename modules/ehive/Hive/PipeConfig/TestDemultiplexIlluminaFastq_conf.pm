@@ -21,6 +21,8 @@ sub default_options {
     'base_work_dir'    => undef,
     'seqrun_user'      => undef,
     'checksum_type'    => 'md5',
+    'read_offset'      => 1,
+    'index_offset'     => 0,
   };
 }
 
@@ -120,6 +122,11 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CalculateBasesMask',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'seqrun_local_dir' => $self->o('seqrun_local_dir'),
+        'read_offset'      => $self->o('read_offset'),
+        'index_offset'     => $self->o('index_offset'),
+        },
       -flow_into    => {
           1 => ['run_bcl2fastq']
       },
