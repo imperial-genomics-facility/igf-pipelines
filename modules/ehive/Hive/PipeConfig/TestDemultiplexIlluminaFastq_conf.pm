@@ -177,7 +177,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters  => {
-        'status'        => 'COMPLETED',
+        'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         },
   };
