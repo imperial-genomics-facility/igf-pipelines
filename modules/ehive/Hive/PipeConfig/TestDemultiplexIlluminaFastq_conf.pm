@@ -68,7 +68,7 @@ sub pipeline_analyses {
     -meadow_type => 'PBSPro',
     -rc_name     => '500Mb',
     -analysis_capacity => 10,
-    -parameters => {
+    -parameters        => {
       'seqrun_source'    => $self->o('seqrun_source'),
       'seqrun_user'      => $self->o('seqrun_user'),
       'seqrun_server'    => $self->o('seqrun_server'),
@@ -124,7 +124,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CalculateBasesMask',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
-      -parameters  => {
+      -parameters   => {
         'seqrun_local_dir' => $self->o('seqrun_local_dir'),
         'read_offset'      => $self->o('read_offset'),
         'index_offset'     => $self->o('index_offset'),
@@ -138,8 +138,9 @@ sub pipeline_analyses {
       -logic_name   => 'run_bcl2fastq',
       -module       => 'ehive.runnable.process.RunBcl2Fastq',
       -language     => 'python3',
-      -meadow_type  => 'LOCAL',
-      -parameters  => {
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '4Gb4t',
+      -parameters   => {
         'seqrun_local_dir'  => $self->o('seqrun_local_dir'),
         'base_work_dir'     => $self->o('base_work_dir'),
         'base_fastq_dir'    => $self->o('base_fastq_dir'),
@@ -156,7 +157,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CheckIndexStats',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
-      -parameters  => {
+      -parameters   => {
         'seqrun_local_dir' => $self->o('seqrun_local_dir'),
         },
       -flow_into => {
@@ -176,7 +177,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
-      -parameters  => {
+      -parameters   => {
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         },
