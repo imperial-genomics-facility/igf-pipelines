@@ -24,7 +24,7 @@ sub default_options {
     'read_offset'       => 1,
     'index_offset'      => 0,
     'bcl2fastq_exe'     => undef,
-    'bcl2fastq_options' => {"-r":1,"-w":1,"-p":1,"--barcode-mismatches":1,"--auto-set-to-zero-barcode-mismatches":"" },
+    'bcl2fastq_options' => {'-r':1,'-w':1,'-p':1,'--barcode-mismatches':1,'--auto-set-to-zero-barcode-mismatches':'' },
   };
 }
 
