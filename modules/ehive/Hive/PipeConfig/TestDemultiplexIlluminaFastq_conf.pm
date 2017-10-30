@@ -173,8 +173,226 @@ sub pipeline_analyses {
       -parameters   => {
         'project_fastq' => '#project_fastq#',
         },
+      -flow_into   => {
+          1 => WHEN(
+                 '#project_status# eq "PASS"' => [ 'project_fastqdir_factory' ],
+           ),
+        },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'project_fastqdir_factory',
+      -module       => 'ehive.runnable.process.ProjectFastqdirFactory',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          '2->A' => ['collect_fastq_to_db_collection' ],
+          'A->1' => ['run_multiqc_for_know_fastq'],
+          '2->B' => ['undetermined_fastq_factory'],
+          'B->1' => ['run_multiqc_for_undetermined_fastq'],
+      },
   };
   
+  
+  push @pipeline, {
+      -logic_name   => 'collect_fastq_to_db_collection',
+      -module       => 'ehive.runnable.process.CollectFastqToDbCollection',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['upload_fastq_dir_to_irods']
+      },
+  };
+  
+  
+  push @pipeline, {
+      -logic_name   => 'upload_fastq_dir_to_irods',
+      -module       => 'ehive.runnable.process.UploadFastqToIrods',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['known_fastq_factory']
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'known_fastq_factory',
+      -module       => 'ehive.runnable.jobfactory.FastqFileFactory',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'filter_keyword' => 'Undetermined*',
+        },
+      -flow_into    => {
+          '2->A' => ['run_fastqc_for_known_fastq'],
+          'A->1' => ['collect_qc_data_for_known_fastq'],
+      },
+  };
+
+  
+  push @pipeline, {
+      -logic_name   => 'run_fastqc_for_known_fastq',
+      -module       => 'ehive.runnable.process.RunFastqc',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_fastqc_results_to_remote']
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'copy_fastqc_results_to_remote',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'known',
+        'label'=>'fastqc',
+        },
+      -flow_into    => {
+          1 => ['run_fastqscreen_for_known_fastq']
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'run_fastqscreen_for_known_fastq',
+      -module       => 'ehive.runnable.process.RunFastqscreen',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_fastqscreen_results_to_remote']
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'copy_fastqscreen_results_to_remote',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'known',
+        'label'=>'fastqscreen',
+        },
+      -flow_into    => {
+          1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
+                '?accu_name=known_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
+               ],
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'collect_qc_data_for_known_fastq',
+      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['?accu_name=qc_known&accu_address={fastq_dir}&accu_input_variable=qc_outputs',]
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'run_multiqc_for_know_fastq',
+      -module       => 'ehive.runnable.process.RunMutiQC',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_known_multiqc_to_remote']
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'copy_known_multiqc_to_remote',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'known',
+        'label'=>'multiqc',
+        },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'undetermined_fastq_factory',
+      -module       => 'ehive.runnable.jobfactory.FastqFileFactory',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'required_keyword' => 'Undetermined*',
+        },
+      -flow_into    => {
+          '2->A' => ['run_fastqc_for_undetermined_fastq'],
+          'A->1' => ['collect_qc_data_for_undetermined_fastq'],
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'run_fastqc_for_undetermined_fastq',
+      -module       => 'ehive.runnable.process.RunFastqc',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['run_fastqscreen_for_undetermined_fastq']
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'run_fastqscreen_for_undetermined_fastq',
+      -module       => 'ehive.runnable.process.RunFastqscreen',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+           1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
+                 '?accu_name=undetermined_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
+                ],
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'collect_qc_data_for_undetermined_fastq',
+      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['?accu_name=qc_undetermined&accu_address={fastq_dir}&accu_input_variable=qc_outputs',]
+      },
+  };
+
+  
+  push @pipeline, {
+      -logic_name   => 'run_multiqc_for_undetermined_fastq',
+      -module       => 'ehive.runnable.process.RunMutiQC',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['copy_undetermined_multiqc_to_remote']
+      },
+  };
+
+
+  push @pipeline, {
+      -logic_name   => 'copy_undetermined_multiqc_to_remote',
+      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'tag' => 'undetermined',
+        'label'=>'multiqc',
+        },
+  };
+
+
   push @pipeline, {
       -logic_name   => 'mark_seqrun_status_in_seed_table',
       -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
