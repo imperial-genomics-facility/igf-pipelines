@@ -170,6 +170,9 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.ValidateAllLanesForProject',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters   => {
+        'project_fastq' => '#project_fastq#',
+        },
   };
   
   push @pipeline, {
