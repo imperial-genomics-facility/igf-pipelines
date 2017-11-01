@@ -28,6 +28,7 @@ sub default_options {
     'bcl2fastq_options' => '{"-r" : "1","-w" : "1","-p" : "1","--barcode-mismatches" : "1","--auto-set-to-zero-barcode-mismatches":""}',
     'fastqc_exe'        => undef,
     'fastqc_options'    => '{"-q" : "","--noextract" : "","-f" : "fastq","-k" : "7","-t" : "1"}',
+    'irods_exe_dir'    => undef,
   };
 }
 
@@ -214,6 +215,9 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.UploadFastqToIrods',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'irods_exe_dir' => $self->o('irods_exe_dir'),
+        },
       -flow_into    => {
           1 => ['known_fastq_factory']
       },
