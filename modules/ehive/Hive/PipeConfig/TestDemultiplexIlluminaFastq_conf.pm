@@ -19,12 +19,15 @@ sub default_options {
     'seqrun_local_dir'  => undef,
     'seqrun_server'     => undef,
     'base_work_dir'     => undef,
+    'base_results_dir'  => undef,
     'seqrun_user'       => undef,
     'checksum_type'     => 'md5',
     'read_offset'       => 1,
     'index_offset'      => 0,
     'bcl2fastq_exe'     => undef,
     'bcl2fastq_options' => '{"-r" : "1","-w" : "1","-p" : "1","--barcode-mismatches" : "1","--auto-set-to-zero-barcode-mismatches":""}',
+    'fastqc_exe'        => undef,
+    'fastqc_options'    => '{"-q" : "","--noextract" : "","-f" : "fastq","-k" : "7","-t" : "1"}',
   };
 }
 
@@ -237,6 +240,12 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_results_dir' => $self->o('base_results_dir'),
+        'fastqc_exe'       => $self->o('fastqc_exe'),
+        'fastqc_options'   => $self->o('fastqc_options'),
+        'tag'              => 'known',
+        },
       -flow_into    => {
           1 => ['copy_fastqc_results_to_remote']
       },
@@ -340,6 +349,12 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_results_dir' => $self->o('base_results_dir'),
+        'fastqc_exe'       => $self->o('fastqc_exe'),
+        'fastqc_options'   => $self->o('fastqc_options'),
+        'tag'              => 'undetermined',
+        },
       -flow_into    => {
           1 => ['run_fastqscreen_for_undetermined_fastq']
       },
