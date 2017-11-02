@@ -265,8 +265,10 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters  => {
-        'tag' => 'known',
-        'label'=>'fastqc',
+        'file'                => '#fastqc_html#',
+        'tag'                 => 'known',
+        'analysis_label'      => 'fastqc',
+        'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
           1 => ['run_fastqscreen_for_known_fastq']
@@ -298,8 +300,10 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters  => {
-        'tag' => 'known',
-        'label'=>'fastqscreen',
+        'file'                => '#fastqscreen_html#',
+        'tag'                 => 'known',
+        'analysis_label'      => 'fastqscreen',
+        'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
           1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
@@ -337,8 +341,10 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters  => {
-        'tag' => 'known',
-        'label'=>'multiqc',
+        'file'                => '#multiqc_html#',
+        'tag'                 => 'known',
+        'analysis_label'      => 'multiqc',
+        'remote_project_path' => $self->o('remote_project_path'),
         },
   };
 
@@ -423,8 +429,10 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters  => {
-        'tag' => 'undetermined',
-        'label'=>'multiqc',
+        'file'                => '#multiqc_html#',
+        'tag'                 => 'undetermined',
+        'analysis_label'      => 'multiqc',
+        'remote_project_path' => $self->o('remote_project_path'),
         },
   };
 
