@@ -32,6 +32,8 @@ sub default_options {
     'fastqscreen_exe'     => undef,
     'fastqscreen_options' => '{"--aligner" : "bowtie2","--force" : "","--quiet" : "","--subset" : "100000","--threads" : "1"}'
     'fastqscreen_conf'    => undef,
+    'multiqc_exe'         => undef,
+    'multiqc_options'     => '{"--zip-data-dir" : ""}',
   };
 }
 
@@ -329,6 +331,12 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_results_dir' => $self->o('base_results_dir'),
+        'multiqc_exe'      => $self->o('multiqc_exe'),
+        'multiqc_options'  => $self->o('multiqc_options'),
+        'tag'              => 'known',
+        },
       -flow_into    => {
           1 => ['copy_known_multiqc_to_remote']
       },
@@ -417,6 +425,12 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_results_dir' => $self->o('base_results_dir'),
+        'multiqc_exe'      => $self->o('multiqc_exe'),
+        'multiqc_options'  => $self->o('multiqc_options'),
+        'tag'              => 'undetermined',
+        },
       -flow_into    => {
           1 => ['copy_undetermined_multiqc_to_remote']
       },
