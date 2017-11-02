@@ -14,21 +14,24 @@ sub default_options {
   my ($self) = @_;
   return {
     %{ $self->SUPER::default_options() },
-    'pipeline_name'     => 'DemultiplexIlluminaFastq',
-    'seqrun_source'     => undef,
-    'seqrun_local_dir'  => undef,
-    'seqrun_server'     => undef,
-    'base_work_dir'     => undef,
-    'base_results_dir'  => undef,
-    'seqrun_user'       => undef,
-    'checksum_type'     => 'md5',
-    'read_offset'       => 1,
-    'index_offset'      => 0,
-    'bcl2fastq_exe'     => undef,
-    'bcl2fastq_options' => '{"-r" : "1","-w" : "1","-p" : "1","--barcode-mismatches" : "1","--auto-set-to-zero-barcode-mismatches":""}',
-    'fastqc_exe'        => undef,
-    'fastqc_options'    => '{"-q" : "","--noextract" : "","-f" : "fastq","-k" : "7","-t" : "1"}',
-    'irods_exe_dir'    => undef,
+    'pipeline_name'       => 'DemultiplexIlluminaFastq',
+    'seqrun_source'       => undef,
+    'seqrun_local_dir'    => undef,
+    'seqrun_server'       => undef,
+    'base_work_dir'       => undef,
+    'base_results_dir'    => undef,
+    'seqrun_user'         => undef,
+    'checksum_type'       => 'md5',
+    'read_offset'         => 1,
+    'index_offset'        => 0,
+    'bcl2fastq_exe'       => undef,
+    'bcl2fastq_options'   => '{"-r" : "1","-w" : "1","-p" : "1","--barcode-mismatches" : "1","--auto-set-to-zero-barcode-mismatches":""}',
+    'fastqc_exe'          => undef,
+    'fastqc_options'      => '{"-q" : "","--noextract" : "","-f" : "fastq","-k" : "7","-t" : "1"}',
+    'irods_exe_dir'       => undef,
+    'fastqscreen_exe'     => undef,
+    'fastqscreen_options' => '{"--aligner" : "bowtie2","--force" : "","--quiet" : "","--subset" : "100000","--threads" : "1"}'
+    'fastqscreen_conf'    => undef,
   };
 }
 
@@ -276,6 +279,13 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunFastqscreen',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_results_dir'    => $self->o('base_results_dir'),
+        'fastqscreen_exe'     => $self->o('fastqscreen_exe'),
+        'fastqscreen_options' => $self->o('fastqscreen_options'),
+        'fastqscreen_conf'    => $self->o('fastqscreen_conf'),
+        'tag'                 => 'known',
+        },
       -flow_into    => {
           1 => ['copy_fastqscreen_results_to_remote']
       },
@@ -370,6 +380,13 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunFastqscreen',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'base_results_dir'    => $self->o('base_results_dir'),
+        'fastqscreen_exe'     => $self->o('fastqscreen_exe'),
+        'fastqscreen_options' => $self->o('fastqscreen_options'),
+        'fastqscreen_conf'    => $self->o('fastqscreen_conf'),
+        'tag'                 => 'undetermined',
+        },
       -flow_into    => {
            1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
                  '?accu_name=undetermined_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
