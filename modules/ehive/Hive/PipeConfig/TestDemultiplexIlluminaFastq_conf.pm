@@ -297,6 +297,7 @@ sub pipeline_analyses {
         'file'                => '#fastqc_html#',
         'tag'                 => 'known',
         'analysis_label'      => 'fastqc',
+        'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
@@ -336,6 +337,7 @@ sub pipeline_analyses {
         'file'                => '#fastqscreen_html#',
         'tag'                 => 'known',
         'analysis_label'      => 'fastqscreen',
+        'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
@@ -389,6 +391,7 @@ sub pipeline_analyses {
         'file'                => '#multiqc_html#',
         'tag'                 => 'known',
         'analysis_label'      => 'multiqc',
+        'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
   };
@@ -493,6 +496,7 @@ sub pipeline_analyses {
         'file'                => '#multiqc_html#',
         'tag'                 => 'undetermined',
         'analysis_label'      => 'multiqc',
+        'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
   };
