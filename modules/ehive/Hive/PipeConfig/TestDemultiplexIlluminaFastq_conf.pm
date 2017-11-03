@@ -30,7 +30,7 @@ sub default_options {
     'fastqc_options'      => '{"-q" : "","--noextract" : "","-f" : "fastq","-k" : "7","-t" : "1"}',
     'irods_exe_dir'       => undef,
     'fastqscreen_exe'     => undef,
-    'fastqscreen_options' => '{"--aligner" : "bowtie2","--force" : "","--quiet" : "","--subset" : "100000","--threads" : "1"}'
+    'fastqscreen_options' => '{"--aligner" : "bowtie2","--force" : "","--quiet" : "","--subset" : "100000","--threads" : "1"}',
     'fastqscreen_conf'    => undef,
     'multiqc_exe'         => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
@@ -96,7 +96,7 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -parameters  => {
         'seqrun_local_dir' => $self->o('seqrun_local_dir'),
-        'base_work_dir' => $self->o('base_work_dir'),
+        'base_work_dir'    => $self->o('base_work_dir'),
     },
     -flow_into => {
       1 => ['find_project_factory'],
