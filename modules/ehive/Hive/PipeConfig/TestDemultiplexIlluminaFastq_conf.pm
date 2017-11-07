@@ -355,6 +355,10 @@ sub pipeline_analyses {
       -meadow_type  => 'PBSPro',
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
+      -parameters  => {
+          'fastqc_info'      => '#known_fastqc#',
+          'fastqscreen_info' => '#known_fastscreen#',
+      },
       -flow_into    => {
           1 => ['?accu_name=qc_known&accu_address={fastq_dir}&accu_input_variable=qc_outputs',]
       },
@@ -369,6 +373,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
+        'qc_files'         => '#qc_know#',
         'base_results_dir' => $self->o('base_results_dir'),
         'multiqc_exe'      => $self->o('multiqc_exe'),
         'multiqc_options'  => $self->o('multiqc_options'),
@@ -460,6 +465,10 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CollectQcForFastqDir',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+          'fastqc_info'      => '#undetermined_fastqc#',
+          'fastqscreen_info' => '#undetermined_fastscreen#',
+      },
       -flow_into    => {
           1 => ['?accu_name=qc_undetermined&accu_address={fastq_dir}&accu_input_variable=qc_outputs',]
       },
@@ -474,6 +483,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
+        'qc_files'         => '#qc_undetermined#',
         'base_results_dir' => $self->o('base_results_dir'),
         'multiqc_exe'      => $self->o('multiqc_exe'),
         'multiqc_options'  => $self->o('multiqc_options'),
