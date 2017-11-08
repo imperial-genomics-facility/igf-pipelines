@@ -86,9 +86,6 @@ sub pipeline_analyses {
       'seqrun_local_dir' => $self->o('seqrun_local_dir'),
       'checksum_type'    => $self->o('checksum_type'),
     },
-    -flow_into => {
-      1 => [ '?accu_name=seqrun_file&accu_address={seqrun_igf_id}&accu_input_variable=seqrun_file_name' ],
-    },
   };
 
   push @pipeline, {
