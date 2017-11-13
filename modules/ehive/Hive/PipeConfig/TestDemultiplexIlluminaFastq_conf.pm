@@ -320,7 +320,8 @@ sub pipeline_analyses {
         'tag'                 => 'known',
         },
       -flow_into    => {
-          1 => ['copy_fastqscreen_results_to_remote']
+          1 => {'copy_fastqscreen_results_to_remote' => 
+                   {'fastqscreen_html' => '#fastqscreen_html#'}},
       },
   };
 
@@ -340,6 +341,8 @@ sub pipeline_analyses {
         'sample_label'        => '#sample_name#',
         'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'fastqc_output'       => '#fastqc#',
+        'fastqscreen_output'  => '#fastqscreen#',
         },
       -flow_into    => {
           1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
@@ -374,7 +377,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'qc_files'         => '#qc_know#',
+        'qc_files_name'    => 'qc_know',
         'base_results_dir' => $self->o('base_results_dir'),
         'multiqc_exe'      => $self->o('multiqc_exe'),
         'multiqc_options'  => $self->o('multiqc_options'),
@@ -452,6 +455,8 @@ sub pipeline_analyses {
         'fastqscreen_options' => $self->o('fastqscreen_options'),
         'fastqscreen_conf'    => $self->o('fastqscreen_conf'),
         'tag'                 => 'undetermined',
+        'fastqc_output'       => '#fastqc#',
+        'fastqscreen_output'  => '#fastqscreen#',
         },
       -flow_into    => {
            1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
@@ -484,7 +489,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'qc_files'         => '#qc_undetermined#',
+        'qc_files_name'    => 'qc_undetermined',
         'base_results_dir' => $self->o('base_results_dir'),
         'multiqc_exe'      => $self->o('multiqc_exe'),
         'multiqc_options'  => $self->o('multiqc_options'),
