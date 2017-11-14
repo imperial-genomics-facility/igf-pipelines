@@ -58,8 +58,7 @@ sub pipeline_analyses {
     -logic_name  => 'seqrun_transfer_factory',
     -module      => 'ehive.runnable.jobfactory.SeqrunFileFactory',
     -language    => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '500Mb',
+    -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
       'seqrun_source' => $self->o('seqrun_source'),
@@ -92,8 +91,7 @@ sub pipeline_analyses {
     -logic_name  => 'check_samplesheet',
     -module      => 'ehive.runnable.process.CheckAndProcessSampleSheet',
     -language    => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '500Mb',
+    -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
         'seqrun_local_dir' => $self->o('seqrun_local_dir'),
@@ -108,8 +106,7 @@ sub pipeline_analyses {
     -logic_name  => 'find_project_factory',
     -module      => 'ehive.runnable.jobfactory.SampleSheetProjectFactory',
     -language    => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '500Mb',
+    -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
     -flow_into   => {
           '2->A' => ['find_sample_index_length_factory'],
@@ -121,8 +118,7 @@ sub pipeline_analyses {
       -logic_name  => 'find_sample_index_length_factory',
       -module      => 'ehive.runnable.jobfactory.SamplesheetFilterAndIndexFactory',
       -language    => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters  => {
         'base_work_dir' => $self->o('base_work_dir'),
@@ -137,8 +133,7 @@ sub pipeline_analyses {
       -logic_name   => 'calculate_bases_mask',
       -module       => 'ehive.runnable.process.CalculateBasesMask',
       -language     => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters   => {
         'seqrun_local_dir' => $self->o('seqrun_local_dir'),
@@ -173,8 +168,7 @@ sub pipeline_analyses {
       -logic_name   => 'check_demultiplexing_barcode',
       -module       => 'ehive.runnable.process.CheckIndexStats',
       -language     => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters   => {
         'seqrun_local_dir' => $self->o('seqrun_local_dir'),
@@ -188,8 +182,7 @@ sub pipeline_analyses {
       -logic_name   => 'validate_all_lanes_for_project',
       -module       => 'ehive.runnable.process.ValidateAllLanesForProject',
       -language     => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters   => {
         'project_fastq' => '#project_fastq#',
@@ -206,8 +199,7 @@ sub pipeline_analyses {
       -logic_name   => 'project_fastqdir_factory',
       -module       => 'ehive.runnable.jobfactory.ProjectFastqdirFactory',
       -language     => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -flow_into    => {
           '2->A' => ['collect_fastq_to_db_collection' ],
@@ -251,8 +243,7 @@ sub pipeline_analyses {
       -logic_name   => 'known_fastq_factory',
       -module       => 'ehive.runnable.jobfactory.FastqFileFactory',
       -language     => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters  => {
         'filter_keyword' => 'Undetermined*',
@@ -354,8 +345,7 @@ sub pipeline_analyses {
       -logic_name   => 'collect_qc_data_for_known_fastq',
       -module       => 'ehive.runnable.process.CollectQcForFastqDir',
       -language     => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters  => {
           'fastqc_info'      => '#known_fastqc#',
@@ -409,8 +399,7 @@ sub pipeline_analyses {
       -logic_name   => 'undetermined_fastq_factory',
       -module       => 'ehive.runnable.jobfactory.FastqFileFactory',
       -language     => 'python3',
-      -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters  => {
         'required_keyword' => 'Undetermined*',
