@@ -341,12 +341,10 @@ sub pipeline_analyses {
         'sample_label'        => '#sample_name#',
         'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
-        'fastqc_output'       => '#fastqc#',
-        'fastqscreen_output'  => '#fastqscreen#',
         },
       -flow_into    => {
-          1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
-                '?accu_name=known_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
+          1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc',
+                '?accu_name=known_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen',
                ],
       },
   };
@@ -456,12 +454,10 @@ sub pipeline_analyses {
         'fastqscreen_options' => $self->o('fastqscreen_options'),
         'fastqscreen_conf'    => $self->o('fastqscreen_conf'),
         'tag'                 => 'undetermined',
-        'fastqc_output'       => '#fastqc#',
-        'fastqscreen_output'  => '#fastqscreen#',
         },
       -flow_into    => {
-           1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_output',
-                 '?accu_name=undetermined_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen_output',
+           1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc',
+                 '?accu_name=undetermined_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen',
                 ],
       },
   };
