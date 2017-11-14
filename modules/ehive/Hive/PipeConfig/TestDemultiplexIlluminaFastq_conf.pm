@@ -365,7 +365,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'qc_files_name'    => 'qc_know',
+        'qc_files_name'    => 'qc_known',
         'base_results_dir' => $self->o('base_results_dir'),
         'multiqc_exe'      => $self->o('multiqc_exe'),
         'multiqc_options'  => $self->o('multiqc_options'),
