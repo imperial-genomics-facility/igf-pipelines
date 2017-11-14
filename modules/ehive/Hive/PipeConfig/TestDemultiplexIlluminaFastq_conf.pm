@@ -312,7 +312,7 @@ sub pipeline_analyses {
         },
       -flow_into    => {
           1 => {'copy_fastqscreen_results_to_remote' => 
-                   {'fastqscreen_html' => '#fastqscreen_html#'}},
+                   {'file' => '#fastqscreen_html#'}},
       },
   };
 
@@ -325,7 +325,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'file'                => '#fastqscreen_html#',
+        'file'                => '#file#',
         'tag'                 => 'known',
         'analysis_label'      => 'fastqscreen',
         'dir_label'           => '#lane_index_info#',
