@@ -269,7 +269,9 @@ sub pipeline_analyses {
         'tag'              => 'known',
         },
       -flow_into    => {
-          1 => ['copy_fastqc_results_to_remote']
+          1 => {'copy_fastqc_results_to_remote' =>
+                  {'file' => '#fastqc_html#'},
+               },
       },
   };
 
@@ -282,7 +284,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'file'                => '#fastqc_html#',
+        'file'                => '#file#',
         'tag'                 => 'known',
         'analysis_label'      => 'fastqc',
         'dir_label'           => '#lane_index_info#',
@@ -372,7 +374,9 @@ sub pipeline_analyses {
         'tag'              => 'known',
         },
       -flow_into    => {
-          1 => ['copy_known_multiqc_to_remote']
+          1 => {'copy_known_multiqc_to_remote' =>
+                  {'file' => '#multiqc_html#' }
+               },
       },
   };
 
@@ -385,7 +389,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'file'                => '#multiqc_html#',
+        'file'                => '#file#',
         'tag'                 => 'known',
         'analysis_label'      => 'multiqc',
         'dir_label'           => '#lane_index_info#',
@@ -482,7 +486,9 @@ sub pipeline_analyses {
         'tag'              => 'undetermined',
         },
       -flow_into    => {
-          1 => ['copy_undetermined_multiqc_to_remote']
+          1 => {'copy_undetermined_multiqc_to_remote' => 
+                  {'file'=> '#multiqc_html#'}
+               },
       },
   };
 
@@ -495,7 +501,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'file'                => '#multiqc_html#',
+        'file'                => '#file#',
         'tag'                 => 'undetermined',
         'analysis_label'      => 'multiqc',
         'dir_label'           => '#lane_index_info#',
