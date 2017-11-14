@@ -314,7 +314,8 @@ sub pipeline_analyses {
         },
       -flow_into    => {
           1 => {'copy_fastqscreen_results_to_remote' => 
-                   {'file' => '#fastqscreen_html#'}},
+                   {'file' => '#fastqscreen_html#',
+                    'fastqscreen' => '#fastqscreen#'}},
       },
   };
 
