@@ -270,7 +270,9 @@ sub pipeline_analyses {
         },
       -flow_into    => {
           1 => {'copy_fastqc_results_to_remote' =>
-                  {'file' => '#fastqc_html#'},
+                  {'file' => '#fastqc_html#',
+                   'lane_index_info' => '#lane_index_info#',
+                   'sample_name'     => '#sample_name#'},
                },
       },
   };
@@ -376,7 +378,8 @@ sub pipeline_analyses {
         },
       -flow_into    => {
           1 => {'copy_known_multiqc_to_remote' =>
-                  {'file' => '#multiqc_html#' }
+                  {'file' => '#multiqc_html#',
+                   'lane_index_info' => '#lane_index_info#'},
                },
       },
   };
@@ -488,7 +491,8 @@ sub pipeline_analyses {
         },
       -flow_into    => {
           1 => {'copy_undetermined_multiqc_to_remote' => 
-                  {'file'=> '#multiqc_html#'}
+                  {'file'=> '#multiqc_html#',
+                   'lane_index_info' => '#lane_index_info#'},
                },
       },
   };
