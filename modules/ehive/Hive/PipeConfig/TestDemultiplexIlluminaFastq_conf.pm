@@ -272,7 +272,8 @@ sub pipeline_analyses {
           1 => {'copy_fastqc_results_to_remote' =>
                   {'file' => '#fastqc_html#',
                    'lane_index_info' => '#lane_index_info#',
-                   'sample_name'     => '#sample_name#'},
+                   'sample_name'     => '#sample_name#',
+                   'fastqc' => '#fastqc#'},
                },
       },
   };
@@ -295,7 +296,7 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
-          1 => ['run_fastqscreen_for_known_fastq']
+          1 => ['run_fastqscreen_for_known_fastq'],
       },
   };
 
