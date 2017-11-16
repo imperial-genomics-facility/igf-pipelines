@@ -404,7 +404,6 @@ sub pipeline_analyses {
         },
       -flow_into    => {
           1 => ['prepare_qc_page_for_lane'],
-          1 => ['?accu_name=multiqc_known&accu_address={fastq_dir}&accu_input_variable=remote_file',],
       },
   };
   
@@ -435,6 +434,9 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
+      -flow_into    => {
+          1 => ['?accu_name=multiqc_known&accu_address={fastq_dir}&accu_input_variable=remote_file',],
+      },
   };
 
   
