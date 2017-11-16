@@ -189,11 +189,20 @@ sub pipeline_analyses {
         },
       -flow_into   => {
           1 => WHEN(
-                 '#project_status# eq "PASS"' => [ 'project_fastqdir_factory' ],
+                 '#project_status# eq "PASS"' => [ 'create_remote_project_access' ],
            ),
         },
   };
 
+  push @pipeline, {
+      -logic_name   => 'create_remote_project_access',
+      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -flow_into    => {
+          1 => ['project_fastqdir_factory'],
+      },
+  };
 
   push @pipeline, {
       -logic_name   => 'project_fastqdir_factory',
