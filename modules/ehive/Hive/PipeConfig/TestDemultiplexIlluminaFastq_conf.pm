@@ -201,7 +201,10 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters   => {
-        'template_dir' => $self->o('template_dir'),
+        'template_dir'        => $self->o('template_dir'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_user'         => $self->o('seqrun_user'),
         },
       -flow_into    => {
           1 => ['project_fastqdir_factory'],
