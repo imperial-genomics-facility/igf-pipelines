@@ -21,6 +21,7 @@ sub default_options {
     'base_work_dir'       => undef,
     'base_results_dir'    => undef,
     'seqrun_user'         => undef,
+    'template_dir'        => undef,
     'checksum_type'       => 'md5',
     'read_offset'         => 1,
     'index_offset'        => 0,
@@ -196,9 +197,12 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'create_remote_project_access',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -module       => 'ehive.runnable.process.CreateRemoteAccessForProject',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters   => {
+        'template_dir' => $self->o('template_dir'),
+        },
       -flow_into    => {
           1 => ['project_fastqdir_factory'],
       },
