@@ -419,42 +419,23 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
-          1 => ['prepare_qc_page_for_lane'],
+          1 => ['prepare_and_copy_qc_page_for_lane'],
       },
   };
   
   
   push @pipeline, {
-      -logic_name   => 'prepare_qc_page_for_lane',
+      -logic_name   => 'prepare_and_copy_qc_page_for_lane',
       -module       => 'ehive.runnable.process.CollectQcForFastqDir',
-      -language     => 'python3',
-      -meadow_type  => 'LOCAL',
-      -flow_into    => {
-          1 => ['copy_lane_qc_to_remote'],
-      },
-  };
-
-
-  push @pipeline, {
-      -logic_name   => 'copy_lane_qc_to_remote',
-      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
-      -parameters  => {
-        'file'                => '#file#',
-        'tag'                 => 'known',
-        'analysis_label'      => 'qc_lane_index',
-        'dir_label'           => '#lane_index_info#',
-        'remote_user'         => $self->o('seqrun_user'),
-        'remote_project_path' => $self->o('remote_project_path'),
-        },
       -flow_into    => {
           1 => ['?accu_name=multiqc_known&accu_address={fastq_dir}&accu_input_variable=remote_file',],
       },
   };
-
+  
   
   push @pipeline, {
       -logic_name   => 'collect_multiqc_for_known',
