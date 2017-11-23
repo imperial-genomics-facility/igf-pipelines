@@ -411,10 +411,6 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'file'                => '#file#',
-        'tag'                 => 'known',
-        'analysis_label'      => 'multiqc',
-        'dir_label'           => '#lane_index_info#',
         'remote_user'         => $self->o('seqrun_user'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
@@ -426,11 +422,18 @@ sub pipeline_analyses {
   
   push @pipeline, {
       -logic_name   => 'prepare_and_copy_qc_page_for_lane',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
+      -parameters  => {
+        'remote_project_path' => $self->o('remote_project_path'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_user'         => $self->o('seqrun_user'),
+        'page_type'           => 'sample',
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
       -flow_into    => {
           1 => ['?accu_name=multiqc_known&accu_address={fastq_dir}&accu_input_variable=remote_file',],
       },
@@ -449,35 +452,25 @@ sub pipeline_analyses {
 
 
   push @pipeline, {
-      -logic_name   => 'prepare_qc_page_for_project',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
-      -language     => 'python3',
-      -meadow_type  => 'LOCAL',
-      -flow_into    => {
-          1 => ['copy_project_qc_to_remote'],
-      },
-  };
-
-  push @pipeline, {
-      -logic_name   => 'copy_project_qc_to_remote',
-      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -logic_name   => 'prepare_and_copy_qc_page_for_project',
+      -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'file'                => '#file#',
-        'tag'                 => 'known',
-        'analysis_label'      => 'qc_project_index',
-        'dir_label'           => '#lane_index_info#',
+        'remote_project_path' => $self->o('remote_project_path'),
+        'remote_host'         => $self->o('remote_host'),
         'remote_user'         => $self->o('seqrun_user'),
+        'page_type'           => 'project',
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
           1 => ['send_email_notification'],
       },
   };
-
+  
+  
   push @pipeline, {
       -logic_name   => 'send_email_notification',
       -module       => 'ehive.runnable.process.CollectQcForFastqDir',
