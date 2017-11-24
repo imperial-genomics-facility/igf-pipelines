@@ -434,6 +434,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
+        'qc_files'            => '#qc_outputs#',
         'remote_project_path' => $self->o('remote_project_path'),
         'remote_host'         => $self->o('remote_host'),
         'remote_user'         => $self->o('seqrun_user'),
