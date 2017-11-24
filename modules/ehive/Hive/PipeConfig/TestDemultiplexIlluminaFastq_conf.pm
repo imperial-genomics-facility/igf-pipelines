@@ -374,8 +374,10 @@ sub pipeline_analyses {
       -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters  => {
-          'fastqc_info'      => '#known_fastqc#',
-          'fastqscreen_info' => '#known_fastscreen#',
+          'fastqc_info'        => '#known_fastqc#',
+          'fastqscreen_info'   => '#known_fastscreen#',
+          'remote_fastqc_info' => '#known_remote_fastqc#',
+          'remote_fastqs_info' => '#known_remote_fastscreen#',
       },
       -flow_into    => {
           1 => ['run_multiqc_for_know_fastq'],
