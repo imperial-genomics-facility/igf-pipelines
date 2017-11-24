@@ -312,7 +312,9 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
-          1 => ['run_fastqscreen_for_known_fastq'],
+          1 => {'run_fastqscreen_for_known_fastq' =>
+                  {'fastqc_remote_file'=>'#remote_file#'}
+               },
       },
   };
 
@@ -358,6 +360,8 @@ sub pipeline_analyses {
       -flow_into    => {
           1 => ['?accu_name=known_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc',
                 '?accu_name=known_fastscreen&accu_address={fastq_file}&accu_input_variable=fastqscreen',
+                '?accu_name=known_remote_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc_remote_file',
+                '?accu_name=known_remote_fastscreen&accu_address={fastq_file}&accu_input_variable=remote_file',
                ],
       },
   };
