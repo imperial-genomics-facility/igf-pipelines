@@ -444,7 +444,7 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
-          1 => ['?accu_name=multiqc_known&accu_address={fastq_dir}&accu_input_variable=remote_file',],
+          1 => ['?accu_name=multiqc_known&accu_address={fastq_dir}&accu_input_variable=qc_file_info',],
       },
   };
   
