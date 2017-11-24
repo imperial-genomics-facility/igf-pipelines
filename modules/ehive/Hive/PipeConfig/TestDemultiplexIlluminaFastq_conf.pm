@@ -421,7 +421,9 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
-          1 => ['prepare_and_copy_qc_page_for_lane'],
+          1 => {'prepare_and_copy_qc_page_for_lane' =>
+                   {'multiqc_remote_file'=>'#remote_file#'},
+               },
       },
   };
   
