@@ -219,7 +219,7 @@ sub pipeline_analyses {
       -analysis_capacity => 2,
       -flow_into    => {
           '2->A' => ['collect_fastq_to_db_collection' ],
-          'A->1' => ['collect_multiqc_for_known'],
+          'A->1' => ['prepare_and_copy_qc_page_for_project'],
           '2->B' => ['undetermined_fastq_factory'],
           'B->1' => ['collect_multiqc_for_undetermined'],
       },
@@ -444,22 +444,11 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
-          1 => ['?accu_name=multiqc_known&accu_address={fastq_dir}&accu_input_variable=qc_file_info',],
+          1 => ['?accu_name=laneqc_known&accu_address={fastq_dir}&accu_input_variable=qc_file_info',],
       },
   };
   
   
-  push @pipeline, {
-      -logic_name   => 'collect_multiqc_for_known',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
-      -language     => 'python3',
-      -meadow_type  => 'LOCAL',
-      -flow_into    => {
-          1 => ['prepare_qc_page_for_project'],
-      },
-  };
-
-
   push @pipeline, {
       -logic_name   => 'prepare_and_copy_qc_page_for_project',
       -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
@@ -468,6 +457,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
+        'qc_files'            => '#laneqc_known#',
         'remote_project_path' => $self->o('remote_project_path'),
         'remote_host'         => $self->o('remote_host'),
         'remote_user'         => $self->o('seqrun_user'),
