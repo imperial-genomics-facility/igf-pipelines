@@ -310,6 +310,7 @@ sub pipeline_analyses {
         'dir_label'           => '#lane_index_info#',
         'sample_label'        => '#sample_name#',
         'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
@@ -356,6 +357,7 @@ sub pipeline_analyses {
         'dir_label'           => '#lane_index_info#',
         'sample_label'        => '#sample_name#',
         'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
@@ -419,6 +421,7 @@ sub pipeline_analyses {
       -analysis_capacity => 2,
       -parameters  => {
         'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
@@ -594,6 +597,7 @@ sub pipeline_analyses {
         'analysis_label'      => 'multiqc',
         'dir_label'           => '#lane_index_info#',
         'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
