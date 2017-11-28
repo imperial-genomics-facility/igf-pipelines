@@ -34,6 +34,7 @@ sub default_options {
     'fastqscreen_options' => '{"--aligner" : "bowtie2","--force" : "","--quiet" : "","--subset" : "100000","--threads" : "1"}',
     'fastqscreen_conf'    => undef,
     'multiqc_exe'         => undef,
+    'user_info_file'      => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
   };
 }
