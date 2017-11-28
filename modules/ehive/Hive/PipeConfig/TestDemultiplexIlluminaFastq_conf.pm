@@ -437,7 +437,7 @@ sub pipeline_analyses {
       -analysis_capacity => 2,
       -parameters  => {
         'qc_files'            => '#qc_outputs#',
-        'remote_project_path' => $self->o('remote_project_path'),
+        'template_dir'        => $self->o('template_dir'),
         'remote_host'         => $self->o('remote_host'),
         'remote_user'         => $self->o('seqrun_user'),
         'page_type'           => 'sample',
@@ -458,7 +458,7 @@ sub pipeline_analyses {
       -analysis_capacity => 2,
       -parameters  => {
         'qc_files'            => '#laneqc_known#',
-        'remote_project_path' => $self->o('remote_project_path'),
+        'template_dir'        => $self->o('template_dir'),
         'remote_host'         => $self->o('remote_host'),
         'remote_user'         => $self->o('seqrun_user'),
         'page_type'           => 'project',
@@ -472,9 +472,15 @@ sub pipeline_analyses {
   
   push @pipeline, {
       -logic_name   => 'send_email_notification',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -module       => 'ehive.runnable.process.SendEmailToUser',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
+      -parameters  => {
+        'template_dir'   => $self->o('template_dir'),
+        'remote_host'    => $self->o('remote_host'),
+        'remote_user'    => $self->o('seqrun_user'),
+        'user_info_file' => $self->o('user_info_file'),
+        },
   };
   
   
