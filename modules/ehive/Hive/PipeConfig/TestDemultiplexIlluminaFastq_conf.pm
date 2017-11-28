@@ -478,7 +478,7 @@ sub pipeline_analyses {
       -meadow_type  => 'LOCAL',
       -parameters  => {
         'template_dir'   => $self->o('template_dir'),
-        'remote_host'    => $self->o('remote_host'),
+        'remote_host'    => $self->o('seqrun_server'),
         'remote_user'    => $self->o('seqrun_user'),
         'user_info_file' => $self->o('user_info_file'),
         },
