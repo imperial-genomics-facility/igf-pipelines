@@ -222,7 +222,7 @@ sub pipeline_analyses {
           '2->A' => ['collect_fastq_to_db_collection' ],
           'A->1' => ['prepare_and_copy_qc_page_for_project'],
           '2->B' => ['undetermined_fastq_factory'],
-          'B->1' => ['collect_multiqc_for_undetermined'],
+          'B->1' => ['prepare_and_copy_qc_page_for_undetermined'],
       },
   };
   
@@ -605,14 +605,24 @@ sub pipeline_analyses {
       },
   };
 
-  
   push @pipeline, {
-      -logic_name   => 'collect_multiqc_for_undetermined',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -logic_name   => 'prepare_and_copy_qc_page_for_undetermined',
+      -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
       -language     => 'python3',
-      -meadow_type  => 'LOCAL',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '500Mb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'qc_files'            => '#multiqc_undetermined#',
+        'template_dir'        => $self->o('template_dir'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_user'         => $self->o('seqrun_user'),
+        'page_type'           => 'undetermined',
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
   };
-
+  
+  
   push @pipeline, {
       -logic_name   => 'mark_seqrun_status_in_seed_table',
       -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
