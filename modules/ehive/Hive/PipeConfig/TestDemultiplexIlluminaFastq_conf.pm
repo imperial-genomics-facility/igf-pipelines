@@ -420,6 +420,10 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
+        'tag'                 => 'known',
+        'file'                => '#file#',
+        'analysis_label'      => 'multiqc',
+        'dir_label'           => '#lane_index_info#',
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
