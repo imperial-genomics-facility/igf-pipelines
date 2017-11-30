@@ -482,7 +482,8 @@ sub pipeline_analyses {
       -logic_name   => 'send_email_notification',
       -module       => 'ehive.runnable.process.SendEmailToUser',
       -language     => 'python3',
-      -meadow_type  => 'LOCAL',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '500Mb',
       -parameters  => {
         'template_dir'   => $self->o('template_dir'),
         'remote_host'    => $self->o('seqrun_server'),
@@ -560,7 +561,6 @@ sub pipeline_analyses {
       },
       -flow_into    => {
           1 => ['run_multiqc_for_undetermined_fastq'],
-          #1 => ['?accu_name=qc_undetermined&accu_address={fastq_dir}&accu_input_variable=qc_outputs',],
       },
   };
 
