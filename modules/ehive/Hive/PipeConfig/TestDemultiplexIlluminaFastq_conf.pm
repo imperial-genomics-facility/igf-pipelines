@@ -36,6 +36,7 @@ sub default_options {
     'multiqc_exe'         => undef,
     'user_info_file'      => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
+    'cleanup_bcl_dir'     => 1,
   };
 }
 
@@ -635,6 +636,21 @@ sub pipeline_analyses {
       -parameters   => {
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
+        },
+      -flow_into    => {
+        1 => ['remove_bcl_directory'],  
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'remove_bcl_directory',
+      -module       => 'ehive.runnable.process.CleanupDirOrFile',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters   => {
+        'seqrun_local_dir' => $self->o('seqrun_local_dir'),
+        'path'             => '#seqrun_local_dir#/#seqrun_igf_id#',
+        'cleanup_status'   => $self->o('cleanup_bcl_dir'),
         },
   };
 
