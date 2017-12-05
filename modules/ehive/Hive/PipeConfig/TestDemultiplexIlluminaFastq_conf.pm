@@ -385,7 +385,6 @@ sub pipeline_analyses {
       },
       -flow_into    => {
           1 => ['run_multiqc_for_know_fastq'],
-          #1 => ['?accu_name=qc_known&accu_address={fastq_dir}&accu_input_variable=qc_outputs',]
       },
   };
 
