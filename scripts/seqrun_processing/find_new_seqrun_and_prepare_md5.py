@@ -1,7 +1,7 @@
 import argparse
 from igf_data.task_tracking.igf_slack import IGF_slack
 from igf_data.task_tracking.igf_asana import IGF_asana
-from igf_data.process.seqrun_processing.find_and_process_new_seqrun import find_new_seqrun_dir, calculate_file_md5, load_seqrun_files_to_db, seed_pipeline_table_for_new_seqrun
+from igf_data.process.seqrun_processing.find_and_process_new_seqrun import find_new_seqrun_dir, calculate_file_md5, load_seqrun_files_to_db, seed_pipeline_table_for_new_seqrun,check_for_registered_project_and_sample
 
 parser=argparse.ArgumentParser()
 parser.add_argument('-p','--seqrun_path', required=True, help='Seqrun directory path')
@@ -28,6 +28,8 @@ asana_obj=IGF_asana(asana_config=asana_config, asana_project_id=asana_project_id
 
 try:
   new_seqruns=find_new_seqrun_dir(seqrun_path, dbconfig_path)
+  new_seqruns,message=check_for_registered_project_and_sample(seqrun_info=new_seqruns,\
+                                                              dbconfig=dbconfig_path)
   if len(new_seqruns.keys()) > 0:
     message='found {0} new sequence runs, calculating md5'.format(len(new_seqruns.keys()))
     slack_obj.post_message_to_channel(message,reaction='pass')
