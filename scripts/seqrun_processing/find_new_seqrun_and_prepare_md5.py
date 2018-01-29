@@ -30,6 +30,9 @@ try:
   new_seqruns=find_new_seqrun_dir(seqrun_path, dbconfig_path)
   new_seqruns,message=check_for_registered_project_and_sample(seqrun_info=new_seqruns,\
                                                               dbconfig=dbconfig_path)
+  if message !='':
+    slack_obj.post_message_to_channel(message,reaction='pass')
+    
   if len(new_seqruns.keys()) > 0:
     message='found {0} new sequence runs, calculating md5'.format(len(new_seqruns.keys()))
     slack_obj.post_message_to_channel(message,reaction='pass')
