@@ -12,7 +12,7 @@ parser.add_argument('-u','--hpc_user', required=True, help='HPC user name for ld
 parser.add_argument('-a','--hpc_address', required=True, help='HPC address for ldap server checking')
 parser.add_argument('-l','--ldap_server', required=True, help='Ldap server address')
 parser.add_argument('-i','--setup_irods', default=True, help='Setup iRODS account for user')
-parser.add_argument('-n','--notify_user', default=True, help='Notify user about new account and password')
+parser.add_argument('-m','--notify_user', default=True, help='Notify user about new account and password')
 args=parser.parse_args()
 
 projet_info_path=args.projet_info_path
