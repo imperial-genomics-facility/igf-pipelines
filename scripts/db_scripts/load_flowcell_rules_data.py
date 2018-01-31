@@ -1,6 +1,6 @@
 import argparse
 from igf_data.task_tracking.igf_slack import IGF_slack
-from igf_data.utils.pipelineutils import load_new_flowcell_data
+from igf_data.utils.platformutils import load_new_flowcell_data
 
 parser=argparse.ArgumentParser()
 parser.add_argument('-f','--flowcell_data', required=True, help='Flowcell rules data json file')
