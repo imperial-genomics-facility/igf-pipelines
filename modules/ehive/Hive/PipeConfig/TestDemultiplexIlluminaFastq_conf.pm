@@ -154,7 +154,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb4t',
-      -analysis_capacity => 10,
+      -analysis_capacity => 5,
       -parameters   => {
         'seqrun_local_dir'  => $self->o('seqrun_local_dir'),
         'base_work_dir'     => $self->o('base_work_dir'),
