@@ -406,7 +406,8 @@ sub pipeline_analyses {
       -flow_into    => {
           1 => {'copy_known_multiqc_to_remote' =>
                   {'file' => '#multiqc_html#',
-                   'lane_index_info' => '#lane_index_info#'},
+                   'lane_index_info' => '#lane_index_info#',
+                   'qc_outputs'      => '#qc_outputs#'},
                },
       },
   };
@@ -430,7 +431,8 @@ sub pipeline_analyses {
         },
       -flow_into    => {
           1 => {'prepare_and_copy_qc_page_for_lane' =>
-                   {'multiqc_remote_file'=>'#remote_file#'},
+                   {'multiqc_remote_file'=>'#remote_file#',
+                    'qc_outputs'  => '#qc_outputs#', },
                },
       },
   };
