@@ -432,7 +432,7 @@ sub pipeline_analyses {
       -flow_into    => {
           1 => {'prepare_and_copy_qc_page_for_lane' =>
                    {'multiqc_remote_file'=>'#remote_file#',
-                    'qc_outputs'  => '#qc_outputs#', },
+                    'qc_files'  => '#qc_outputs#', },
                },
       },
   };
@@ -446,7 +446,7 @@ sub pipeline_analyses {
       -rc_name      => '500Mb',
       -analysis_capacity => 2,
       -parameters  => {
-        'qc_files'            => '#qc_outputs#',
+        'qc_files'            => '#qc_files#',
         'template_dir'        => $self->o('template_dir'),
         'remote_host'         => $self->o('remote_host'),
         'remote_user'         => $self->o('seqrun_user'),
