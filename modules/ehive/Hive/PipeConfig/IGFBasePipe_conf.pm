@@ -69,6 +69,7 @@ sub hive_meta_table {
   return {
     %{$self->SUPER::hive_meta_table},
     'hive_use_param_stack'  => 1,           # switching on parameter propagation by default
+    'hive_auto_rebalance_semaphores' => 1,
   };
 }
 
