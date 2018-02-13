@@ -206,7 +206,8 @@ sub main {
       }
       open(my $fh, '<',$self->{'url_file'});
       my $url=<$fh>;                          # read db url from the file
-      $self->{'url'}=chomp($url);
+      chomp($url);
+      $self->{'url'}=$url;
       close($fh)
     }
 
