@@ -205,7 +205,8 @@ sub main {
         die "Can't read url file ".$self->{'url_file'}."\n"
       }
       open(my $fh, '<',$self->{'url_file'});
-      $self->{'url'}=chomp(<$fh>);                          # read db url from the file
+      $url=<$fh>;                          # read db url from the file
+      $self->{'url'}=chomp($url);
       close($fh)
     }
 
