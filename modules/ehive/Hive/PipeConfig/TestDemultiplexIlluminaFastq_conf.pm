@@ -26,7 +26,7 @@ sub default_options {
     'read_offset'         => 1,
     'index_offset'        => 0,
     'bcl2fastq_exe'       => undef,
-    'bcl2fastq_options'   => '{"-r" : "1","-w" : "1","-p" : "1","--barcode-mismatches" : "1","--auto-set-to-zero-barcode-mismatches":"","--create-fastq-for-index-reads":""}',
+    'bcl2fastq_options'   => '{"-r" : "1","-w" : "1","-p" : "2","--barcode-mismatches" : "1","--auto-set-to-zero-barcode-mismatches":"","--create-fastq-for-index-reads":""}',
     'fastqc_exe'          => undef,
     'fastqc_options'      => '{"-q" : "","--noextract" : "","-f" : "fastq","-k" : "7","-t" : "1"}',
     'irods_exe_dir'       => undef,
@@ -153,7 +153,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunBcl2Fastq',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '4Gb4t',
+      -rc_name      => '8Gb4t',
       -analysis_capacity => 5,
       -parameters   => {
         'seqrun_local_dir'  => $self->o('seqrun_local_dir'),
@@ -233,8 +233,8 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CollectFastqToDbCollection',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
-      -analysis_capacity => 2,
+      -rc_name      => '4Gb',
+      -analysis_capacity => 5,
       -flow_into    => {
           1 => ['upload_fastq_dir_to_irods']
       },
@@ -246,7 +246,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.UploadFastqToIrods',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '4Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'irods_exe_dir' => $self->o('irods_exe_dir'),
@@ -278,7 +278,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '2Gb',
       -analysis_capacity => 10,
       -parameters  => {
         'base_results_dir' => $self->o('base_results_dir'),
@@ -394,7 +394,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '4Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'qc_files'         => '#qc_outputs#',
@@ -443,7 +443,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '4Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'qc_files'            => '#qc_files#',
@@ -464,7 +464,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '2Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'qc_files'            => '#laneqc_known#',
@@ -516,7 +516,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '4Gb',
       -analysis_capacity => 10,
       -parameters  => {
         'base_results_dir' => $self->o('base_results_dir'),
@@ -572,7 +572,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '4Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'qc_files'         => '#qc_outputs#',
@@ -616,7 +616,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '2Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'qc_files'            => '#multiqc_undetermined#',
