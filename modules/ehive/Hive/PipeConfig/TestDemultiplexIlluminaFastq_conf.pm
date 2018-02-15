@@ -36,7 +36,7 @@ sub default_options {
     'multiqc_exe'         => undef,
     'user_info_file'      => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
-    'cleanup_bcl_dir'     => 1,
+    'cleanup_bcl_dir'     => 0,
   };
 }
 
