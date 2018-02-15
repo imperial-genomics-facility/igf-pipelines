@@ -80,7 +80,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '500Mb',
-    -analysis_capacity => 10,
+    -analysis_capacity => 20,
     -parameters        => {
       'seqrun_source'    => $self->o('seqrun_source'),
       'seqrun_user'      => $self->o('seqrun_user'),
@@ -154,7 +154,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '8Gb4t',
-      -analysis_capacity => 5,
+      -analysis_capacity => 8,
       -parameters   => {
         'seqrun_local_dir'  => $self->o('seqrun_local_dir'),
         'base_work_dir'     => $self->o('base_work_dir'),
@@ -234,7 +234,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
-      -analysis_capacity => 5,
+      -analysis_capacity => 8,
       -flow_into    => {
           1 => ['upload_fastq_dir_to_irods']
       },
@@ -247,7 +247,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
-      -analysis_capacity => 2,
+      -analysis_capacity => 4,
       -parameters  => {
         'irods_exe_dir' => $self->o('irods_exe_dir'),
         },
@@ -279,7 +279,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '2Gb',
-      -analysis_capacity => 10,
+      -analysis_capacity => 20,
       -parameters  => {
         'base_results_dir' => $self->o('base_results_dir'),
         'fastqc_exe'       => $self->o('fastqc_exe'),
@@ -395,7 +395,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
-      -analysis_capacity => 2,
+      -analysis_capacity => 8,
       -parameters  => {
         'qc_files'         => '#qc_outputs#',
         'base_results_dir' => $self->o('base_results_dir'),
@@ -444,7 +444,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
-      -analysis_capacity => 2,
+      -analysis_capacity => 4,
       -parameters  => {
         'qc_files'            => '#qc_files#',
         'template_dir'        => $self->o('template_dir'),
@@ -486,6 +486,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '500Mb',
+      -analysis_capacity => 2,
       -parameters  => {
         'template_dir'   => $self->o('template_dir'),
         'remote_host'    => $self->o('seqrun_server'),
