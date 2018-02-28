@@ -97,14 +97,30 @@ sub pipeline_analyses {
     -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-        'seqrun_local_dir' => $self->o('seqrun_local_dir'),
-        'base_work_dir'    => $self->o('base_work_dir'),
+        'seqrun_local_dir'  => $self->o('seqrun_local_dir'),
+        'base_work_dir'     => $self->o('base_work_dir'),
+	'single_cell_lebel' => $self->o('single_cell_lebel'),
+    },
+    -flow_into => {
+      1 => WHEN('#project_type# eq #single_cell_lebel#' => ['change_single_cell_barcodes'] 
+	       ELSe ['find_project_factory'],),
+    },
+  };
+  
+  push @pipeline, {
+    -logic_name  => 'change_single_cell_barcodes',
+    -module      => 'ehive.runnable.process.CheckAndProcessSampleSheet',
+    -language    => 'python3',
+    -meadow_type  => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+	'single_cell_barcode_file' => $self->o('single_cell_barcode_file'),
     },
     -flow_into => {
       1 => ['find_project_factory'],
     },
   };
-  
+
   push @pipeline, {
     -logic_name  => 'find_project_factory',
     -module      => 'ehive.runnable.jobfactory.SampleSheetProjectFactory',
