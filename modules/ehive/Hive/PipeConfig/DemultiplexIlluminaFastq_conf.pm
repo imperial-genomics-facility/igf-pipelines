@@ -1,5 +1,5 @@
 =head1 NAME
-    ehive::Hive::PipeConfig::TestDemultiplexIlluminaFastq_conf
+    ehive::Hive::PipeConfig::DemultiplexIlluminaFastq_conf
 =cut
 
 package ehive::Hive::PipeConfig::TestDemultiplexIlluminaFastq_conf;
