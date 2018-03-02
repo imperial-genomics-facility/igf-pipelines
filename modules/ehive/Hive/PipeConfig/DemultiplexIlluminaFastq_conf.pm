@@ -103,13 +103,13 @@ sub pipeline_analyses {
     },
     -flow_into => {
       1 => WHEN('#project_type# eq #single_cell_lebel#' => ['change_single_cell_barcodes'] 
-	       ELSe ['find_project_factory'],),
+	       ELSE ['find_project_factory'],),
     },
   };
   
   push @pipeline, {
     -logic_name  => 'change_single_cell_barcodes',
-    -module      => 'ehive.runnable.process.CheckAndProcessSampleSheet',
+    -module      => 'ehive.runnable.process.ReplaceSingleCellBarcodes',
     -language    => 'python3',
     -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
