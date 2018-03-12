@@ -201,6 +201,7 @@ sub pipeline_analyses {
            1 => ['check_demultiplexing_barcode']
       },
   };
+
   push @pipeline, {
       -logic_name   => 'check_demultiplexing_barcode',
       -module       => 'ehive.runnable.process.CheckIndexStats',
@@ -260,8 +261,7 @@ sub pipeline_analyses {
           'B->1' => ['prepare_and_copy_qc_page_for_undetermined'],
       },
   };
-  
-  
+
   push @pipeline, {
       -logic_name   => 'collect_fastq_to_db_collection',
       -module       => 'ehive.runnable.process.CollectFastqToDbCollection',
@@ -273,8 +273,7 @@ sub pipeline_analyses {
           1 => ['upload_fastq_dir_to_irods']
       },
   };
-  
-  
+
   push @pipeline, {
       -logic_name   => 'upload_fastq_dir_to_irods',
       -module       => 'ehive.runnable.process.UploadFastqToIrods',
@@ -289,7 +288,6 @@ sub pipeline_analyses {
           1 => ['known_fastq_factory']
       },
   };
-
 
   push @pipeline, {
       -logic_name   => 'known_fastq_factory',
@@ -306,7 +304,6 @@ sub pipeline_analyses {
       },
   };
 
-  
   push @pipeline, {
       -logic_name   => 'run_fastqc_for_known_fastq',
       -module       => 'ehive.runnable.process.RunFastqc',
@@ -329,7 +326,6 @@ sub pipeline_analyses {
                },
       },
   };
-
 
   push @pipeline, {
       -logic_name   => 'copy_fastqc_results_to_remote',
@@ -355,7 +351,6 @@ sub pipeline_analyses {
       },
   };
 
-
   push @pipeline, {
       -logic_name   => 'run_fastqscreen_for_known_fastq',
       -module       => 'ehive.runnable.process.RunFastqscreen',
@@ -376,7 +371,6 @@ sub pipeline_analyses {
                     'fastqscreen' => '#fastqscreen#'}},
       },
   };
-
 
   push @pipeline, {
       -logic_name   => 'copy_fastqscreen_results_to_remote',
@@ -404,7 +398,6 @@ sub pipeline_analyses {
       },
   };
 
-
   push @pipeline, {
       -logic_name   => 'collect_qc_data_for_known_fastq',
       -module       => 'ehive.runnable.process.CollectQcForFastqDir',
@@ -421,7 +414,6 @@ sub pipeline_analyses {
           1 => ['run_multiqc_for_know_fastq'],
       },
   };
-
 
   push @pipeline, {
       -logic_name   => 'run_multiqc_for_know_fastq',
@@ -446,7 +438,6 @@ sub pipeline_analyses {
       },
   };
 
-
   push @pipeline, {
       -logic_name   => 'copy_known_multiqc_to_remote',
       -module       => 'ehive.runnable.process.CopyQCFileToRemote',
@@ -470,8 +461,7 @@ sub pipeline_analyses {
                },
       },
   };
-  
-  
+
   push @pipeline, {
       -logic_name   => 'prepare_and_copy_qc_page_for_lane',
       -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
@@ -491,8 +481,7 @@ sub pipeline_analyses {
           1 => ['?accu_name=laneqc_known&accu_address={fastq_dir}&accu_input_variable=qc_file_info',],
       },
   };
-  
-  
+
   push @pipeline, {
       -logic_name   => 'prepare_and_copy_qc_page_for_project',
       -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
@@ -512,8 +501,7 @@ sub pipeline_analyses {
           1 => ['send_email_notification'],
       },
   };
-  
-  
+
   push @pipeline, {
       -logic_name   => 'send_email_notification',
       -module       => 'ehive.runnable.process.SendEmailToUser',
@@ -528,8 +516,7 @@ sub pipeline_analyses {
         'user_info_file' => $self->o('user_info_file'),
         },
   };
-  
-  
+
   push @pipeline, {
       -logic_name   => 'undetermined_fastq_factory',
       -module       => 'ehive.runnable.jobfactory.FastqFileFactory',
@@ -544,7 +531,6 @@ sub pipeline_analyses {
           'A->1' => ['collect_qc_data_for_undetermined_fastq'],
       },
   };
-
 
   push @pipeline, {
       -logic_name   => 'run_fastqc_for_undetermined_fastq',
@@ -563,7 +549,6 @@ sub pipeline_analyses {
           1 => ['run_fastqscreen_for_undetermined_fastq']
       },
   };
-
 
   push @pipeline, {
       -logic_name   => 'run_fastqscreen_for_undetermined_fastq',
@@ -586,7 +571,6 @@ sub pipeline_analyses {
       },
   };
 
-
   push @pipeline, {
       -logic_name   => 'collect_qc_data_for_undetermined_fastq',
       -module       => 'ehive.runnable.process.CollectQcForFastqDir',
@@ -601,7 +585,6 @@ sub pipeline_analyses {
       },
   };
 
-  
   push @pipeline, {
       -logic_name   => 'run_multiqc_for_undetermined_fastq',
       -module       => 'ehive.runnable.process.RunMutiQC',
@@ -623,7 +606,6 @@ sub pipeline_analyses {
                },
       },
   };
-
 
   push @pipeline, {
       -logic_name   => 'copy_undetermined_multiqc_to_remote',
@@ -662,8 +644,7 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
   };
-  
-  
+
   push @pipeline, {
       -logic_name   => 'mark_seqrun_status_in_seed_table',
       -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
@@ -690,7 +671,6 @@ sub pipeline_analyses {
         },
   };
 
-  
   return \@pipeline;
 }
 
