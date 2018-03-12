@@ -269,6 +269,9 @@ sub pipeline_analyses {
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
       -analysis_capacity => 8,
+      -parameters   => {
+         'singlecell_tag'    => $self->o('singlecell_tag'),
+       },
       -flow_into    => {
           1 => ['upload_fastq_dir_to_irods']
       },
@@ -476,6 +479,7 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'page_type'           => 'sample',
         'remote_project_path' => $self->o('remote_project_path'),
+        'singlecell_tag'      => $self->o('singlecell_tag'),
         },
       -flow_into    => {
           1 => ['?accu_name=laneqc_known&accu_address={fastq_dir}&accu_input_variable=qc_file_info',],
