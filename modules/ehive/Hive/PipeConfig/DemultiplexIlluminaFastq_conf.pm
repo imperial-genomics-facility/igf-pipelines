@@ -179,12 +179,28 @@ sub pipeline_analyses {
         'base_fastq_dir'    => $self->o('base_fastq_dir'),
         'bcl2fastq_exe'     => $self->o('bcl2fastq_exe'),
         'bcl2fastq_options' => $self->o('bcl2fastq_options'),
+        'singlecell_tag'    => $self->o('singlecell_tag'),
         },
-      -flow_into    => {
-          1 => ['check_demultiplexing_barcode'],
+      -flow_into => {
+         1 => WHEN('#project_type# eq #singlecell_tag#' => ['merge_single_cell_fastq'] 
+              ELSE ['check_demultiplexing_barcode'],),
       },
   };
 
+  push @pipeline, {
+      -logic_name   => 'merge_single_cell_fastq',
+      -module       => 'ehive.runnable.process.MergeSingleCellFastqFragments',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '4Gb',
+      -analysis_capacity => 2,
+      -parameters   => {
+         'singlecell_tag'    => $self->o('singlecell_tag'),
+      },
+      -flow_into => {
+           1 => ['check_demultiplexing_barcode']
+      },
+  };
   push @pipeline, {
       -logic_name   => 'check_demultiplexing_barcode',
       -module       => 'ehive.runnable.process.CheckIndexStats',
