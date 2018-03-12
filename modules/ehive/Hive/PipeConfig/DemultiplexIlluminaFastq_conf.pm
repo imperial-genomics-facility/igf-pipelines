@@ -37,6 +37,7 @@ sub default_options {
     'user_info_file'      => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'cleanup_bcl_dir'     => 0,
+    'singlecell_tag'      => '10X',
   };
 }
 
@@ -99,10 +100,10 @@ sub pipeline_analyses {
     -parameters  => {
         'seqrun_local_dir'  => $self->o('seqrun_local_dir'),
         'base_work_dir'     => $self->o('base_work_dir'),
-	'single_cell_lebel' => $self->o('single_cell_lebel'),
+        'singlecell_tag' => $self->o('singlecell_tag'),
     },
     -flow_into => {
-      1 => WHEN('#project_type# eq #single_cell_lebel#' => ['change_single_cell_barcodes'] 
+      1 => WHEN('#project_type# eq #singlecell_tag#' => ['change_single_cell_barcodes'] 
 	       ELSE ['find_project_factory'],),
     },
   };
@@ -114,7 +115,8 @@ sub pipeline_analyses {
     -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-	'single_cell_barcode_file' => $self->o('single_cell_barcode_file'),
+         'single_cell_barcode_file' => $self->o('single_cell_barcode_file'),
+         'singlecell_tag' => $self->o('singlecell_tag'),
     },
     -flow_into => {
       1 => ['find_project_factory'],
