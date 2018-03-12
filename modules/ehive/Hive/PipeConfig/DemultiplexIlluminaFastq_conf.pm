@@ -103,11 +103,11 @@ sub pipeline_analyses {
         'singlecell_tag' => $self->o('singlecell_tag'),
     },
     -flow_into => {
-      1 => WHEN('#project_type# eq #singlecell_tag#' => ['change_single_cell_barcodes'] 
-	       ELSE ['find_project_factory'],),
+        1 => WHEN('#project_type# eq #singlecell_tag#' => ['change_single_cell_barcodes'] 
+	           ELSE ['find_project_factory'],),
     },
   };
-  
+
   push @pipeline, {
     -logic_name  => 'change_single_cell_barcodes',
     -module      => 'ehive.runnable.process.ReplaceSingleCellBarcodes',
