@@ -38,6 +38,8 @@ sub default_options {
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'cleanup_bcl_dir'     => 0,
     'singlecell_tag'      => '10X',
+    'seqruninfofile':'seqruninfofile.json',
+    'samplereadcountfile':'samplereadcountfile.json',
   };
 }
 
@@ -242,6 +244,8 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         'remote_host'         => $self->o('remote_host'),
         'remote_user'         => $self->o('seqrun_user'),
+        'seqruninfofile'      => $self->o('seqruninfofile'),
+        'samplereadcountfile' => $self->o('samplereadcountfile'),
         },
       -flow_into    => {
           1 => ['project_fastqdir_factory'],
