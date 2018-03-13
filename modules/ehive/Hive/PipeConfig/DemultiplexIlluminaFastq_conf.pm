@@ -506,6 +506,25 @@ sub pipeline_analyses {
         'remote_project_path' => $self->o('remote_project_path'),
         },
       -flow_into    => {
+          1 => ['update_project_info_page'],
+      },
+  };
+
+  push @pipeline, {
+      -logic_name   => 'update_project_info_page',
+      -module       => 'ehive.runnable.process.UpdateProjectInfo',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'remote_project_path' => $self->o('remote_project_path'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_user'         => $self->o('seqrun_user'),
+        'seqruninfofile'      => $self->o('seqruninfofile'),
+        'samplereadcountfile' => $self->o('samplereadcountfile'),
+      },
+      -flow_into    => {
           1 => ['send_email_notification'],
       },
   };
