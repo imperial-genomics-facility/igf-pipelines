@@ -43,6 +43,16 @@ sub default_options {
   };
 }
 
+
+sub pipeline_wide_parameters {
+    my ($self) = @_;
+    return {
+        %{$self->SUPER::pipeline_wide_parameters},            # here we inherit anything from the base class
+        'singlecell_tag'     => $self->o('singlecell_tag'),
+    };
+}
+
+
 sub pipeline_analyses {
   my ($self) = @_;
   my @pipeline;
