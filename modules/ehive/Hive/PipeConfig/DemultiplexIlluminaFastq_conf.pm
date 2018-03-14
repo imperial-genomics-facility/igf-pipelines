@@ -127,8 +127,9 @@ sub pipeline_analyses {
     -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
+         'base_work_dir'            => $self->o('base_work_dir'),
+         'singlecell_tag'           => $self->o('singlecell_tag'),
          'single_cell_barcode_file' => $self->o('single_cell_barcode_file'),
-         'singlecell_tag' => $self->o('singlecell_tag'),
     },
     -flow_into => {
       1 => ['find_project_factory'],
