@@ -38,8 +38,8 @@ sub default_options {
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'cleanup_bcl_dir'     => 0,
     'singlecell_tag'      => '10X',
-    'seqruninfofile':'seqruninfofile.json',
-    'samplereadcountfile':'samplereadcountfile.json',
+    'seqruninfofile'      => 'seqruninfofile.json',
+    'samplereadcountfile' => 'samplereadcountfile.json',
   };
 }
 
