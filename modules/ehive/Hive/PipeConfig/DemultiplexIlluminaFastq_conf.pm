@@ -2,7 +2,7 @@
     ehive::Hive::PipeConfig::DemultiplexIlluminaFastq_conf
 =cut
 
-package ehive::Hive::PipeConfig::TestDemultiplexIlluminaFastq_conf;
+package ehive::Hive::PipeConfig::DemultiplexIlluminaFastq_conf;
 
 use strict;
 use warnings;
