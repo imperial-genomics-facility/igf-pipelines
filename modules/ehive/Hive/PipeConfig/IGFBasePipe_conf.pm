@@ -59,6 +59,8 @@ sub resource_classes {
             '8Gb' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=1:mem=8gb:tmpspace=100gb' },
             '8Gb4t' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=4:mem=8gb:tmpspace=100gb' },
             '8Gb16t' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=16:mem=8gb:tmpspace=100gb' },
+            '12Gb' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=1:mem=12gb:tmpspace=100gb' },
+            '12Gb4t' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=4:mem=12gb:tmpspace=100gb' },
             
     };
 }
