@@ -31,6 +31,7 @@ try:
                      destination_address=remote_server)                         # copy json file to remote server
   else:
     shutil.copy2(temp_file, output_path)                                        # copy json file to local server
+
   remove_dir(temp_dir)                                                          # remove temp dir
 except Exception as e:
   print('Error: {0}'.format(e))
