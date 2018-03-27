@@ -1,4 +1,4 @@
-import argparse, shutil, json
+import argparse, shutil, json, os
 from igf_data.utils.gviz_utils import convert_to_gviz_json_for_display
 from igf_data.utils.disk_usage_utils import merge_storage_stats_json
 from igf_data.utils.fileutils import copy_remote_file, get_temp_dir, remove_dir
