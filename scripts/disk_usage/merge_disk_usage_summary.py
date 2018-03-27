@@ -24,7 +24,7 @@ try:
 
   temp_dir=get_temp_dir()
   temp_file=os.path.join(temp_dir,'merged_summary_usage.json')                  # get temp file path
-  data,desctiption,column_order=merge_storage_stats_json(config_file,label_file) # get merged summary
+  data,description,column_order=merge_storage_stats_json(config_file,label_file) # get merged summary
   convert_to_gviz_json_for_display(description=description,
                                    data=data,
                                    columns_order=column_order,
