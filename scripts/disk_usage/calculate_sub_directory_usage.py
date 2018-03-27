@@ -34,7 +34,7 @@ try:
                      destination_path=output_filepath,
                      destination_address=remote_server)                         # copy json file to remote server
   else:
-    shutil.copy2(temp_file, output_filepath)                                        # copy json file to local server
+    shutil.copy2(temp_file, output_filepath)                                    # copy json file to local server
 
   remove_dir(temp_dir)                                                          # remove temp dir
 except Exception as e:
