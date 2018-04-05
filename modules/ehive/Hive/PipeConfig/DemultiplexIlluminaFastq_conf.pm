@@ -197,7 +197,7 @@ sub pipeline_analyses {
         'singlecell_tag'    => $self->o('singlecell_tag'),
         },
       -flow_into => {
-         1 => WHEN('#project_type# eq #singlecell_tag#' => ['merge_single_cell_fastq'],
+         1 => WHEN('#bcl2fq_project_type# eq #singlecell_tag#' => ['merge_single_cell_fastq'],
                    ELSE ['check_demultiplexing_barcode'],),
       },
   };
