@@ -27,6 +27,7 @@ sub default_options {
     'index_offset'        => 0,
     'bcl2fastq_exe'       => undef,
     'bcl2fastq_options'   => '{"-r" : "1","-w" : "1","-p" : "2","--barcode-mismatches" : "1","--auto-set-to-zero-barcode-mismatches":"","--create-fastq-for-index-reads":""}',
+    'singlecell_options'  => '{"--minimum-trimmed-read-length=8":"","--mask-short-adapter-reads=8":""}',
     'fastqc_exe'          => undef,
     'fastqc_options'      => '{"-q" : "","--noextract" : "","-f" : "fastq","-k" : "7","-t" : "1"}',
     'irods_exe_dir'       => undef,
@@ -192,6 +193,7 @@ sub pipeline_analyses {
         'base_fastq_dir'    => $self->o('base_fastq_dir'),
         'bcl2fastq_exe'     => $self->o('bcl2fastq_exe'),
         'bcl2fastq_options' => $self->o('bcl2fastq_options'),
+        'singlecell_options'=> $self->o('singlecell_options'),
         'singlecell_tag'    => $self->o('singlecell_tag'),
         },
       -flow_into => {
