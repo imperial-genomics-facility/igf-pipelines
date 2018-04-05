@@ -92,7 +92,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.TransferAndCheckRemoteBclFile',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '500Mb',
+    -rc_name     => '1Gb',
     -analysis_capacity => 20,
     -parameters        => {
       'seqrun_source'    => $self->o('seqrun_source'),
@@ -350,7 +350,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'file'                => '#file#',
@@ -395,7 +395,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'file'                => '#file#',
@@ -461,7 +461,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'tag'                 => 'known',
@@ -545,7 +545,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.SendEmailToUser',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'template_dir'   => $self->o('template_dir'),
@@ -650,7 +650,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '500Mb',
+      -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
         'file'                => '#file#',
