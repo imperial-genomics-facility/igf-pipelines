@@ -284,7 +284,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.CollectFastqToDbCollection',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '4Gb',
+      -rc_name      => '8Gb',
       -analysis_capacity => 8,
       -parameters   => {
          'singlecell_tag'    => $self->o('singlecell_tag'),
