@@ -1,7 +1,8 @@
 import argparse
 from igf_data.task_tracking.igf_slack import IGF_slack
 from igf_data.task_tracking.igf_asana import IGF_asana
-from igf_data.process.seqrun_processing.find_and_process_new_seqrun import find_new_seqrun_dir, calculate_file_md5, load_seqrun_files_to_db, seed_pipeline_table_for_new_seqrun,check_for_registered_project_and_sample
+from igf_data.utils.fileutils import get_temp_dir,remove_dir
+from igf_data.process.seqrun_processing.find_and_process_new_seqrun import find_new_seqrun_dir, calculate_file_md5, load_seqrun_files_to_db, seed_pipeline_table_for_new_seqrun,check_for_registered_project_and_sample,validate_samplesheet_for_seqrun
 
 parser=argparse.ArgumentParser()
 parser.add_argument('-p','--seqrun_path', required=True, help='Seqrun directory path')
@@ -11,6 +12,7 @@ parser.add_argument('-s','--slack_config', required=True, help='Slack configurat
 parser.add_argument('-a','--asana_config', required=True, help='Asana configuration json file')
 parser.add_argument('-i','--asana_project_id', required=True, help='Asana project id')
 parser.add_argument('-n','--pipeline_name', required=True, help='IGF pipeline name')
+parser.add_argument('-j','--samplesheet_json_schema', required=True, help='JSON schema for samplesheet validation')
 parser.add_argument('-e','--exclude_path', action='append', default=[], help='List of sub directories excluded from the search')
 args=parser.parse_args()
 
@@ -22,6 +24,8 @@ asana_config=args.asana_config
 asana_project_id=args.asana_project_id
 pipeline_name=args.pipeline_name
 exclude_path=args.exclude_path
+samplesheet_json_schema=args.samplesheet_json_schema
+
 
 slack_obj=IGF_slack(slack_config=slack_config)
 asana_obj=IGF_asana(asana_config=asana_config, asana_project_id=asana_project_id)
@@ -32,7 +36,20 @@ try:
                                                               dbconfig=dbconfig_path)
   if message !='':
     slack_obj.post_message_to_channel(message,reaction='pass')
-    
+  
+  if len(new_seqruns.keys()) > 0:
+    temp_dir=get_temp_dir()                                                     # create temp dir
+    new_seqruns,error_files=validate_samplesheet_for_seqrun(seqrun_info=new_seqruns,\
+                                                            schema_json=samplesheet_json_schema,\
+                                                            output_dir=temp_dir)# validate samplesheet for seqruns
+    if len(error_files.keys())>0:
+      for seqrun_name, error_file_path in error_files.items():
+        message='Samplesheet validation failed for run {0}'.format(seqrun_name)
+        slack_obj.post_file_to_slack(filepath=error_file_path,\
+                                     message=message)                           # post validation results to slack
+
+    remove_dir(temp_dir)                                                        # remove temp dir
+
   if len(new_seqruns.keys()) > 0:
     message='found {0} new sequence runs, calculating md5'.format(len(new_seqruns.keys()))
     slack_obj.post_message_to_channel(message,reaction='pass')
