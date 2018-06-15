@@ -18,7 +18,7 @@ sub default_options {
     'pipeline_name'       => 'PrimaryAnalysis',
     'pipeseed_mode'       => 'alignment',
     'singlecell_source'   => 'TRANSCRIPTOMIC_SINGLE_CELL',
-    'tenx_chemistry'      => 'TENX'
+    'tenx_chemistry'      => 'TENX',
     'base_work_dir'       => undef,
     'base_results_dir'    => undef,
     'seqrun_user'         => undef,
