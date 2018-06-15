@@ -36,8 +36,8 @@ sub pipeline_wide_parameters {
     my ($self) = @_;
     return {
         %{$self->SUPER::pipeline_wide_parameters},                              # here we inherit anything from the base class
-        'singlecell_source' = $self->o('singlecell_source'),
-        'tenx_chemistry' = $self->o('tenx_chemistry'),
+        'singlecell_source' => $self->o('singlecell_source'),
+        'tenx_chemistry' => $self->o('tenx_chemistry'),
     };
 }
 
@@ -70,7 +70,7 @@ sub pipeline_analyses {
     -analysis_capacity => 1,
     -parameters  => {
       'cellranger_exe'     => $self->o('cellranger_exe'),
-      'cellranger_options' => $self->o('cellranger_options'),
+      'cellranger_options' => $self->o('cellranger_param'),
       },
     -flow_into   => {
         1 => ['mark_experiment_finished'],  
