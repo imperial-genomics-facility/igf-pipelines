@@ -18,7 +18,7 @@ sub default_options {
     'pipeline_name'       => 'PrimaryAnalysis',
     'pipeseed_mode'       => 'alignment',
     'singlecell_source'   => 'TRANSCRIPTOMIC_SINGLE_CELL',
-    'tenx_chemistry'      => 'TENX',
+    'tenx_exp_type'       => 'TENX-TRANSCRIPTOME',
     'base_work_dir'       => undef,
     'base_results_dir'    => undef,
     'seqrun_user'         => undef,
@@ -37,7 +37,7 @@ sub pipeline_wide_parameters {
     return {
         %{$self->SUPER::pipeline_wide_parameters},                              # here we inherit anything from the base class
         'singlecell_source' => $self->o('singlecell_source'),
-        'tenx_chemistry' => $self->o('tenx_chemistry'),
+        'tenx_exp_type' => $self->o('tenx_exp_type'),
     };
 }
 
@@ -56,7 +56,7 @@ sub pipeline_analyses {
       'pipeseed_mode' => $self->o('pipeseed_mode'),
     },
     -flow_into => {
-        2 => WHEN('#singlecell_chemistry# eq #tenx_chemistry# and #library_source# eq #singlecell_source#' => ['run_cellranger_count_for_experiment'],
+        2 => WHEN('#experiment_type# eq #tenx_exp_type# && #library_source# eq #singlecell_source#' => ['run_cellranger_count_for_experiment'],
                  ELSE ['mark_experiment_finished'],),
     },
   };
