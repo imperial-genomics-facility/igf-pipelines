@@ -71,6 +71,7 @@ sub pipeline_analyses {
     -parameters  => {
       'cellranger_exe'     => $self->o('cellranger_exe'),
       'cellranger_options' => $self->o('cellranger_param'),
+      'base_work_dir'      => $self->o('base_work_dir'),
       },
     -flow_into   => {
         1 => ['mark_experiment_finished'],  
