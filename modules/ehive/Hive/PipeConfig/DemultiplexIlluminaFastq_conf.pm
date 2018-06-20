@@ -691,6 +691,7 @@ sub pipeline_analyses {
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters   => {
+        'igf_id'        => '#seqrun_igf_id#',
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         },
