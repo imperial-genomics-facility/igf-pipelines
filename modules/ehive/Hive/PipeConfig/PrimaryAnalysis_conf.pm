@@ -26,7 +26,7 @@ sub default_options {
     'checksum_type'       => 'md5',
     'irods_exe_dir'       => undef,
     'cellranger_exe'      => undef,
-    'cellranger_param'    => undef,
+    'cellranger_param'    => '{"--nopreflight":"",--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"4","--mempercore":"4","--maxjobs":"20"}',
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'cleanup_bam_dir'     => 0,
     'cram_type'           => 'ANALYSIS_CRAM',
