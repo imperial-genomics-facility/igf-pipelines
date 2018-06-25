@@ -93,7 +93,7 @@ sub pipeline_analyses {
     -parameters  => {
         'bam_file'        => '#bam_file#',
         'base_result_dir' => $self->o('base_results_dir'),
-        'collection_name' => '#experment_igf_id#',
+        'collection_name' => '#experiment_igf_id#',
         'collection_type' => $self->o('cram_type'),
         'collection_table'=> $self->o('cellranger_collection_table'),
         'analysis_name'   => $self->o('cellranger_analysis_name'),
@@ -112,6 +112,7 @@ sub pipeline_analyses {
       -meadow_type  => 'LOCAL',
       -parameters   => {
         'igf_id'        => '#experiment_igf_id#',
+        'task_id'       => '#project_igf_id#',
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         },
