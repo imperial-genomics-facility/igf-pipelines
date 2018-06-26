@@ -87,10 +87,11 @@ sub pipeline_analyses {
     -logic_name  => 'upload_cellranger_results_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
     -language    => 'python3',
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'file_list'     => '#cellranger_output#',
+      'file_list'     => '#analysis_output_list#',
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('cellranger_analysis_name'),
       'dir_path_list' => ['#project_igf_id#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
@@ -127,6 +128,7 @@ sub pipeline_analyses {
     -logic_name  => 'upload_cellranger_bam_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
     -language    => 'python3',
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
