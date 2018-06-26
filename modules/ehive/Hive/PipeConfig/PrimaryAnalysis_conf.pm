@@ -79,6 +79,24 @@ sub pipeline_analyses {
       'base_results_dir'   => $self->o('base_results_dir'),
       },
     -flow_into   => {
+        1 => ['upload_cellranger_results_to_irods'],  
+      },
+  };
+  
+  push @pipeline, {
+    -logic_name  => 'upload_cellranger_results_to_irods',
+    -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language    => 'python3',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'file_list'     => '#cellranger_output#',
+      'irods_exe_dir' => $self->o('irods_exe_dir'),
+      'analysis_name' => $self->o('cellranger_analysis_name'),
+      'dir_path_list' => ['#project_igf_id#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'      => '#sample_igf_id#'.'_'.'#experiment_igf_id#'.'_'.'#analysis_name#'.'_'.'#species_name#',
+     },
+     -flow_into   => {
         1 => ['convert_bam_to_cram'],  
       },
   };
@@ -89,7 +107,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
-    -analysis_capacity => 1,
+    -analysis_capacity => 2,
     -parameters  => {
         'bam_file'        => '#bam_file#',
         'base_result_dir' => $self->o('base_results_dir'),
@@ -101,6 +119,24 @@ sub pipeline_analyses {
         'reference_type'  => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
+        1 => ['upload_cellranger_bam_to_irods'],  
+      },
+  };
+  
+  push @pipeline, {
+    -logic_name  => 'upload_cellranger_bam_to_irods',
+    -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language    => 'python3',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'file_list'     => '#output_cram_list#',
+      'irods_exe_dir' => $self->o('irods_exe_dir'),
+      'analysis_name' => $self->o('cellranger_analysis_name'),
+      'dir_path_list' => ['#project_igf_id#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'      => '#sample_igf_id#'.'_'.'#experiment_igf_id#'.'_'.'#analysis_name#'.'_'.'#species_name#',
+     },
+     -flow_into   => {
         1 => ['mark_experiment_finished'],  
       },
   };
