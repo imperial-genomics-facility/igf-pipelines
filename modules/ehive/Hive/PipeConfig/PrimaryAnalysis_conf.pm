@@ -94,7 +94,7 @@ sub pipeline_analyses {
       'file_list'     => '#analysis_output_list#',
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('cellranger_analysis_name'),
-      'dir_path_list' => ['#project_igf_id#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.'_'.'#experiment_igf_id#'.'_'.'#analysis_name#'.'_'.'#species_name#',
      },
      -flow_into   => {
@@ -135,7 +135,7 @@ sub pipeline_analyses {
       'file_list'     => '#output_cram_list#',
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('cellranger_analysis_name'),
-      'dir_path_list' => ['#project_igf_id#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.'_'.'#experiment_igf_id#'.'_'.'#analysis_name#'.'_'.'#species_name#',
      },
      -flow_into   => {
