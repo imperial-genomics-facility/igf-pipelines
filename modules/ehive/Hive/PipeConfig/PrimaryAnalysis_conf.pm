@@ -65,6 +65,7 @@ sub pipeline_analyses {
     },
   };
   
+  ## run cellranger for each experiments
   push @pipeline, {
     -logic_name  => 'run_cellranger_count_for_experiment',
     -module      => 'ehive.runnable.process.alignment.RunCellrangerCount',
@@ -79,10 +80,11 @@ sub pipeline_analyses {
       'base_results_dir'   => $self->o('base_results_dir'),
       },
     -flow_into   => {
-        1 => ['upload_cellranger_results_to_irods'],  
+        1 => ['upload_cellranger_results_to_irods'],
       },
   };
   
+  ## upload cellranger resilts to irods
   push @pipeline, {
     -logic_name  => 'upload_cellranger_results_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
@@ -95,13 +97,14 @@ sub pipeline_analyses {
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('cellranger_analysis_name'),
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
-      'file_tag'      => '#sample_igf_id#'.'_'.'#experiment_igf_id#'.'_'.'#analysis_name#'.'_'.'#species_name#',
+      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
      -flow_into   => {
-        1 => ['convert_bam_to_cram'],  
+        1 => ['convert_bam_to_cram'],
       },
   };
   
+  ## convert bam file to cram
   push @pipeline, {
     -logic_name  => 'convert_bam_to_cram',
     -module      => 'ehive.runnable.process.alignment.ConvertBamToCram',
@@ -124,6 +127,7 @@ sub pipeline_analyses {
       },
   };
   
+  ## upload bam file to irods server
   push @pipeline, {
     -logic_name  => 'upload_cellranger_bam_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
@@ -136,13 +140,14 @@ sub pipeline_analyses {
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('cellranger_analysis_name'),
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
-      'file_tag'      => '#sample_igf_id#'.'_'.'#experiment_igf_id#'.'_'.'#analysis_name#'.'_'.'#species_name#',
+      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
      -flow_into   => {
-        1 => ['mark_experiment_finished'],  
+        1 => ['mark_experiment_finished'],
       },
   };
   
+  ## mark experiment as done
   push @pipeline, {
       -logic_name   => 'mark_experiment_finished',
       -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
