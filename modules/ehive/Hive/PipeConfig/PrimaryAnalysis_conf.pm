@@ -31,6 +31,7 @@ sub default_options {
     'cleanup_bam_dir'     => 0,
     'cram_type'           => 'ANALYSIS_CRAM',
     'samtools_threads'    => 4,
+    'cellranger_timeout'  => 43200,
     'reference_fasta_type'        => 'GENOME_FASTA',
     'cellranger_collection_table' => 'experiment',
     'cellranger_analysis_name'    => 'cellranger_count',
@@ -79,6 +80,7 @@ sub pipeline_analyses {
       'cellranger_options' => $self->o('cellranger_param'),
       'base_work_dir'      => $self->o('base_work_dir'),
       'base_results_dir'   => $self->o('base_results_dir'),
+      'job_timeout'        => $self->o('cellranger_timeout'),
       },
     -flow_into   => {
         1 => ['upload_cellranger_results_to_irods'],
