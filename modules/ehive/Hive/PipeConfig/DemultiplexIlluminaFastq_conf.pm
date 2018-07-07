@@ -692,6 +692,7 @@ sub pipeline_analyses {
       -meadow_type  => 'LOCAL',
       -parameters   => {
         'igf_id'        => '#seqrun_igf_id#',
+        'task_id'       => '#seqrun_igf_id#',
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         },
