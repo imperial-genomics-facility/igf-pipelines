@@ -94,7 +94,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '1Gb',
-    -analysis_capacity => 20,
+    -analysis_capacity => 10,
     -parameters        => {
       'seqrun_source'    => $self->o('seqrun_source'),
       'seqrun_user'      => $self->o('seqrun_user'),
@@ -376,7 +376,7 @@ sub pipeline_analyses {
       -module       => 'ehive.runnable.process.RunFastqscreen',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
-      -rc_name      => '4Gb',
+      -rc_name      => '4Gb2t',
       -analysis_capacity => 10,
       -parameters  => {
         'base_results_dir'    => $self->o('base_results_dir'),
