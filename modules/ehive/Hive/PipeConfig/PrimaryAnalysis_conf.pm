@@ -83,6 +83,23 @@ sub pipeline_analyses {
       'job_timeout'        => $self->o('cellranger_timeout'),
       },
     -flow_into   => {
+        1 => ['load_cellranger_count_output_for_experiment'],
+      },
+  };
+  
+  ## load cellranger output for each experiments
+  push @pipeline, {
+    -logic_name  => 'load_cellranger_count_output_for_experiment',
+    -module      => 'ehive.runnable.process.alignment.ProcessCellrangerCountOutput',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 1,
+    -parameters  => {
+      'base_work_dir'      => $self->o('base_work_dir'),
+      'base_results_dir'   => $self->o('base_results_dir'),
+      },
+    -flow_into   => {
         1 => ['upload_cellranger_results_to_irods'],
       },
   };
