@@ -32,7 +32,10 @@ sub default_options {
     'cram_type'           => 'ANALYSIS_CRAM',
     'samtools_threads'    => 4,
     'cellranger_timeout'  => 43200,
+    'java_exe'            => undef,
+    'picard_jar'          => undef,
     'reference_fasta_type'        => 'GENOME_FASTA',
+    'reference_refFlat'           => 'GENE_REFFLAT',
     'cellranger_collection_table' => 'experiment',
     'cellranger_analysis_name'    => 'cellranger_count',
   };
@@ -100,7 +103,15 @@ sub pipeline_analyses {
       'base_results_dir'   => $self->o('base_results_dir'),
       },
     -flow_into   => {
-        1 => ['upload_cellranger_results_to_irods'],
+        '2->A' => ['upload_cellranger_results_to_irods',
+                   'convert_bam_to_cram',
+                   'picard_aln_summary_for_cellranger',
+                   'picard_base_dist_summary_for_cellranger',
+                   'picard_gc_bias_summary_for_cellranger',
+                   'picard_qual_dist_summary_for_cellranger',
+                   'picard_rna_metrics_summary_for_cellranger'
+                   ],
+        'A->1' => ['mark_experiment_finished'], 
       },
   };
   
@@ -119,9 +130,6 @@ sub pipeline_analyses {
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
-     -flow_into   => {
-        1 => ['convert_bam_to_cram'],
-      },
   };
   
   ## convert bam file to cram
@@ -143,8 +151,8 @@ sub pipeline_analyses {
         'tag_name'        => '#species_name#',
         'reference_type'  => $self->o('reference_fasta_type'),
      },
-    -flow_into   => {
-        1 => ['upload_cellranger_bam_to_irods'],  
+     -flow_into   => {
+        1 => ['upload_cellranger_bam_to_irods'],
       },
   };
   
@@ -163,9 +171,101 @@ sub pipeline_analyses {
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
-     -flow_into   => {
-        1 => ['mark_experiment_finished'],
-      },
+  };
+  
+  ## picard alignment summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_aln_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectAlignmentSummaryMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type'    => $self->o('reference_fasta_type'),
+      'reference_refFlat' => $self->o('reference_refFlat'),
+     },
+  };
+  
+  ## picard base distribution summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_base_dist_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectBaseDistributionByCycle',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type'    => $self->o('reference_fasta_type'),
+      'reference_refFlat' => $self->o('reference_refFlat'),
+     },
+  };
+  
+  ## picard gc bias summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_gc_bias_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectGcBiasMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type'    => $self->o('reference_fasta_type'),
+      'reference_refFlat' => $self->o('reference_refFlat'),
+     },
+  };
+  
+  ## picard quality distribution summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_qual_dist_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'QualityScoreDistribution',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type'    => $self->o('reference_fasta_type'),
+      'reference_refFlat' => $self->o('reference_refFlat'),
+     },
+  };
+  
+  ## picard rna metrics summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_rna_metrics_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectRnaSeqMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type'    => $self->o('reference_fasta_type'),
+      'reference_refFlat' => $self->o('reference_refFlat'),
+     },
   };
   
   ## mark experiment as done
