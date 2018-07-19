@@ -34,6 +34,7 @@ sub default_options {
     'cellranger_timeout'  => 43200,
     'java_exe'            => undef,
     'picard_jar'          => undef,
+    'java_param'          => undef,
     'reference_fasta_type'        => 'GENOME_FASTA',
     'reference_refFlat'           => 'GENE_REFFLAT',
     'cellranger_collection_table' => 'experiment',
@@ -184,6 +185,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectAlignmentSummaryMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
@@ -203,6 +205,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectBaseDistributionByCycle',
       'base_work_dir'  => $self->o('base_work_dir'),
@@ -222,6 +225,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectGcBiasMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
@@ -241,6 +245,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'QualityScoreDistribution',
       'base_work_dir'  => $self->o('base_work_dir'),
@@ -260,6 +265,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectRnaSeqMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
