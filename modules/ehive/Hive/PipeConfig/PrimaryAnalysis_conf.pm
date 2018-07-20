@@ -34,7 +34,7 @@ sub default_options {
     'cellranger_timeout'  => 43200,
     'java_exe'            => undef,
     'picard_jar'          => undef,
-    'java_param'          => undef,
+    'java_param'          => '-Xmx4g',
     'reference_fasta_type'        => 'GENOME_FASTA',
     'reference_refFlat'           => 'GENE_REFFLAT',
     'cellranger_collection_table' => 'experiment',
