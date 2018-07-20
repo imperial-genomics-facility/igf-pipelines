@@ -110,7 +110,9 @@ sub pipeline_analyses {
                    'picard_base_dist_summary_for_cellranger',
                    'picard_gc_bias_summary_for_cellranger',
                    'picard_qual_dist_summary_for_cellranger',
-                   'picard_rna_metrics_summary_for_cellranger'
+                   'picard_rna_metrics_summary_for_cellranger',
+                   'samtools_flagstat_summary_for_cellranger',
+                   'samtools_idxstat_summary_for_cellranger'
                    ],
         'A->1' => ['mark_experiment_finished'], 
       },
@@ -271,6 +273,39 @@ sub pipeline_analyses {
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type'    => $self->o('reference_fasta_type'),
       'reference_refFlat' => $self->o('reference_refFlat'),
+     },
+  };
+  
+  ## samtools flagstat metrics
+  push @pipeline, {
+    -logic_name  => 'samtools_flagstat_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'bam_file'         => '#bam_file#',
+      'samtools_command' => 'flagstat',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+      'threads'          => 4,
+     },
+  };
+  
+  ## samtools idxstat metrics
+  push @pipeline, {
+    -logic_name  => 'samtools_idxstat_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'bam_file'         => '#bam_file#',
+      'samtools_command' => 'idxstat',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
      },
   };
   
