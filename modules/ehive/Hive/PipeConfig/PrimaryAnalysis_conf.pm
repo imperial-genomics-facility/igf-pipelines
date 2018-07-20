@@ -319,7 +319,7 @@ sub pipeline_analyses {
     -analysis_capacity => 2,
     -parameters  => {
       'bam_file'         => '#input_file#',
-      'samtools_command' => 'idxstat',
+      'samtools_command' => 'idxstats',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
      },
