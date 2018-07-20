@@ -289,7 +289,7 @@ sub pipeline_analyses {
       'samtools_command' => 'flagstat',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
-      'threads'          => 4,
+      'threads'          => $self->o('samtools_threads'),
      },
   };
   
