@@ -57,7 +57,7 @@ sub pipeline_analyses {
   
   ## collect all experiment seeds
   push @pipeline, {
-    -logic_name  => 'find_new_sequencing_runs',
+    -logic_name  => 'find_new_experiment_for_analysis',
     -module      => 'ehive.runnable.jobfactory.PipeseedFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
@@ -104,6 +104,22 @@ sub pipeline_analyses {
       'base_results_dir'   => $self->o('base_results_dir'),
       },
     -flow_into   => {
+        1 => ['bam_analysis_factory'],
+      },
+  };
+  
+  ## bam analysis factory
+  push @pipeline, {
+    -logic_name  => 'bam_analysis_factory',
+    -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 1,
+    -parameters  => {
+      'file_list' => ['#bam_file#'],
+      },
+    -flow_into   => {
         '2->A' => ['upload_cellranger_results_to_irods',
                    'convert_bam_to_cram',
                    'picard_aln_summary_for_cellranger',
@@ -144,7 +160,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-        'bam_file'        => '#bam_file#',
+        'bam_file'        => '#input_file#',
         'base_result_dir' => $self->o('base_results_dir'),
         'threads'         => $self->o('samtools_threads'),
         'collection_name' => '#experiment_igf_id#',
@@ -155,13 +171,13 @@ sub pipeline_analyses {
         'reference_type'  => $self->o('reference_fasta_type'),
      },
      -flow_into   => {
-        1 => ['upload_cellranger_bam_to_irods'],
+        1 => ['upload_cellranger_cram_to_irods'],
       },
   };
   
-  ## upload bam file to irods server
+  ## upload cram file to irods server
   push @pipeline, {
-    -logic_name  => 'upload_cellranger_bam_to_irods',
+    -logic_name  => 'upload_cellranger_cram_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -185,7 +201,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_file'     => '#input_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -205,7 +221,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_file'     => '#input_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -225,7 +241,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_file'     => '#input_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -245,7 +261,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_file'     => '#input_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -265,7 +281,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_file'     => '#input_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -285,7 +301,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#bam_file#',
+      'bam_file'         => '#input_file#',
       'samtools_command' => 'flagstat',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
@@ -302,7 +318,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#bam_file#',
+      'bam_file'         => '#input_file#',
       'samtools_command' => 'idxstat',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
