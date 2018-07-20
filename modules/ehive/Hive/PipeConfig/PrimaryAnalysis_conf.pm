@@ -114,7 +114,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '1Gb',
     -analysis_capacity => 1,
     -parameters  => {
       'file_list' => ['#bam_file#'],
@@ -198,7 +198,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
       'input_file'     => '#input_file#',
@@ -218,7 +218,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
       'input_file'     => '#input_file#',
@@ -238,7 +238,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
       'input_file'     => '#input_file#',
@@ -258,7 +258,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
       'input_file'     => '#input_file#',
@@ -278,7 +278,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
       'input_file'     => '#input_file#',
@@ -298,7 +298,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunSamtools',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
       'bam_file'         => '#input_file#',
