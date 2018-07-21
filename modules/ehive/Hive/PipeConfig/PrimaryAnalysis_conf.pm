@@ -35,6 +35,7 @@ sub default_options {
     'java_exe'            => undef,
     'picard_jar'          => undef,
     'java_param'          => '-Xmx4g',
+    'copy_input_to_temp'  => 1,
     'reference_fasta_type'        => 'GENOME_FASTA',
     'reference_refFlat'           => 'GENE_REFFLAT',
     'cellranger_collection_table' => 'experiment',
@@ -113,9 +114,7 @@ sub pipeline_analyses {
     -logic_name  => 'bam_analysis_factory',
     -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
     -language    => 'python3',
-    -meadow_type => 'PBSPro',
-    -rc_name     => '1Gb',
-    -analysis_capacity => 1,
+    -meadow_type => 'LOCAL',
     -parameters  => {
       'file_list' => ['#bam_file#'],
       },
@@ -169,6 +168,7 @@ sub pipeline_analyses {
         'analysis_name'   => $self->o('cellranger_analysis_name'),
         'tag_name'        => '#species_name#',
         'reference_type'  => $self->o('reference_fasta_type'),
+        'copy_input'      => $self->o('copy_input_to_temp'),
      },
      -flow_into   => {
         1 => ['upload_cellranger_cram_to_irods'],
@@ -207,8 +207,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectAlignmentSummaryMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'reference_type'    => $self->o('reference_fasta_type'),
-      'reference_refFlat' => $self->o('reference_refFlat'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
      },
   };
   
@@ -227,8 +227,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectBaseDistributionByCycle',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'reference_type'    => $self->o('reference_fasta_type'),
-      'reference_refFlat' => $self->o('reference_refFlat'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
      },
   };
   
@@ -247,8 +247,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectGcBiasMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'reference_type'    => $self->o('reference_fasta_type'),
-      'reference_refFlat' => $self->o('reference_refFlat'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
      },
   };
   
@@ -267,8 +267,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'QualityScoreDistribution',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'reference_type'    => $self->o('reference_fasta_type'),
-      'reference_refFlat' => $self->o('reference_refFlat'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
      },
   };
   
@@ -287,7 +287,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectRnaSeqMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'reference_type'    => $self->o('reference_fasta_type'),
+      'reference_type' => $self->o('reference_fasta_type'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_refFlat' => $self->o('reference_refFlat'),
      },
   };
@@ -306,6 +307,7 @@ sub pipeline_analyses {
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
       'threads'          => $self->o('samtools_threads'),
+      'copy_input'       => $self->o('copy_input_to_temp'),
      },
   };
   
@@ -322,6 +324,7 @@ sub pipeline_analyses {
       'samtools_command' => 'idxstats',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
+      'copy_input'       => $self->o('copy_input_to_temp'),
      },
   };
   
