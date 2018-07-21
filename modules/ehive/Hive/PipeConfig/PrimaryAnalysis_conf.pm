@@ -35,7 +35,7 @@ sub default_options {
     'java_exe'            => undef,
     'picard_jar'          => undef,
     'java_param'          => '-Xmx4g',
-    'copy_input_to_temp'  => 1,
+    'copy_input_to_temp'  => 0,
     'reference_fasta_type'        => 'GENOME_FASTA',
     'reference_refFlat'           => 'GENE_REFFLAT',
     'cellranger_collection_table' => 'experiment',
@@ -105,33 +105,34 @@ sub pipeline_analyses {
       'base_results_dir'   => $self->o('base_results_dir'),
       },
     -flow_into   => {
-        1 => ['bam_analysis_factory'],
+        #1 => ['bam_analysis_factory'],
+        1 => ['upload_cellranger_results_to_irods'],
       },
   };
   
   ## bam analysis factory
-  push @pipeline, {
-    -logic_name  => 'bam_analysis_factory',
-    -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
-    -language    => 'python3',
-    -meadow_type => 'LOCAL',
-    -parameters  => {
-      'file_list' => ['#bam_file#'],
-      },
-    -flow_into   => {
-        '2->A' => ['upload_cellranger_results_to_irods',
-                   'convert_bam_to_cram',
-                   'picard_aln_summary_for_cellranger',
-                   'picard_base_dist_summary_for_cellranger',
-                   'picard_gc_bias_summary_for_cellranger',
-                   'picard_qual_dist_summary_for_cellranger',
-                   'picard_rna_metrics_summary_for_cellranger',
-                   'samtools_flagstat_summary_for_cellranger',
-                   'samtools_idxstat_summary_for_cellranger'
-                   ],
-        'A->1' => ['mark_experiment_finished'], 
-      },
-  };
+  #push @pipeline, {
+  #  -logic_name  => 'bam_analysis_factory',
+  #  -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
+  #  -language    => 'python3',
+  #  -meadow_type => 'LOCAL',
+  #  -parameters  => {
+  #    'file_list' => ['#bam_file#'],
+  #    },
+  #  -flow_into   => {
+  #      '2->A' => ['upload_cellranger_results_to_irods',
+  #                 'convert_bam_to_cram',
+  #                 'picard_aln_summary_for_cellranger',
+  #                 'picard_base_dist_summary_for_cellranger',
+  #                 'picard_gc_bias_summary_for_cellranger',
+  #                 'picard_qual_dist_summary_for_cellranger',
+  #                 'picard_rna_metrics_summary_for_cellranger',
+  #                 'samtools_flagstat_summary_for_cellranger',
+  #                 'samtools_idxstat_summary_for_cellranger'
+  #                 ],
+  #      'A->1' => ['mark_experiment_finished'], 
+  #    },
+  #};
   
   ## upload cellranger resilts to irods
   push @pipeline, {
@@ -148,6 +149,9 @@ sub pipeline_analyses {
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
+    -flow_into   => {
+        1 => ['convert_bam_to_cram'],
+      },
   };
   
   ## convert bam file to cram
@@ -190,6 +194,9 @@ sub pipeline_analyses {
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
+    -flow_into   => {
+        1 => ['picard_aln_summary_for_cellranger'],
+      },
   };
   
   ## picard alignment summary metrics
@@ -210,6 +217,9 @@ sub pipeline_analyses {
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
+    -flow_into   => {
+        1 => ['picard_base_dist_summary_for_cellranger'],
+      },
   };
   
   ## picard base distribution summary metrics
@@ -230,6 +240,9 @@ sub pipeline_analyses {
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
+    -flow_into   => {
+        1 => ['picard_gc_bias_summary_for_cellranger'],
+      },
   };
   
   ## picard gc bias summary metrics
@@ -250,6 +263,9 @@ sub pipeline_analyses {
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
+    -flow_into   => {
+        1 => ['picard_qual_dist_summary_for_cellranger'],
+      },
   };
   
   ## picard quality distribution summary metrics
@@ -270,6 +286,9 @@ sub pipeline_analyses {
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
+    -flow_into   => {
+        1 => ['picard_rna_metrics_summary_for_cellranger'],
+      },
   };
   
   ## picard rna metrics summary metrics
@@ -291,6 +310,9 @@ sub pipeline_analyses {
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_refFlat' => $self->o('reference_refFlat'),
      },
+    -flow_into   => {
+        1 => ['samtools_flagstat_summary_for_cellranger'],
+      },
   };
   
   ## samtools flagstat metrics
@@ -309,6 +331,9 @@ sub pipeline_analyses {
       'threads'          => $self->o('samtools_threads'),
       'copy_input'       => $self->o('copy_input_to_temp'),
      },
+    -flow_into   => {
+        1 => ['samtools_idxstat_summary_for_cellranger'],
+      },
   };
   
   ## samtools idxstat metrics
@@ -326,6 +351,9 @@ sub pipeline_analyses {
       'reference_type'   => $self->o('reference_fasta_type'),
       'copy_input'       => $self->o('copy_input_to_temp'),
      },
+    -flow_into   => {
+        1 => ['mark_experiment_finished'],
+      },
   };
   
   ## mark experiment as done
