@@ -163,7 +163,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-        'bam_file'        => '#input_file#',
+        'bam_file'        => '#bam_file#',
         'base_result_dir' => $self->o('base_results_dir'),
         'threads'         => $self->o('samtools_threads'),
         'collection_name' => '#experiment_igf_id#',
@@ -208,7 +208,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#input_file#',
+      'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -231,7 +231,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#input_file#',
+      'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -254,7 +254,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#input_file#',
+      'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -277,7 +277,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#input_file#',
+      'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -300,7 +300,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#input_file#',
+      'input_file'     => '#bam_file#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -324,7 +324,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#input_file#',
+      'bam_file'         => '#bam_file#',
       'samtools_command' => 'flagstat',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
@@ -345,7 +345,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#input_file#',
+      'bam_file'         => '#bam_file#',
       'samtools_command' => 'idxstats',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
