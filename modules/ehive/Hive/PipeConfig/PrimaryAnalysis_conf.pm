@@ -30,16 +30,20 @@ sub default_options {
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'cleanup_bam_dir'     => 0,
     'cram_type'           => 'ANALYSIS_CRAM',
+    'multiqc_type'        => 'MULTIQC_HTML',
     'samtools_threads'    => 4,
     'cellranger_timeout'  => 43200,
     'java_exe'            => undef,
     'picard_jar'          => undef,
     'java_param'          => '-Xmx4g',
     'copy_input_to_temp'  => 0,
+    'multiqc_exe'         => undef,
+    'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'reference_fasta_type'        => 'GENOME_FASTA',
     'reference_refFlat'           => 'GENE_REFFLAT',
     'cellranger_collection_table' => 'experiment',
     'cellranger_analysis_name'    => 'cellranger_count',
+    'multiqc_analysis_name'       => 'multiqc',
   };
 }
 
@@ -239,6 +243,7 @@ sub pipeline_analyses {
       'base_work_dir'  => $self->o('base_work_dir'),
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
+      'analysis_files' => $self->o('analysis_files'),
      },
     -flow_into   => {
         1 => ['picard_gc_bias_summary_for_cellranger'],
@@ -262,6 +267,7 @@ sub pipeline_analyses {
       'base_work_dir'  => $self->o('base_work_dir'),
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
+      'analysis_files' => $self->o('analysis_files'),
      },
     -flow_into   => {
         1 => ['picard_qual_dist_summary_for_cellranger'],
@@ -285,6 +291,7 @@ sub pipeline_analyses {
       'base_work_dir'  => $self->o('base_work_dir'),
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
+      'analysis_files' => $self->o('analysis_files'),
      },
     -flow_into   => {
         1 => ['picard_rna_metrics_summary_for_cellranger'],
@@ -309,6 +316,7 @@ sub pipeline_analyses {
       'reference_type' => $self->o('reference_fasta_type'),
       'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_refFlat' => $self->o('reference_refFlat'),
+      'analysis_files' => $self->o('analysis_files'),
      },
     -flow_into   => {
         1 => ['samtools_flagstat_summary_for_cellranger'],
@@ -330,6 +338,7 @@ sub pipeline_analyses {
       'reference_type'   => $self->o('reference_fasta_type'),
       'threads'          => $self->o('samtools_threads'),
       'copy_input'       => $self->o('copy_input_to_temp'),
+      'analysis_files'   => $self->o('analysis_files'),
      },
     -flow_into   => {
         1 => ['samtools_idxstat_summary_for_cellranger'],
@@ -350,6 +359,31 @@ sub pipeline_analyses {
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
       'copy_input'       => $self->o('copy_input_to_temp'),
+      'analysis_files' => $self->o('analysis_files'),
+     },
+    -flow_into   => {
+        1 => ['multiqc_report_for_cellranger'],
+      },
+  };
+  
+  ## multiqc report building
+  push @pipeline, {
+    -logic_name  => 'multiqc_report_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_files'   => $self->o('analysis_files'),
+      'collection_name'  => '#experiment_igf_id#',
+      'collection_type'  => $self->o('multiqc_type'),
+      'collection_table' => $self->o('cellranger_collection_table'),
+      'analysis_name'    => $self->o('multiqc_analysis_name'),
+      'tag_name'         => '#species_name#',
+      'multiqc_exe'      => $self->o('multiqc_exe'),
+      'multiqc_options'  => $self->o('multiqc_options'),
      },
     -flow_into   => {
         1 => ['mark_experiment_finished'],
