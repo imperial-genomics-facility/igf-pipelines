@@ -363,7 +363,7 @@ sub pipeline_analyses {
   ## multiqc report building
   push @pipeline, {
     -logic_name  => 'multiqc_report_for_cellranger',
-    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -module      => 'ehive.runnable.process.alignment.RunAnalysisMultiQC',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
