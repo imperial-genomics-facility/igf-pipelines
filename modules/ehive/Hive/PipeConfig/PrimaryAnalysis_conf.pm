@@ -379,10 +379,27 @@ sub pipeline_analyses {
       'multiqc_options'  => $self->o('multiqc_options'),
      },
     -flow_into   => {
-        1 => ['mark_experiment_finished'],
+        1 => ['copy_sample_multiqc_to_remote'],
       },
   };
   
+  push @pipeline, {
+      -logic_name   => 'copy_sample_multiqc_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'file_list'           => ['#multiqc_html#'],
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
+      -flow_into    => {
+          1 => ['mark_experiment_finished'],
+      },
+  };
   ## mark experiment as done
   push @pipeline, {
       -logic_name   => 'mark_experiment_finished',
