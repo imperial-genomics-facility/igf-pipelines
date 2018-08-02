@@ -1,4 +1,4 @@
-# Setup pipeline environment
+# Pipeline source code and environment
 
 ## Checkout codebases from Github
 
