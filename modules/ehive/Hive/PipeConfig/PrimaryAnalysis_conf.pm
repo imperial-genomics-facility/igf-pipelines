@@ -44,6 +44,7 @@ sub default_options {
     'cellranger_collection_table' => 'experiment',
     'cellranger_analysis_name'    => 'cellranger_count',
     'multiqc_analysis_name'       => 'multiqc',
+    'scanpy_report_template'      => undef,
   };
 }
 
@@ -109,34 +110,28 @@ sub pipeline_analyses {
       'base_results_dir'   => $self->o('base_results_dir'),
       },
     -flow_into   => {
-        #1 => ['bam_analysis_factory'],
-        1 => ['upload_cellranger_results_to_irods'],
+        1 => ['single_cell_analysis_factory_1'],
+        #1 => ['upload_cellranger_results_to_irods'],
       },
   };
   
-  ## bam analysis factory
-  #push @pipeline, {
-  #  -logic_name  => 'bam_analysis_factory',
-  #  -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
-  #  -language    => 'python3',
-  #  -meadow_type => 'LOCAL',
-  #  -parameters  => {
-  #    'file_list' => ['#bam_file#'],
-  #    },
-  #  -flow_into   => {
-  #      '2->A' => ['upload_cellranger_results_to_irods',
-  #                 'convert_bam_to_cram',
-  #                 'picard_aln_summary_for_cellranger',
-  #                 'picard_base_dist_summary_for_cellranger',
-  #                 'picard_gc_bias_summary_for_cellranger',
-  #                 'picard_qual_dist_summary_for_cellranger',
-  #                 'picard_rna_metrics_summary_for_cellranger',
-  #                 'samtools_flagstat_summary_for_cellranger',
-  #                 'samtools_idxstat_summary_for_cellranger'
-  #                 ],
-  #      'A->1' => ['mark_experiment_finished'], 
-  #    },
-  #};
+  ## single cell analysis factory 1
+  push @pipeline, {
+    -logic_name  => 'single_cell_analysis_factory_1',
+    -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -parameters  => {
+      'file_list' => ['#bam_file#'],
+      },
+    -flow_into   => {
+        '2->A' => ['upload_cellranger_results_to_irods',
+                   'convert_bam_to_cram',
+                   'scanpy_report_generation'
+                   ],
+        'A->1' => ['picard_aln_summary_for_cellranger'], 
+      },
+  };
   
   ## upload cellranger resilts to irods
   push @pipeline, {
@@ -153,9 +148,6 @@ sub pipeline_analyses {
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
-    -flow_into   => {
-        1 => ['convert_bam_to_cram'],
-      },
   };
   
   ## convert bam file to cram
@@ -198,9 +190,20 @@ sub pipeline_analyses {
       'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
-    -flow_into   => {
-        1 => ['picard_aln_summary_for_cellranger'],
-      },
+  };
+  
+  ## scanpy report
+  push @pipeline, {
+    -logic_name  => 'scanpy_report_generation',
+    -module      => 'ehive.runnable.process.alignment.RunScanpy',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'report_template_file' => $self->o('scanpy_report_template'),
+      'base_result_dir' => $self->o('base_results_dir'),
+     },
   };
   
   ## picard alignment summary metrics
