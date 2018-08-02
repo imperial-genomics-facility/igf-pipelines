@@ -51,9 +51,9 @@ Activate the conda environment using the following command
 
 ## Install missing perl modules
 Check for required perl modules after activating the environment using the following command
-  ```
+  <p>```
   perl -e 'use DBI;use DBD::mysql;use DBD::SQLite;IPC::Run;'
-  ```
+  ```</p>
 
 Install the missing packages using `cpanm` if they are not already present.
 <pre><code>  cpanm DBI
