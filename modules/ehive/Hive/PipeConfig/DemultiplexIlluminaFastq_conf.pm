@@ -536,6 +536,7 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'seqruninfofile'      => $self->o('seqruninfofile'),
         'samplereadcountfile' => $self->o('samplereadcountfile'),
+        'pipeline_name'       => $self->o('pipeline_name'),
       },
       -flow_into    => {
           1 => ['send_email_notification'],
