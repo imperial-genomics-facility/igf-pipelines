@@ -455,6 +455,8 @@ sub pipeline_analyses {
         'collection_type_list' => [$self->o('multiqc_type'),
                                    $self->o('scanpy_type')],
         'remote_project_path'  => $self->o('remote_project_path'),
+        'remote_user'          => $self->o('seqrun_user'),
+        'remote_host'          => $self->o('remote_host'),
       },
   };
   
