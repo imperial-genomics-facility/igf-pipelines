@@ -31,6 +31,7 @@ sub default_options {
     'cleanup_bam_dir'     => 0,
     'cram_type'           => 'ANALYSIS_CRAM',
     'multiqc_type'        => 'MULTIQC_HTML',
+    'scanpy_type'         => 'SCANPY_RESULTS',
     'samtools_threads'    => 4,
     'cellranger_timeout'  => 43200,
     'java_exe'            => undef,
@@ -201,8 +202,9 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'report_template_file' => $self->o('scanpy_report_template'),
-      'base_result_dir' => $self->o('base_results_dir'),
+      'report_template_file'   => $self->o('scanpy_report_template'),
+      'base_result_dir'        => $self->o('base_results_dir'),
+      'scanpy_collection_type' => $self->o('scanpy_type'),
      },
     -flow_into   => {
         1 => ['copy_scanpy_report_to_remote'],
@@ -436,7 +438,26 @@ sub pipeline_analyses {
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         },
+      -flow_into    => {
+          1 => ['update_project_analysis'],
+      },
   };
+  
+  ## update analysis page
+  push @pipeline, {
+      -logic_name   => 'update_project_analysis',
+      -module       => 'ehive.runnable.process.UpdateProjectAnalysisStats',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 1,
+      -parameters   => {
+        'collection_type_list' => [$self->o('multiqc_type'),
+                                   $self->o('scanpy_type')],
+        'remote_project_path'  => $self->o('remote_project_path'),
+      },
+  };
+  
   return \@pipeline;
 }
 
