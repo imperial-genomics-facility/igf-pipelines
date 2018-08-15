@@ -537,6 +537,7 @@ sub pipeline_analyses {
         'seqruninfofile'      => $self->o('seqruninfofile'),
         'samplereadcountfile' => $self->o('samplereadcountfile'),
         'pipeline_name'       => $self->o('pipeline_name'),
+        'analysis_pipeline_name' => $self->o('analysis_pipeline_name'),
       },
       -flow_into    => {
           1 => ['send_email_notification'],
