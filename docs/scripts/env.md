@@ -33,7 +33,7 @@ Install the missing packages using `cpan` (for system perl) or `cpanm` (for perl
 <pre><code>  cpan install DBI
   cpan install DBD::mysql
   cpan install DBD::SQLite
-  cpan install IPC::Run
+  cpan install IPC::Run  
 </code></pre>
 
 ## Install required python packages
@@ -42,8 +42,7 @@ Setup environment using conda
 
 * Download and setup miniconda
  <pre><code>  wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-  bash Miniconda3-latest-Linux-x86_64.sh
-</code></pre>
+  bash Miniconda3-latest-Linux-x86_64.sh  </code></pre>
 
 * Create an conda environment using the configuration file
   <p>```
@@ -72,15 +71,12 @@ Create a new file, e.g. `env.sh` and
   ```</p>
   
  * Add PERL5LIB variables
-  <pre><code>  export PERL5LIB=/path/ensembl-hive/modules:/path/ensembl-hive-pbspro/modules:/path/igf-pipelines/modules:${PERL5LIB}
-  </code></pre>
+  <pre><code>  export PERL5LIB=/path/ensembl-hive/modules:/path/ensembl-hive-pbspro/modules:/path/igf-pipelines/modules:${PERL5LIB}  </code></pre>
   
   * Add PATH variable
-  <pre><code>  export PATH=/path/ensembl-hive/scripts:${PATH}
-  </code></pre>
+  <pre><code>  export PATH=/path/ensembl-hive/scripts:${PATH}  </code></pre>
   
   * Add PYTHONPATH variables
-  <pre><code>  export PYTHONPATH=/path/data-management-python/:/path/ensembl-hive/wrappers/python3:${PYTHONPATH}
-  </code></pre>
+  <pre><code>  export PYTHONPATH=/path/data-management-python/:/path/ensembl-hive/wrappers/python3:${PYTHONPATH}  </code></pre>
 
 Then activate environment for pipeline using `source env.sh` command.
