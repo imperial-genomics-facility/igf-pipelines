@@ -22,7 +22,22 @@
   git clone https://github.com/Ensembl/ensembl-hive-pbspro.git
   ```</p>
 
-## Install required perl and python packages
+## Install required perl packages
+
+Use system perl or install specific perl version using [perlbrew](https://perlbrew.pl/). Check for required perl modules after installation using the following command
+  <p>```
+  perl -e 'use DBI;use DBD::mysql;use DBD::SQLite;IPC::Run;'
+  ```</p>
+
+Install the missing packages using `cpan` (for system perl) or `cpanm` (for perlbrew) if they are not already present.
+<pre><code>  cpan install DBI
+  cpan install DBD::mysql
+  cpan install DBD::SQLite
+  cpan install IPC::Run
+</code></pre>
+
+## Install required python packages
+
 Setup environment using conda
 
 * Download and setup miniconda
@@ -35,29 +50,37 @@ Setup environment using conda
   conda env create --name pipeline-env --file igf-pipelines/environment.yaml
   ```</p>
 
+## Test conda environment
 
-## Set additional PERL5LIB and PYTHONPATH variables
-Add the following lines to the `~/.bashrc` file
-<pre><code>  export PERL5LIB=/path/ensembl-hive/modules:/path/ensembl-hive-pbspro/modules:/path/igf-pipelines/modules:${PERL5LIB}
-  export PATH=/path/ensembl-hive/scripts:${PATH}
-  export PYTHONPATH=/path/data-management-python/:/path/ensembl-hive/wrappers/python3:${PYTHONPATH}
-</code></pre>
-
-## Activate conda environment
 Activate the conda environment using the following command
   <p>```
   source activate pipeline-env
   ```</p>
 
-## Install missing perl modules
-Check for required perl modules after activating the environment using the following command
+Deactivate conda env
   <p>```
-  perl -e 'use DBI;use DBD::mysql;use DBD::SQLite;IPC::Run;'
+  source deactivate
   ```</p>
 
-Install the missing packages using `cpanm` if they are not already present.
-<pre><code>  cpanm DBI
-  cpanm DBD::mysql
-  cpanm DBD::SQLite
-  cpanm IPC::Run
-</code></pre>
+## Create environment configuration file for pipeline
+
+Create a new file, e.g. `env.sh` and 
+
+ *  Add conda activation command
+  <p>```
+  source activate pipeline-env
+  ```</p>
+  
+ * Add PERL5LIB variables
+  <pre><code>  export PERL5LIB=/path/ensembl-hive/modules:/path/ensembl-hive-pbspro/modules:/path/igf-pipelines/modules:${PERL5LIB}
+  </code></pre>
+  
+  * Add PATH variable
+  <pre><code>  export PATH=/path/ensembl-hive/scripts:${PATH}
+  </code></pre>
+  
+  * Add PYTHONPATH variables
+  <pre><code>  export PYTHONPATH=/path/data-management-python/:/path/ensembl-hive/wrappers/python3:${PYTHONPATH}
+  </code></pre>
+
+Then activate environment for pipeline using `source env.sh` command.
