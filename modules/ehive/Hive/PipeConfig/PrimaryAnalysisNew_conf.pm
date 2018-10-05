@@ -220,7 +220,24 @@ sub pipeline_analyses {
   };
 
 
-
+  ## run star alignment
+  push @pipeline, {
+    -logic_name  => 'run_star',
+    -module      => 'ehive.runnable.process.alignment.RunSTAR',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '42Gb8t',
+    -analysis_capacity => 1,
+    -parameters  => {
+      'star_exe' => $self->o('star_exe'),
+      'output_prefix' => '#run_igf_id#',
+      'reference_type' => $self->o('star_reference_type'),
+      'reference_gtf_type' => $self->o('reference_gtf_type'),
+      'two_pass_mode' => 1,
+      'run_thread' => 8,
+      'star_patameters' => $self->o('star_patameters'),
+    },
+  };
 
   ## run cellranger for each experiments
   push @pipeline, {
