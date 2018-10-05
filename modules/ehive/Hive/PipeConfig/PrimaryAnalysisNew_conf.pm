@@ -158,6 +158,24 @@ sub pipeline_analyses {
   };
 
 
+  ## run bwa alignment
+  push @pipeline, {
+    -logic_name  => 'run_bwa',
+    -module      => 'ehive.runnable.process.alignment.RunBWA',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 10,
+    -parameters  => {
+      'run_thread' => 4,
+       'bwa_exe' => $self->o('bwa_exe'),
+       'samtools_exe' => $self->o('samtools_exe'),
+       'output_prefix' => '#run_igf_id#'.'_'.'#chunk_id#',
+      'reference_type' => $self->o('bwa_reference_type')
+    },
+  };
+
+
   ## adapter trim without fastq splitting
   push @pipeline, {
     -logic_name  => 'adapter_trim_and_fastq_split',
