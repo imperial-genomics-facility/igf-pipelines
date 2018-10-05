@@ -230,7 +230,7 @@ sub pipeline_analyses {
     -analysis_capacity => 1,
     -parameters  => {
       'star_exe' => $self->o('star_exe'),
-      'output_prefix' => '#run_igf_id#',
+      'output_prefix' => '#run_igf_id#'.'_'.'#chunk_id#',
       'reference_type' => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
       'two_pass_mode' => 1,
