@@ -73,6 +73,7 @@ sub resource_classes {
             '32Gb' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=1:mem=32gb' },
             '32Gb4t' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=4:mem=32gb' },
             '32Gb8t' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=8:mem=32gb' },
+            '42Gb8t' => { 'PBSPro' => '-q '.$self->o('pbs_queue').' -M /dev/null -l walltime=24:00:00 -l select=1:ncpus=8:mem=42gb' },
     };
 }
 
