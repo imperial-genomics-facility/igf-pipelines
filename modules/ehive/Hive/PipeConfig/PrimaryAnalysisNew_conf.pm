@@ -15,6 +15,7 @@ sub default_options {
   my ($self) = @_;
   return {
     %{ $self->SUPER::default_options() },                                       # here we inherit anything from the base class
+    ## Pipeline
     'pipeline_name'       => 'PrimaryAnalysis',
     'pipeseed_mode'       => 'alignment',
     'genomic_source'      => 'GENOMIC',
@@ -26,28 +27,55 @@ sub default_options {
     'seqrun_user'         => undef,
     'template_dir'        => undef,
     'checksum_type'       => 'md5',
-    'irods_exe_dir'       => undef,
-    'cellranger_exe'      => undef,
-    'cellranger_param'    => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
-    'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'cleanup_bam_dir'     => 0,
     'cram_type'           => 'ANALYSIS_CRAM',
-    'multiqc_type'        => 'MULTIQC_HTML',
-    'scanpy_type'         => 'SCANPY_RESULTS',
-    'samtools_threads'    => 4,
-    'cellranger_timeout'  => 43200,
-    'java_exe'            => undef,
-    'picard_jar'          => undef,
-    'java_param'          => '-Xmx4g',
     'copy_input_to_temp'  => 0,
+    ## Irods
+    'irods_exe_dir'       => undef,
+    ## Java
+    'java_exe'            => undef,
+    'java_param'          => '-Xmx4g',
+    ## Picard
+    'picard_jar'          => undef,
+    ## MultiQC
+    'multiqc_analysis'    => 'multiqc',
     'multiqc_exe'         => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
-    'reference_fasta_type'        => 'GENOME_FASTA',
-    'reference_refFlat'           => 'GENE_REFFLAT',
-    'cellranger_collection_table' => 'experiment',
+    'multiqc_type'        => 'MULTIQC_HTML',
+    ## Ref genome
+    'reference_fasta_type'=> 'GENOME_FASTA',
+    'reference_refFlat'   => 'GENE_REFFLAT',
+    'reference_gtf_type'  => undef,
+    ## Cellranger
+    'cellranger_exe'              => undef,
+    'cellranger_param'            => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
     'cellranger_analysis_name'    => 'cellranger_count',
-    'multiqc_analysis_name'       => 'multiqc',
+    'cellranger_collection_table' => 'experiment',
+    'cellranger_timeout'          => 43200,
+    ## SCANPY
     'scanpy_report_template'      => undef,
+    'scanpy_type'                 => 'SCANPY_RESULTS',
+    ## Fetch fastq
+    'fastq_collection_type'       => undef,
+    'fastq_collection_table'      => undef,
+    ## Fastp adapter trimming
+    'fastp_exe'            => undef,
+    'fastp_options_list'   => undef,
+    'fastp_run_thread'     => 4,
+    'split_by_lines_count' => undef,
+    ## BWA alignment
+    'bwa_exe'              => undef,
+    'bwa_reference_type'   => undef,
+    'bwa_run_thread'       => 4,
+    ## Samtools
+    'samtools_exe'         => undef,
+    'samtools_threads'     => 4,
+    ## STAR alignment
+    'star_exe'             => undef,
+    'star_reference_type'  => undef,
+    'star_patameters'      => undef,
+    'star_run_thread'      => 8,
+    'star_two_pass_mode'   => 1,
   };
 }
 
@@ -123,7 +151,7 @@ sub pipeline_analyses {
     -parameters  => {
       'fastp_options_list' => $self->o('fastp_options_list'),
       'split_by_lines_count' => $self->o('split_by_lines_count'),
-      'run_thread' => 4,
+      'run_thread' => $self->o('fastp_run_thread'),
       'split_fastq' => 1,
       'base_work_dir' => $self->o('base_work_dir'),
       'fastp_exe' => $self->o('fastp_exe'),
@@ -167,7 +195,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 10,
     -parameters  => {
-      'run_thread' => 4,
+      'run_thread' => $self->o('bwa_run_thread'),
        'bwa_exe' => $self->o('bwa_exe'),
        'samtools_exe' => $self->o('samtools_exe'),
        'output_prefix' => '#run_igf_id#'.'_'.'#chunk_id#',
@@ -187,7 +215,7 @@ sub pipeline_analyses {
     -parameters  => {
       'fastp_options_list' => $self->o('fastp_options_list'),
       'split_by_lines_count' => $self->o('split_by_lines_count'),
-      'run_thread' => 4,
+      'run_thread' => $self->o('fastp_run_thread'),
       'base_work_dir' => $self->o('base_work_dir'),
       'fastp_exe' => $self->o('fastp_exe'),
       'input_fastq_list' => '#fastq_files#',
@@ -233,8 +261,8 @@ sub pipeline_analyses {
       'output_prefix' => '#run_igf_id#'.'_'.'#chunk_id#',
       'reference_type' => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
-      'two_pass_mode' => 1,
-      'run_thread' => 8,
+      'two_pass_mode' => $self->o('star_two_pass_mode'),
+      'run_thread' => $self->o('star_run_thread'),
       'star_patameters' => $self->o('star_patameters'),
     },
   };
