@@ -30,6 +30,7 @@ sub default_options {
     'cleanup_bam_dir'     => 0,
     'cram_type'           => 'ANALYSIS_CRAM',
     'copy_input_to_temp'  => 0,
+    'patterned_flow_cell_list' => ['NEXTSEQ','HISEQ4000'],
     ## Irods
     'irods_exe_dir'       => undef,
     ## Java
@@ -45,7 +46,7 @@ sub default_options {
     ## Ref genome
     'reference_fasta_type'=> 'GENOME_FASTA',
     'reference_refFlat'   => 'GENE_REFFLAT',
-    'reference_gtf_type'  => undef,
+    'reference_gtf_type'  => 'GENE_GTF',
     ## Cellranger
     'cellranger_exe'              => undef,
     'cellranger_param'            => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
@@ -60,20 +61,31 @@ sub default_options {
     'fastq_collection_table'      => undef,
     ## Fastp adapter trimming
     'fastp_exe'            => undef,
-    'fastp_options_list'   => undef,
+    'fastp_options_list'   => ['--qualified_quality_phred 15',
+                               '--length_required 15'],
     'fastp_run_thread'     => 4,
-    'split_by_lines_count' => undef,
+    'split_by_lines_count' => 5000000,
     ## BWA alignment
     'bwa_exe'              => undef,
-    'bwa_reference_type'   => undef,
+    'bwa_reference_type'   => 'GENOME_BWA',
     'bwa_run_thread'       => 4,
     ## Samtools
     'samtools_exe'         => undef,
     'samtools_threads'     => 4,
     ## STAR alignment
     'star_exe'             => undef,
-    'star_reference_type'  => undef,
-    'star_patameters'      => undef,
+    'star_reference_type'  => 'TRANSCRIPTOME_STAR',
+    'star_patameters'      => {"--outFilterMultimapNmax":20,
+                               "--alignSJoverhangMin":8,
+                               "--alignSJDBoverhangMin":1,
+                               "--outFilterMismatchNmax":999,
+                               "--outFilterMismatchNoverReadLmax":0.04,
+                               "--alignIntronMin":20,
+                               "--alignIntronMax":1000000,
+                               "--alignMatesGapMax":1000000,
+                               "--outSAMattributes":"NH HI AS NM MD",
+                               "--limitBAMsortRAM":12000000000
+                              },
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
   };
@@ -180,8 +192,8 @@ sub pipeline_analyses {
       'read2_list' => '#output_read2#',
     },
     -flow_into   => {
-        '2->A' => ['run_bwa'],
-        'A->1' => ['merge_chunk_bams'],
+        2 => ['run_bwa'],
+        
       },
   };
 
@@ -221,8 +233,7 @@ sub pipeline_analyses {
       'input_fastq_list' => '#fastq_files#',
     },
     -flow_into   => {
-        '2->A' => ['fastq_factory_for_star'],
-        'A->1' => ['merge_run_level_rna_bams'],
+        2 => ['fastq_factory_for_star'],
       },
   };
 
