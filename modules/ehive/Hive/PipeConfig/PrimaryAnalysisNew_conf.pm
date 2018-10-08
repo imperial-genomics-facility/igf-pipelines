@@ -75,17 +75,7 @@ sub default_options {
     ## STAR alignment
     'star_exe'             => undef,
     'star_reference_type'  => 'TRANSCRIPTOME_STAR',
-    'star_patameters'      => {"--outFilterMultimapNmax":20,
-                               "--alignSJoverhangMin":8,
-                               "--alignSJDBoverhangMin":1,
-                               "--outFilterMismatchNmax":999,
-                               "--outFilterMismatchNoverReadLmax":0.04,
-                               "--alignIntronMin":20,
-                               "--alignIntronMax":1000000,
-                               "--alignMatesGapMax":1000000,
-                               "--outSAMattributes":"NH HI AS NM MD",
-                               "--limitBAMsortRAM":12000000000
-                              },
+    'star_patameters'      => '{"--outFilterMultimapNmax":"20","--alignSJoverhangMin":"8","--alignSJDBoverhangMin":"1","--outFilterMismatchNmax":"999","--outFilterMismatchNoverReadLmax":"0.04","--alignIntronMin":"20","--alignIntronMax":"1000000,"--alignMatesGapMax":"1000000","--outSAMattributes":"NH HI AS NM MD","--limitBAMsortRAM":"12000000000"}',
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
   };
@@ -124,7 +114,7 @@ sub pipeline_analyses {
   ## run factory for genomic and transcriptomic data
   push @pipeline, {
     -logic_name  => 'run_factory',
-    -module      => 'ehive.runnable.jobfactory.RunFactory',
+    -module      => 'ehive.runnable.jobfactory.alignment.RunFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
@@ -147,7 +137,7 @@ sub pipeline_analyses {
     },
     -flow_into   => {
         1 =>  WHEN('#library_source# eq #genomic_source# && #fastq_counts# > 0 ' => ['adapter_trim_and_fastq_split'],
-                    '#library_source# eq #rna_source# && #fastq_counts# > 0' => ['adapter_trim'],
+                    '#library_source# eq #rna_source# && #fastq_counts# > 0' => ['adapter_trim_without_fastq_split'],
                   ),
       },
   };
@@ -181,7 +171,7 @@ sub pipeline_analyses {
   ## fastq factory for bwa
   push @pipeline, {
     -logic_name  => 'fastq_factory_for_bwa',
-    -module      => 'ehive.runnable.jobfactory.FastqAlignmentFactory',
+    -module      => 'ehive.runnable.jobfactory.alignment.FastqAlignmentFactory',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '1Gb',
@@ -217,7 +207,7 @@ sub pipeline_analyses {
 
   ## adapter trim without fastq splitting
   push @pipeline, {
-    -logic_name  => 'adapter_trim_and_fastq_split',
+    -logic_name  => 'adapter_trim_without_fastq_split',
     -module      => 'ehive.runnable.process.alignment.RunFastp',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -242,8 +232,8 @@ sub pipeline_analyses {
 
   ## fastq factory for star
   push @pipeline, {
-    -logic_name  => 'fastq_factory_for_bwa',
-    -module      => 'ehive.runnable.jobfactory.FastqAlignmentFactory',
+    -logic_name  => 'fastq_factory_for_star',
+    -module      => 'ehive.runnable.jobfactory.alignment.FastqAlignmentFactory',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '1Gb',
@@ -294,6 +284,20 @@ sub pipeline_analyses {
       },
   };
 
+
+  ## mark experiment as done
+  push @pipeline, {
+      -logic_name   => 'mark_experiment_finished',
+      -module       => 'ehive.runnable.process.ChangePipelineSeedStatus',
+      -language     => 'python3',
+      -meadow_type  => 'LOCAL',
+      -parameters   => {
+        'igf_id'        => '#experiment_igf_id#',
+        'task_id'       => '#project_igf_id#',
+        'new_status'    => 'FINISHED',
+        'pipeline_name' => $self->o('pipeline_name'),
+        },
+  };
   return \@pipeline;
 }
 
