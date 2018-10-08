@@ -170,8 +170,7 @@ sub pipeline_analyses {
       'input_fastq_list' => '#fastq_files#',
     },
     -flow_into   => {
-        '2->A' => ['fastq_factory_for_bwa'],
-        'A->1' => ['merge_run_level_genomic_bams'],
+        2 => ['fastq_factory_for_bwa'],
       },
   };
 
