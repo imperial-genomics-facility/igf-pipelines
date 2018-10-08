@@ -268,6 +268,9 @@ sub pipeline_analyses {
       'run_thread' => $self->o('star_run_thread'),
       'star_patameters' => $self->o('star_patameters'),
     },
+    -flow_into => {
+          1 => [ '?accu_name=aligned_rna_bam&accu_address={run_igf_id}&accu_input_variable=star_output' ],
+        },
   };
 
   ## run cellranger for each experiments
