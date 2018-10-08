@@ -202,6 +202,9 @@ sub pipeline_analyses {
        'output_prefix' => '#run_igf_id#'.'_'.'#chunk_id#',
       'reference_type' => $self->o('bwa_reference_type')
     },
+    -flow_into => {
+          1 => [ '?accu_name=aligned_bam_chunk&accu_address=[chunk_id]&accu_input_variable=bwa_output' ],
+        },
   };
 
 
