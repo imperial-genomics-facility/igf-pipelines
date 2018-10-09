@@ -203,7 +203,7 @@ sub pipeline_analyses {
       'reference_type' => $self->o('bwa_reference_type')
     },
     -flow_into => {
-          1 => [ '?accu_name=aligned_bam_chunk&accu_address=[chunk_id]&accu_input_variable=bwa_output' ],
+          1 => [ '?accu_name=bwa_aligned_bam&accu_address={run_igf_id}{seed_date_stamp}[chunk_id]&accu_input_variable=bwa_bam' ],
         },
   };
 
@@ -269,7 +269,8 @@ sub pipeline_analyses {
       'star_patameters' => $self->o('star_patameters'),
     },
     -flow_into => {
-          1 => [ '?accu_name=aligned_rna_bam&accu_address={run_igf_id}&accu_input_variable=star_output' ],
+          1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_genomic_bam' ],
+          1 => [ '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_transcriptomic_bam' ],
         },
   };
 
