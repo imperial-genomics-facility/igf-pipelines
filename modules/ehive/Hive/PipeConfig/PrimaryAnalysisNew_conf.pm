@@ -138,7 +138,7 @@ sub pipeline_analyses {
     -flow_into   => {
         1 =>  WHEN('#library_source# eq #genomic_source# && #fastq_counts# > 0 ' => ['adapter_trim_and_fastq_split'],
                     '#library_source# eq #rna_source# && #fastq_counts# > 0' => ['adapter_trim_without_fastq_split'],
-                  ),
+                   ELSE ['mark_experiment_finished']),
       },
   };
 
@@ -233,6 +233,7 @@ sub pipeline_analyses {
       'fastp_options_list' => $self->o('fastp_options_list'),
       'split_by_lines_count' => $self->o('split_by_lines_count'),
       'run_thread' => $self->o('fastp_run_thread'),
+      'split_fastq' => undef,
       'base_work_dir' => $self->o('base_work_dir'),
       'fastp_exe' => $self->o('fastp_exe'),
       'input_fastq_list' => '#fastq_files#',
@@ -260,7 +261,7 @@ sub pipeline_analyses {
       'read2_list' => '#output_read2#',
     },
     -flow_into   => {
-        1 => ['run_star'],
+        2 => ['run_star'],
       },
   };
 
