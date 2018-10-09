@@ -238,7 +238,8 @@ sub pipeline_analyses {
       'input_fastq_list' => '#fastq_files#',
     },
     -flow_into   => {
-        2 => ['fastq_factory_for_star'],
+        '2->A' => ['fastq_factory_for_star'],
+        'A->1' => ['process_star_bams'],
       },
   };
 
@@ -259,8 +260,7 @@ sub pipeline_analyses {
       'read2_list' => '#output_read2#',
     },
     -flow_into   => {
-        '2->A' => ['run_star'],
-        'A->1' => ['collect_star_genomic_bam'],
+        1 => ['run_star'],
       },
   };
 
@@ -283,10 +283,27 @@ sub pipeline_analyses {
       'star_patameters' => $self->o('star_patameters'),
     },
     -flow_into => {
-          1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_genomic_bam' ],
-          1 => [ '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_transcriptomic_bam' ],
+          1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_genomic_bam' ,
+                 '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_transcriptomic_bam' ],
         },
   };
+
+
+  ## process star bams
+  push @pipeline, {
+    -logic_name  => 'process_star_bams',
+    -module      => 'ehive.runnable.IGFBaseProcess',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'dataflow_params' => {'finished_star'=>1},
+      },
+    -flow_into   => {
+        1 => ['collect_star_genomic_bam','collect_star_transcriptomic_bam'],
+      },
+  };
+
 
   ## collect star genomic bam
   push @pipeline, {
@@ -298,9 +315,6 @@ sub pipeline_analyses {
     -parameters  => {
        'accu_data' => '#star_aligned_genomic_bam#',
        'output_mode' => 'list',
-      },
-    -flow_into   => {
-        1 => ['collect_star_transcriptomic_bam'],
       },
   };
 
