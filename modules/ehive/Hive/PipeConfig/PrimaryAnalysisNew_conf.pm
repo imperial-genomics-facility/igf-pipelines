@@ -181,8 +181,8 @@ sub pipeline_analyses {
       'read2_list' => '#output_read2#',
     },
     -flow_into   => {
-        2 => ['run_bwa'],
-        
+        '2->A' => ['run_bwa'],
+        'A->1' => ['collect_bwa_aligned_chunks'],
       },
   };
 
@@ -207,6 +207,19 @@ sub pipeline_analyses {
         },
   };
 
+  ## collect BWA aligned chunks
+  push @pipeline, {
+    -logic_name  => 'collect_bwa_aligned_chunks',
+    -module      => 'ehive.runnable.process.alignment.CollectRunAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 10,
+    -parameters  => {
+       'accu_data' => '#bwa_aligned_bam#',
+       'output_mode' => 'file',
+    },
+  };
 
   ## adapter trim without fastq splitting
   push @pipeline, {
@@ -246,7 +259,8 @@ sub pipeline_analyses {
       'read2_list' => '#output_read2#',
     },
     -flow_into   => {
-        2 => ['run_star'],
+        '2->A' => ['run_star'],
+        'A->1' => ['collect_star_genomic_bam'],
       },
   };
 
@@ -273,6 +287,37 @@ sub pipeline_analyses {
           1 => [ '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_transcriptomic_bam' ],
         },
   };
+
+  ## collect star genomic bam
+  push @pipeline, {
+    -logic_name  => 'collect_star_genomic_bam',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data' => '#star_aligned_genomic_bam#',
+       'output_mode' => 'list',
+      },
+    -flow_into   => {
+        1 => ['collect_star_transcriptomic_bam'],
+      },
+  };
+
+
+  ## collect star transcriptomic bam
+  push @pipeline, {
+    -logic_name  => 'collect_star_transcriptomic_bam',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data' => '#star_aligned_trans_bam#',
+       'output_mode' => 'list',
+      },
+  };
+
 
   ## run cellranger for each experiments
   push @pipeline, {
