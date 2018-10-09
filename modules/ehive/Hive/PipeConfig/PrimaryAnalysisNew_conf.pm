@@ -219,7 +219,61 @@ sub pipeline_analyses {
        'accu_data' => '#bwa_aligned_bam#',
        'output_mode' => 'file',
     },
+    -flow_into   => {
+        1 => {'merge_bwa_bam_chunks'=>{'bwa_chunk_list_file' => '#run_chunk_list_file#'}},
+      },
   };
+
+
+  ## samtools flagstat metrics
+  push @pipeline, {
+    -logic_name  => 'merge_bwa_bam_chunks',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'       => '#bwa_chunk_list_file#',
+      'samtools_command' => 'merge',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+      'threads'          => $self->o('samtools_threads'),
+     },
+    -flow_into   => {
+        1 => {'picard_add_rg_tag_to_bwa_bam'=>{'bam_file'=>'#analysis_files#'[0]}},
+      },
+  };
+
+
+  ## picard add rg tag to run bwa bam
+  push @pipeline, {
+    -logic_name  => 'picard_add_rg_tag_to_bwa_bam',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'AddOrReplaceReadGroups',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'RGID'           => undef,
+      'RGLB'           => undef,
+      'RGPL'           => undef,
+      'RGPU'           => undef,
+      'RGSM'           => undef,
+      'RGCN'           => 'Imperial Genomics Facility',
+      'SORT_ORDER'     => 'coordinate',
+     },
+    -flow_into => {
+          1 => [ '?accu_name=bwa_run_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files[0]' ],
+        },
+  };
+
 
   ## adapter trim without fastq splitting
   push @pipeline, {
@@ -283,10 +337,10 @@ sub pipeline_analyses {
       'run_thread' => $self->o('star_run_thread'),
       'star_patameters' => $self->o('star_patameters'),
     },
-    -flow_into => {
-          1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_genomic_bam' ,
-                 '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_transcriptomic_bam' ],
-        },
+    #-flow_into => {
+    #      1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_genomic_bam' ,
+    #             '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_transcriptomic_bam' ],
+    #    },
   };
 
 
