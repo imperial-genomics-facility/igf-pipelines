@@ -65,6 +65,7 @@ sub default_options {
     'star_patameters'      => '{"--outFilterMultimapNmax":"20","--alignSJoverhangMin":"8","--alignSJDBoverhangMin":"1","--outFilterMismatchNmax":"999","--outFilterMismatchNoverReadLmax":"0.04","--alignIntronMin":"20","--alignIntronMax":"1000000,"--alignMatesGapMax":"1000000","--outSAMattributes":"NH HI AS NM MD","--limitBAMsortRAM":"12000000000"}',
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
+    'bedGraphToBigWig_path' => undef,
     ## RSEM
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
     'rsem_threads'         => 4,
@@ -272,6 +273,55 @@ sub pipeline_analyses {
        'accu_data' => '#star_aligned_genomic_bam#',
        'output_mode' => 'list',
       },
+    -flow_into   => {
+        1 => {'picard_merge_and_mark_dup_genomic_bam' => {'star_genomic_bams' => '#exp_chunk_list#'}},
+      },
+  };
+  
+  
+  ## picard merge and mark duplicate genomic bam
+  push @pipeline, {
+    -logic_name  => 'picard_merge_and_mark_dup_genomic_bam',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#star_genomic_bams#',
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'MarkDuplicates',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'SORT_ORDER'     => 'coordinate',
+     },
+    -flow_into => {
+          1 => { 'star_bigwig' => {'merged_star_genomic_bam' => '#analysis_files[0]#' }},
+     },
+  };
+  
+  
+  ## star bigwig
+  push @pipeline, {
+    -logic_name  => 'run_star',
+    -module      => 'ehive.runnable.process.alignment.RunSTAR',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '42Gb8t',
+    -analysis_capacity => 1,
+    -parameters  => {
+      'star_exe'           => $self->o('star_exe'),
+      'r1_read_file'       => '#output_read1#',
+      'r2_read_file'       =>  '#output_read2#',
+      'output_prefix'      => '#run_igf_id#'.'_'.'#chunk_id#',
+      'reference_type'     => $self->o('star_reference_type'),
+      'reference_gtf_type' => $self->o('reference_gtf_type'),
+      'two_pass_mode'      => $self->o('star_two_pass_mode'),
+      'run_thread'         => $self->o('star_run_thread'),
+      'run_mode'           => 'generate_rna_bigwig',
+      'bedGraphToBigWig_path' => $self->o('bedGraphToBigWig_path'),
+    },
   };
   
   
