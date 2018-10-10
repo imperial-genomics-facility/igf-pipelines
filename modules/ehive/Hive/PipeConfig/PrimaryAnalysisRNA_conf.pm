@@ -379,6 +379,49 @@ sub pipeline_analyses {
       'threads'          => $self->o('rsem_threads'),
       'memory_limit'     => $self->o('rsem_memory_limit'),
      },
+    -flow_into   => {
+        1 => ['load_rsem_results'],
+      },
+  };
+  
+  
+  ## Load rsem results
+  push @pipeline, {
+    -logic_name  => 'load_rsem_results',
+    -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#rsem_output#',
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('rsem_analysis_name'),
+      'collection_name'  => '#experiment_igf_id#',
+      'collection_type'  => $self->o('rsem_collection_type'),
+      'collection_table' => $self->o('rsem_collection_table'),
+     },
+    -flow_into   => {
+        1 => ['upload_rsem_results_to_irods'],
+      },
+  };
+  
+  
+  ## copy rsem results to irods
+  push @pipeline, {
+    -logic_name  => 'upload_rsem_results_to_irods',
+    -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'file_list'     => '#analysis_output_list#',
+      'irods_exe_dir' => $self->o('irods_exe_dir'),
+      'analysis_name' => $self->o('rsem_analysis_name'),
+      'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+     },
   };
   
   
