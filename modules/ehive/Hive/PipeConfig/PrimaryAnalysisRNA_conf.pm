@@ -304,7 +304,7 @@ sub pipeline_analyses {
   
   ## star bigwig
   push @pipeline, {
-    -logic_name  => 'run_star',
+    -logic_name  => 'star_bigwig',
     -module      => 'ehive.runnable.process.alignment.RunSTAR',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
