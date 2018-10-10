@@ -65,6 +65,10 @@ sub default_options {
     'star_patameters'      => '{"--outFilterMultimapNmax":"20","--alignSJoverhangMin":"8","--alignSJDBoverhangMin":"1","--outFilterMismatchNmax":"999","--outFilterMismatchNoverReadLmax":"0.04","--alignIntronMin":"20","--alignIntronMax":"1000000,"--alignMatesGapMax":"1000000","--outSAMattributes":"NH HI AS NM MD","--limitBAMsortRAM":"12000000000"}',
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
+    ## RSEM
+    'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
+    'rsem_threads'         => 4,
+    'rsem_memory_limit'    => 4000,
   };
 }
 
@@ -92,21 +96,22 @@ sub pipeline_analyses {
       'pipeseed_mode' => $self->o('pipeseed_mode'),
     },
     -flow_into => {
-        2 => WHEN('#library_source# eq #genomic_source# || #library_source# eq #rna_source#' => ['run_factory'],
-                 ELSE ['mark_experiment_finished'],),
+        2 => WHEN('#library_source# eq #rna_source#' => ['run_factory_for_rnaseq'],
+                  ELSE ['mark_experiment_finished'],),
     },
   };
   
   
   ## run factory for genomic and transcriptomic data
   push @pipeline, {
-    -logic_name  => 'run_factory',
+    -logic_name  => 'run_factory_for_rnaseq',
     -module      => 'ehive.runnable.jobfactory.alignment.RunFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -flow_into   => {
-        2 => ['fetch_fastq_for_run'],
+        '2->A' => ['fetch_fastq_for_run'],
+        'A->1' => ['process_star_bams'],
       },
   };
   
@@ -148,32 +153,13 @@ sub pipeline_analyses {
       'input_fastq_list' => '#fastq_files#',
     },
     -flow_into   => {
-        '2->A' => ['fastq_factory_for_star'],
-        'A->1' => ['process_star_bams'],
+        '1' => ['run_star'],
       },
   };
   
   
   ## collect fastp report
   ## copy report to remote dir
-  
-  
-  ## fastq factory for star
-  push @pipeline, {
-    -logic_name  => 'fastq_factory_for_star',
-    -module      => 'ehive.runnable.jobfactory.alignment.FastqAlignmentFactory',
-    -language    => 'python3',
-    -meadow_type => 'PBSPro',
-    -rc_name     => '1Gb',
-    -analysis_capacity => 10,
-    -parameters  => {
-      'read1_list' => '#output_read1#',
-      'read2_list' => '#output_read2#',
-    },
-    -flow_into   => {
-        2 => ['run_star'],
-      },
-  };
   
   
   ## run star alignment
@@ -185,13 +171,15 @@ sub pipeline_analyses {
     -rc_name     => '42Gb8t',
     -analysis_capacity => 1,
     -parameters  => {
-      'star_exe' => $self->o('star_exe'),
-      'output_prefix' => '#run_igf_id#'.'_'.'#chunk_id#',
-      'reference_type' => $self->o('star_reference_type'),
+      'star_exe'           => $self->o('star_exe'),
+      'r1_read_file'       => '#output_read1#',
+      'r2_read_file'       =>  '#output_read2#',
+      'output_prefix'      => '#run_igf_id#'.'_'.'#chunk_id#',
+      'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
-      'two_pass_mode' => $self->o('star_two_pass_mode'),
-      'run_thread' => $self->o('star_run_thread'),
-      'star_patameters' => $self->o('star_patameters'),
+      'two_pass_mode'      => $self->o('star_two_pass_mode'),
+      'run_thread'         => $self->o('star_run_thread'),
+      'star_patameters'    => $self->o('star_patameters'),
     },
     -flow_into => {
           1 => ['picard_add_rg_tag_to_genomic_bam','picard_add_rg_tag_to_transcriptomic_bam'],
@@ -268,14 +256,14 @@ sub pipeline_analyses {
        'dataflow_params' => {'finished_star'=>1},
       },
     -flow_into   => {
-        1 => ['collect_star_genomic_bam','collect_star_transcriptomic_bam'],
+        1 => ['collect_star_genomic_bam_for_exp','collect_star_transcriptomic_bam_for_exp'],
       },
   };
   
   
   ## collect star genomic bam
   push @pipeline, {
-    -logic_name  => 'collect_star_genomic_bam',
+    -logic_name  => 'collect_star_genomic_bam_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
@@ -289,15 +277,58 @@ sub pipeline_analyses {
   
   ## collect star transcriptomic bam
   push @pipeline, {
-    -logic_name  => 'collect_star_transcriptomic_bam',
+    -logic_name  => 'collect_star_transcriptomic_bam_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data' => '#star_aligned_trans_bam#',
-       'output_mode' => 'list',
+       'output_mode' => 'file',
       },
+    -flow_into   => {
+        1 => {'merge_star_transcriptomic_bams'=>{'star_run_trans_bam_list_file' => '#run_chunk_list_file#'}},
+      },
+  };
+  
+  
+  ## samtools merge transcriptomic bam
+  push @pipeline, {
+    -logic_name  => 'merge_star_transcriptomic_bams',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'       => '#star_run_trans_bam_list_file#',
+      'samtools_command' => 'merge',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+      'threads'          => $self->o('samtools_threads'),
+     },
+    -flow_into   => {
+        1 => {'run_rsem' => {'bam_file' => '#analysis_files#[0]'}},
+      },
+  };
+  
+  
+  ## run rsem on star transcriptomic bam
+  push @pipeline, {
+    -logic_name  => 'run_rsem',
+    -module      => 'ehive.runnable.process.alignment.RunRSEM',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_bam'       => '#bam_file#',
+      'samtools_command' => 'merge',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('rsem_reference_type'),
+      'threads'          => $self->o('rsem_threads'),
+      'memory_limit'     => $self->o('rsem_memory_limit'),
+     },
   };
   
   
