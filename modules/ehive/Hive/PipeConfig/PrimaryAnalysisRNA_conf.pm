@@ -65,11 +65,18 @@ sub default_options {
     'star_patameters'      => '{"--outFilterMultimapNmax":"20","--alignSJoverhangMin":"8","--alignSJDBoverhangMin":"1","--outFilterMismatchNmax":"999","--outFilterMismatchNoverReadLmax":"0.04","--alignIntronMin":"20","--alignIntronMax":"1000000,"--alignMatesGapMax":"1000000","--outSAMattributes":"NH HI AS NM MD","--limitBAMsortRAM":"12000000000"}',
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
-    'bedGraphToBigWig_path' => undef,
+    'star_analysis_name'   => undef,
+    'bedGraphToBigWig_path'   => undef,
+    'star_collection_table'   => undef,
+    'star_genomic_cram_type'  => undef,
+    'star_bw_collection_type' => undef,
     ## RSEM
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
     'rsem_threads'         => 4,
     'rsem_memory_limit'    => 4000,
+    'rsem_analysis_name'   => undef,
+    'rsem_collection_type' => undef,
+    'rsem_collection_table' => undef,
   };
 }
 
@@ -297,8 +304,56 @@ sub pipeline_analyses {
       'SORT_ORDER'     => 'coordinate',
      },
     -flow_into => {
-          1 => { 'star_bigwig' => {'merged_star_genomic_bam' => '#analysis_files[0]#' }},
+          1 => { 'convert_star_genomic_bam_to_cram' => {'merged_star_genomic_bam' => '#analysis_files[0]#' }},
      },
+  };
+  
+  
+  ## convert genomic bam to cram
+  push @pipeline, {
+    -logic_name  => 'convert_star_genomic_bam_to_cram',
+    -module      => 'ehive.runnable.process.alignment.ConvertBamToCram',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+        'bam_file'        => '#bam_file#',
+        'base_result_dir' => $self->o('base_results_dir'),
+        'threads'         => $self->o('samtools_threads'),
+        'samtools_exe'     => $self->o('samtools_exe'),
+        'collection_name' => '#experiment_igf_id#',
+        'collection_type' => $self->o('star_genomic_cram_type'),
+        'collection_table'=> $self->o('star_collection_table'),
+        'analysis_name'   => $self->o('star_analysis_name'),
+        'tag_name'        => '#species_name#',
+        'reference_type'  => $self->o('reference_fasta_type'),
+     },
+     -flow_into   => {
+        1 => ['upload_star_genomic_cram_to_irods'],
+      },
+  };
+  
+  
+  ## copy star genomic cram to irods
+  push @pipeline, {
+    -logic_name  => 'upload_star_genomic_cram_to_irods',
+    -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'file_list'     => '#output_cram_list#',
+      'irods_exe_dir' => $self->o('irods_exe_dir'),
+      'analysis_name' => $self->o('star_analysis_name'),
+      'analysis_dir'  => 'analysis',
+      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+     },
+    -flow_into   => {
+        1 => ['star_bigwig'],
+      },
   };
   
   
@@ -312,8 +367,7 @@ sub pipeline_analyses {
     -analysis_capacity => 1,
     -parameters  => {
       'star_exe'           => $self->o('star_exe'),
-      'r1_read_file'       => '#output_read1#',
-      'r2_read_file'       =>  '#output_read2#',
+      input_bam            => '#merged_star_genomic_bam#',
       'output_prefix'      => '#run_igf_id#'.'_'.'#chunk_id#',
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
@@ -322,6 +376,49 @@ sub pipeline_analyses {
       'run_mode'           => 'generate_rna_bigwig',
       'bedGraphToBigWig_path' => $self->o('bedGraphToBigWig_path'),
     },
+   -flow_into   => {
+        1 => ['load_star_bigwig'],
+      },
+  };
+  
+  
+  ## Load star bigwig
+  push @pipeline, {
+    -logic_name  => 'load_star_bigwig',
+    -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#star_bigwigs#',
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('star_analysis_name'),
+      'collection_name'  => '#experiment_igf_id#',
+      'tag_name'         => '#species_name#',
+      'collection_type'  => $self->o('star_bw_collection_type'),
+      'collection_table' => $self->o('star_collection_table'),
+     },
+    -flow_into   => {
+        1 => ['copy_star_bigwig_to_remote'],
+      },
+  };
+  
+  
+  ## copy star bigwig to remote
+  push @pipeline, {
+      -logic_name   => 'copy_star_bigwig_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'file_list'           => '#analysis_output_list#',
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
   };
   
   
@@ -353,6 +450,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_file'       => '#star_run_trans_bam_list_file#',
       'samtools_command' => 'merge',
+      'samtools_exe'     => $self->o('samtools_exe'),
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
       'threads'          => $self->o('samtools_threads'),
@@ -398,6 +496,7 @@ sub pipeline_analyses {
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('rsem_analysis_name'),
       'collection_name'  => '#experiment_igf_id#',
+      'tag_name'         => '#species_name#',
       'collection_type'  => $self->o('rsem_collection_type'),
       'collection_table' => $self->o('rsem_collection_table'),
      },
@@ -419,7 +518,8 @@ sub pipeline_analyses {
       'file_list'     => '#analysis_output_list#',
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('rsem_analysis_name'),
-      'dir_path_list' => ['#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'analysis_dir'  => 'analysis',
+      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
   };
