@@ -66,6 +66,7 @@ sub default_options {
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
     'star_analysis_name'   => undef,
+    'star_multiqc_type'    => undef,
     'bedGraphToBigWig_path'   => undef,
     'star_collection_table'   => undef,
     'star_genomic_cram_type'  => undef,
@@ -304,8 +305,26 @@ sub pipeline_analyses {
       'SORT_ORDER'     => 'coordinate',
      },
     -flow_into => {
-          1 => { 'convert_star_genomic_bam_to_cram' => {'merged_star_genomic_bam' => '#analysis_files[0]#' }},
+          1 => { 'star_genomic_bam_analysis_factory_1' => {'merged_star_genomic_bam' => '#analysis_files[0]#' }},
      },
+  };
+  
+  
+  ## star genomic bam analysis factory
+  push @pipeline, {
+    -logic_name  => 'star_genomic_bam_analysis_factory_1',
+    -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -parameters  => {
+      'file_list' => ['#merged_star_genomic_bam#'],
+      },
+    -flow_into   => {
+        '2->A' => ['convert_star_genomic_bam_to_cram',
+                   'star_bigwig'
+                  ],
+        'A->1' => ['picard_aln_summary_for_star'], 
+      },
   };
   
   
@@ -351,9 +370,6 @@ sub pipeline_analyses {
       'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
-    -flow_into   => {
-        1 => ['star_bigwig'],
-      },
   };
   
   
@@ -367,7 +383,7 @@ sub pipeline_analyses {
     -analysis_capacity => 1,
     -parameters  => {
       'star_exe'           => $self->o('star_exe'),
-      input_bam            => '#merged_star_genomic_bam#',
+      input_bam            => '#bam_file#',
       'output_prefix'      => '#run_igf_id#'.'_'.'#chunk_id#',
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
@@ -415,6 +431,210 @@ sub pipeline_analyses {
       -analysis_capacity => 2,
       -parameters  => {
         'file_list'           => '#analysis_output_list#',
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
+  };
+  
+  
+  ## picard alignment summary metrics for star
+  push @pipeline, {
+    -logic_name  => 'picard_aln_summary_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectAlignmentSummaryMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_base_dist_summary_for_star'],
+      },
+  };
+  
+  
+  ## picard base distribution summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_base_dist_summary_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectBaseDistributionByCycle',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_gc_bias_summary_for_star'],
+      },
+  };
+  
+  ## picard gc bias summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_gc_bias_summary_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectGcBiasMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_qual_dist_summary_for_star'],
+      },
+  };
+  
+  
+  ## picard quality distribution summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_qual_dist_summary_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'QualityScoreDistribution',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_rna_metrics_summary_for_star'],
+      },
+  };
+  
+  
+  ## picard rna metrics summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_rna_metrics_summary_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_file'     => '#bam_file#',
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectRnaSeqMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type' => $self->o('reference_fasta_type'),
+      'copy_input'     => $self->o('copy_input_to_temp'),
+      'reference_refFlat' => $self->o('reference_refFlat'),
+     },
+    -flow_into   => {
+        1 => ['samtools_flagstat_summary_for_star'],
+      },
+  };
+  
+  
+  ## samtools flagstat metrics
+  push @pipeline, {
+    -logic_name  => 'samtools_flagstat_summary_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'bam_file'         => '#bam_file#',
+      'samtools_command' => 'flagstat',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+      'threads'          => $self->o('samtools_threads'),
+      'copy_input'       => $self->o('copy_input_to_temp'),
+     },
+    -flow_into   => {
+        1 => ['samtools_idxstat_summary_for_star'],
+      },
+  };
+  
+  
+  ## samtools idxstat metrics
+  push @pipeline, {
+    -logic_name  => 'samtools_idxstat_summary_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'bam_file'         => '#bam_file#',
+      'samtools_command' => 'idxstats',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+      'copy_input'       => $self->o('copy_input_to_temp'),
+     },
+    -flow_into   => {
+        1 => ['multiqc_report_for_star'],
+      },
+  };
+  
+  
+  ## multiqc report building
+  push @pipeline, {
+    -logic_name  => 'multiqc_report_for_star',
+    -module      => 'ehive.runnable.process.alignment.RunAnalysisMultiQC',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'base_results_dir' => $self->o('base_results_dir'),
+      'collection_name'  => '#experiment_igf_id#',
+      'collection_type'  => $self->o('star_multiqc_type'),
+      'collection_table' => $self->o('star_collection_table'),
+      'analysis_name'    => $self->o('multiqc_analysis'),
+      'tag_name'         => '#species_name#',
+      'multiqc_exe'      => $self->o('multiqc_exe'),
+      'multiqc_options'  => $self->o('multiqc_options'),
+     },
+    -flow_into   => {
+        1 => ['copy_star_multiqc_to_remote'],
+      },
+  };
+  
+  
+  ## copy multiqc to remote
+  push @pipeline, {
+      -logic_name   => 'copy_star_multiqc_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'file_list'           => ['#multiqc_html#'],
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
