@@ -105,8 +105,9 @@ sub pipeline_analyses {
       'pipeseed_mode' => $self->o('pipeseed_mode'),
     },
     -flow_into => {
-        2 => WHEN('#library_source# eq #rna_source#' => ['run_factory_for_rnaseq'],
-                  ELSE ['mark_experiment_finished'],),
+        '2->A' => WHEN('#library_source# eq #rna_source#' => ['run_factory_for_rnaseq'],
+                       ELSE ['mark_experiment_finished']),
+        'A->1' => ['mark_experiment_finished'],
     },
   };
   
