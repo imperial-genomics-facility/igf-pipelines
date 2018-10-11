@@ -108,9 +108,8 @@ sub pipeline_analyses {
       'rna_source'    => $self->o('rna_source'),
     },
     -flow_into => {
-        '2->A' => WHEN('#library_source# eq #rna_source#' => ['run_factory_for_rnaseq'],
+        2 => WHEN('#library_source# eq #rna_source#' => ['run_factory_for_rnaseq'],
                        ELSE ['mark_experiment_finished']),
-        'A->1' => ['mark_experiment_finished'],
     },
   };
   
@@ -643,6 +642,9 @@ sub pipeline_analyses {
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
+      -flow_into   => {
+         1 => ['mark_experiment_finished'],
+      },
   };
   
   
