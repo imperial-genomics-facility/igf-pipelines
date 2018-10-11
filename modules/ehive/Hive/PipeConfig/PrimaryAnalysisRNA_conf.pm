@@ -142,7 +142,7 @@ sub pipeline_analyses {
       'rna_source'             => $self->o('rna_source'),
     },
     -flow_into   => {
-        1 =>  WHEN('#library_source# eq #rna_source#' => {'adapter_trim_without_fastq_split' => {'fastq_files' => '#fastq_files#' }}),
+        1 =>  WHEN('#library_source# eq #rna_source#' => {'adapter_trim_without_fastq_split' => {'fastq_files' => '#fastq_files_list#' }}),
       },
   };
   
