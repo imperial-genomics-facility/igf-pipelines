@@ -72,6 +72,7 @@ sub default_options {
     'star_genomic_cram_type'  => undef,
     'star_bw_collection_type' => undef,
     ## RSEM
+    'rsem_exe_dir'         => undef,
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
     'rsem_threads'         => 4,
     'rsem_memory_limit'    => 4000,
