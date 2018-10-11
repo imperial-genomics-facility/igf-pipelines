@@ -137,12 +137,12 @@ sub pipeline_analyses {
     -rc_name     => '1Gb',
     -analysis_capacity => 10,
     -parameters  => {
-      'fastq_collection_type' => $self->o('fastq_collection_type'),
+      'fastq_collection_type'  => $self->o('fastq_collection_type'),
       'fastq_collection_table' => $self->o('fastq_collection_table'),
+      'rna_source'             => $self->o('rna_source'),
     },
     -flow_into   => {
-        1 =>  WHEN('#library_source# eq #rna_source# && #fastq_counts# > 0' => ['adapter_trim_without_fastq_split'],
-                   ELSE ['mark_experiment_finished']),
+        1 =>  WHEN('#library_source# eq #rna_source# && #fastq_counts# > 0' => ['adapter_trim_without_fastq_split']),
       },
   };
   
