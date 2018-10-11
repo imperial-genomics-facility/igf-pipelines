@@ -101,7 +101,7 @@ sub pipeline_analyses {
     -logic_name  => 'find_new_experiment_for_analysis',
     -module      => 'ehive.runnable.jobfactory.PipeseedFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type => 'PBSPro',
     -parameters  => {
       'pipeline_name' => $self->o('pipeline_name'),
       'pipeseed_mode' => $self->o('pipeseed_mode'),
