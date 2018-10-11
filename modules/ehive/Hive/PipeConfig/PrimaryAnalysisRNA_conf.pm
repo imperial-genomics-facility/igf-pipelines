@@ -161,7 +161,7 @@ sub pipeline_analyses {
       'run_thread'           => $self->o('fastp_run_thread'),
       'base_work_dir'        => $self->o('base_work_dir'),
       'fastp_exe'            => $self->o('fastp_exe'),
-      'input_fastq_list'     => '#fastq_files#',
+      'input_fastq_list'     => '#fastq_files_list#',
     },
     -flow_into   => {
         '1' => ['run_star'],
