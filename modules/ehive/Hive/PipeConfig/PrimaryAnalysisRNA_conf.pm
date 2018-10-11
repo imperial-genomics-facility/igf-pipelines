@@ -31,6 +31,7 @@ sub default_options {
     'cram_type'           => 'ANALYSIS_CRAM',
     'copy_input_to_temp'  => 0,
     'patterned_flow_cell_list' => ['NEXTSEQ','HISEQ4000'],
+    'rna_source'          => 'TRANSCRIPTOMIC',
     ## Irods
     'irods_exe_dir'       => undef,
     ## Java
@@ -104,6 +105,7 @@ sub pipeline_analyses {
     -parameters  => {
       'pipeline_name' => $self->o('pipeline_name'),
       'pipeseed_mode' => $self->o('pipeseed_mode'),
+      'rna_source'    => $self->o('rna_source'),
     },
     -flow_into => {
         '2->A' => WHEN('#library_source# eq #rna_source#' => ['run_factory_for_rnaseq'],
