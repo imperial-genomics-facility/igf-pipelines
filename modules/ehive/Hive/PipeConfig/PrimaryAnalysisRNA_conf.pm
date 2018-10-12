@@ -185,7 +185,7 @@ sub pipeline_analyses {
       'star_exe'           => $self->o('star_exe'),
       'r1_read_file'       => '#output_read1#',
       'r2_read_file'       =>  '#output_read2#',
-      'output_prefix'      => '#run_igf_id#'.'_'.'#chunk_id#',
+      'output_prefix'      => '#run_igf_id#',
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
       'two_pass_mode'      => $self->o('star_two_pass_mode'),
