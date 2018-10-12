@@ -186,6 +186,7 @@ sub pipeline_analyses {
       'r1_read_file'       => '#output_read1#',
       'r2_read_file'       =>  '#output_read2#',
       'output_prefix'      => '#run_igf_id#',
+      'base_work_dir'      => $self->o('base_work_dir'),
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
       'two_pass_mode'      => $self->o('star_two_pass_mode'),
