@@ -132,7 +132,7 @@ sub pipeline_analyses {
     -logic_name  => 'fetch_fastq_for_run',
     -module      => 'ehive.runnable.process.alignment.FetchFastqForRun',
     -language    => 'python3',
-    -meadow_type => 'PBSPro',
+    -meadow_type => 'LOCAL',
     -rc_name     => '1Gb',
     -analysis_capacity => 10,
     -parameters  => {
