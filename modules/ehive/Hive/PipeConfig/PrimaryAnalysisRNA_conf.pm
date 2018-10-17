@@ -132,7 +132,7 @@ sub pipeline_analyses {
     -logic_name  => 'fetch_fastq_for_run',
     -module      => 'ehive.runnable.process.alignment.FetchFastqForRun',
     -language    => 'python3',
-    -meadow_type => 'LOCAL', #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '1Gb',
     -analysis_capacity => 10,
     -parameters  => {
@@ -151,7 +151,7 @@ sub pipeline_analyses {
     -logic_name  => 'adapter_trim_without_fastq_split',
     -module      => 'ehive.runnable.process.alignment.RunFastp',
     -language    => 'python3',
-    -meadow_type => 'LOCAL', #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '1Gb4t',
     -analysis_capacity => 10,
     -parameters  => {
@@ -177,7 +177,7 @@ sub pipeline_analyses {
     -logic_name  => 'run_star',
     -module      => 'ehive.runnable.process.alignment.RunSTAR',
     -language    => 'python3',
-    -meadow_type => 'LOCAL', #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '42Gb8t',
     -analysis_capacity => 1,
     -parameters  => {
@@ -203,7 +203,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_add_rg_tag_to_genomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL', #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -232,7 +232,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_add_rg_tag_to_transcriptomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL', #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -294,7 +294,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_merge_and_mark_dup_genomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -335,7 +335,7 @@ sub pipeline_analyses {
     -logic_name  => 'convert_star_genomic_bam_to_cram',
     -module      => 'ehive.runnable.process.alignment.ConvertBamToCram',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
@@ -361,7 +361,7 @@ sub pipeline_analyses {
     -logic_name  => 'upload_star_genomic_cram_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -380,7 +380,7 @@ sub pipeline_analyses {
     -logic_name  => 'star_bigwig',
     -module      => 'ehive.runnable.process.alignment.RunSTAR',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '42Gb8t',
     -analysis_capacity => 1,
     -parameters  => {
@@ -405,7 +405,7 @@ sub pipeline_analyses {
     -logic_name  => 'load_star_bigwig',
     -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
@@ -428,7 +428,7 @@ sub pipeline_analyses {
       -logic_name   => 'copy_star_bigwig_to_remote',
       -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
       -language     => 'python3',
-      -meadow_type  => 'LOCAL',  #PBSPro
+      -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
@@ -445,7 +445,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_aln_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -469,7 +469,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_base_dist_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -492,7 +492,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_gc_bias_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -516,7 +516,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_qual_dist_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -540,7 +540,7 @@ sub pipeline_analyses {
     -logic_name  => 'picard_rna_metrics_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -565,7 +565,7 @@ sub pipeline_analyses {
     -logic_name  => 'samtools_flagstat_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunSamtools',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
@@ -587,7 +587,7 @@ sub pipeline_analyses {
     -logic_name  => 'samtools_idxstat_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunSamtools',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',   #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -608,7 +608,7 @@ sub pipeline_analyses {
     -logic_name  => 'multiqc_report_for_star',
     -module      => 'ehive.runnable.process.alignment.RunAnalysisMultiQC',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
@@ -632,7 +632,7 @@ sub pipeline_analyses {
       -logic_name   => 'copy_star_multiqc_to_remote',
       -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
       -language     => 'python3',
-      -meadow_type  => 'LOCAL',  #PBSPro
+      -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
@@ -669,7 +669,7 @@ sub pipeline_analyses {
     -logic_name  => 'merge_star_transcriptomic_bams',
     -module      => 'ehive.runnable.process.alignment.RunSamtools',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
@@ -691,7 +691,7 @@ sub pipeline_analyses {
     -logic_name  => 'run_rsem',
     -module      => 'ehive.runnable.process.alignment.RunRSEM',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
@@ -713,7 +713,7 @@ sub pipeline_analyses {
     -logic_name  => 'load_rsem_results',
     -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
     -language    => 'python3',
-    -meadow_type => 'LOCAL', #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
@@ -736,7 +736,7 @@ sub pipeline_analyses {
     -logic_name  => 'upload_rsem_results_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',  #PBSPro
+    -meadow_type => 'PBSPro',
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
