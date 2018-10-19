@@ -179,11 +179,11 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '42Gb8t',
-    -analysis_capacity => 1,
+    -analysis_capacity => 10,
     -parameters  => {
       'star_exe'           => $self->o('star_exe'),
       'r1_read_file'       => '#output_read1#',
-      'r2_read_file'       =>  '#output_read2#',
+      'r2_read_file'       => '#output_read2#',
       'output_prefix'      => '#run_igf_id#',
       'base_work_dir'      => $self->o('base_work_dir'),
       'reference_type'     => $self->o('star_reference_type'),
@@ -207,7 +207,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'     => ['#star_genomic_bam#'],
+      'input_files'    => ['#star_genomic_bam#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -236,7 +236,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'     => ['#star_transcriptomic_bam#'],
+      'input_files'    => ['#star_transcriptomic_bam#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -385,7 +385,7 @@ sub pipeline_analyses {
     -analysis_capacity => 1,
     -parameters  => {
       'star_exe'           => $self->o('star_exe'),
-      input_bam            => '#bam_file#',
+      'input_bam'          => '#bam_file#',
       'output_prefix'      => '#run_igf_id#'.'_'.'#chunk_id#',
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
