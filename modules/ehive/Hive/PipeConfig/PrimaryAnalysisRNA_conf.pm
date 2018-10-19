@@ -449,7 +449,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files     => ['#bam_file#'],
+      'input_files'    => ['#bam_file#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
