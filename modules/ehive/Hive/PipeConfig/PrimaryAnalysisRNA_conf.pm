@@ -36,7 +36,7 @@ sub default_options {
     'irods_exe_dir'       => undef,
     ## Java
     'java_exe'            => undef,
-    'java_param'          => '-Xmx4g -XX:ParallelGCThreads=1',
+    'java_param'          => '-Xmx4g',
     ## Picard
     'picard_jar'             => undef,
     'illumina_platform_name' => 'ILLUMINA',
