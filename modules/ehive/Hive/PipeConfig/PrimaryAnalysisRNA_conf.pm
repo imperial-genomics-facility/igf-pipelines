@@ -285,8 +285,9 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-       'accu_data' => '#star_aligned_genomic_bam#',
-       'output_mode' => 'list',
+       'accu_data'     => '#star_aligned_genomic_bam#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
         1 => {'picard_merge_and_mark_dup_genomic_bam' => {'star_genomic_bams' => '#exp_chunk_list#'}},
@@ -660,8 +661,9 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-       'accu_data' => '#star_aligned_trans_bam#',
-       'output_mode' => 'file',
+       'accu_data'      => '#star_aligned_trans_bam#',
+       'output_mode'    => 'file',
+       'base_work_dir'  => $self->o('base_work_dir'),
       },
     -flow_into   => {
         1 => {'merge_star_transcriptomic_bams'=>{'star_run_trans_bam_list_file' => '#run_chunk_list_file#'}},
