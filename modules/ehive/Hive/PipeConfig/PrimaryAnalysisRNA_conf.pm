@@ -38,7 +38,8 @@ sub default_options {
     'java_exe'            => undef,
     'java_param'          => '-Xmx4g',
     ## Picard
-    'picard_jar'          => undef,
+    'picard_jar'             => undef,
+    'illumina_platform_name' => 'ILLUMINA',
     ## MultiQC
     'multiqc_analysis'    => 'multiqc',
     'multiqc_exe'         => undef,
@@ -205,7 +206,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
-    -analysis_capacity => 2,
+    -analysis_capacity => 10,
     -parameters  => {
       'input_files'    => ['#star_genomic_bam#'],
       'java_exe'       => $self->o('java_exe'),
@@ -214,10 +215,10 @@ sub pipeline_analyses {
       'picard_command' => 'AddOrReplaceReadGroups',
       'base_work_dir'  => $self->o('base_work_dir'),
       'picard_option'  => {
-         'RGID'       => '#flowcell_id#' . '.' . '#lane_id#' . '#library_name#',
+         'RGID'       => '#run_igf_id#',
          'RGLB'       => '#library_name#',
-         'RGPL'       => $self->o('illumina_platform'),
-         'RGPU'       => '#flowcell_id#' . '.' . '#lane_id#' . '#sample_igf_id#',
+         'RGPL'       => $self->o('illumina_platform_name'),
+         'RGPU'       => '#run_igf_id#',
          'RGSM'       => '#sample_igf_id#',
          'RGCN'       => 'Imperial Genomics Facility',
          'SORT_ORDER' => 'coordinate',
@@ -236,7 +237,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
-    -analysis_capacity => 2,
+    -analysis_capacity => 10,
     -parameters  => {
       'input_files'    => ['#star_transcriptomic_bam#'],
       'java_exe'       => $self->o('java_exe'),
@@ -245,10 +246,10 @@ sub pipeline_analyses {
       'picard_command' => 'AddOrReplaceReadGroups',
       'base_work_dir'  => $self->o('base_work_dir'),
       'picard_option'  => {
-         'RGID'       => '#flowcell_id#' . '.' . '#lane_id#' . '#library_name#',
+         'RGID'       => '#run_igf_id#',
          'RGLB'       => '#library_name#',
-         'RGPL'       => $self->o('illumina_platform'),
-         'RGPU'       => '#flowcell_id#' . '.' . '#lane_id#' . '#sample_igf_id#',
+         'RGPL'       => $self->o('illumina_platform_name'),
+         'RGPU'       => '#run_igf_id#',
          'RGSM'       => '#sample_igf_id#',
          'RGCN'       => 'Imperial Genomics Facility',
          'SORT_ORDER' => 'unsorted',
