@@ -392,7 +392,7 @@ sub pipeline_analyses {
     -parameters  => {
       'star_exe'           => $self->o('star_exe'),
       'input_bam'          => '#bam_file#',
-      'output_prefix'      => '#run_igf_id#'.'_'.'#chunk_id#',
+      'output_prefix'      => '#experiment_igf_id#',
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
       'two_pass_mode'      => $self->o('star_two_pass_mode'),
@@ -682,6 +682,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_file'       => '#star_run_trans_bam_list_file#',
       'samtools_command' => 'merge',
+      'output_prefix'    => '#experiment_igf_id#',
       'samtools_exe'     => $self->o('samtools_exe'),
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
