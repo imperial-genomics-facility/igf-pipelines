@@ -225,7 +225,7 @@ sub pipeline_analyses {
          },
      },
     -flow_into => {
-          1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=#analysis_files#[0]' ],
+          1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
      },
   };
   
@@ -256,7 +256,7 @@ sub pipeline_analyses {
          },
      },
     -flow_into => {
-          1 => [ '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=#analysis_files[0]#' ],
+          1 => [ '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
      },
   };
   
