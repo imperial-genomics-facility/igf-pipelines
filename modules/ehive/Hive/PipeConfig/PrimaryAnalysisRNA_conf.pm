@@ -666,7 +666,7 @@ sub pipeline_analyses {
        'base_work_dir'  => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'merge_star_transcriptomic_bams'=>{'star_run_trans_bam_list_file' => '#run_chunk_list_file#'}},
+        1 => {'merge_star_transcriptomic_bams'=>{'star_run_trans_bam_list_file' => '#exp_chunk_list_file#'}},
       },
   };
   
