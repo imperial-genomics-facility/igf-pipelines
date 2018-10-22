@@ -707,7 +707,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_bam'       => '#bam_files#',
+      'input_bams'       => '#bam_files#',
       'samtools_command' => 'merge',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('rsem_reference_type'),
