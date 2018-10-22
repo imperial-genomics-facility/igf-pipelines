@@ -317,19 +317,19 @@ sub pipeline_analyses {
       'SORT_ORDER'     => 'coordinate',
      },
     -flow_into => {
-          1 => { 'star_genomic_bam_analysis_factory_1' => {'merged_star_genomic_bam' => '#analysis_files[0]#' }},
+          1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#analysis_files#' }},
      },
   };
   
   
   ## star genomic bam analysis factory
   push @pipeline, {
-    -logic_name  => 'star_genomic_bam_analysis_factory_1',
+    -logic_name  => 'star_genomic_bam_analysis_factory',
     -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -parameters  => {
-      'file_list' => ['#merged_star_genomic_bam#'],
+      'file_list' => '#merged_star_genomic_bams#',
       },
     -flow_into   => {
         '2->A' => ['convert_star_genomic_bam_to_cram',
