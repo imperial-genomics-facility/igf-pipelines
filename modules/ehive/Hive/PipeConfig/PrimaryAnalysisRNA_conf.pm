@@ -75,6 +75,7 @@ sub default_options {
     ## RSEM
     'rsem_exe_dir'         => undef,
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
+    'rsem_analysis_name'   => 'rsem',
     'rsem_threads'         => 4,
     'rsem_memory_limit'    => 4000,
     'rsem_analysis_name'   => undef,
