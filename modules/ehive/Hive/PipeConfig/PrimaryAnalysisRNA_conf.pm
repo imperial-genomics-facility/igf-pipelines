@@ -687,7 +687,7 @@ sub pipeline_analyses {
       'input_file'       => '#star_run_trans_bam_list_file#',
       'samtools_command' => 'merge',
       'output_prefix'    => '#experiment_igf_id#',
-      'sorted_by_name'   => 1,
+      'sorted_by_name'   => 1,                                                  # enable read sorting by name for rsem
       'samtools_exe'     => $self->o('samtools_exe'),
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
