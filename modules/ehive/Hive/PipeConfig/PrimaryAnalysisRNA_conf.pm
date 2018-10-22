@@ -709,7 +709,6 @@ sub pipeline_analyses {
     -analysis_capacity => 2,
     -parameters  => {
       'input_bams'       => '#bam_files#',
-      'samtools_command' => 'merge',
       'rsem_exe_dir'     => $self->o('rsem_exe_dir'),
       'base_work_dir'    => $self->o('base_work_dir'),
       'output_prefix'    => '#experiment_igf_id#',
