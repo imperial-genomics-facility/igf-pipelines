@@ -709,7 +709,9 @@ sub pipeline_analyses {
     -parameters  => {
       'input_bams'       => '#bam_files#',
       'samtools_command' => 'merge',
+      'rsem_exe_dir'     => $self->o('rsem_exe_dir'),
       'base_work_dir'    => $self->o('base_work_dir'),
+      'output_prefix'    => '#experiment_igf_id#',
       'reference_type'   => $self->o('rsem_reference_type'),
       'threads'          => $self->o('rsem_threads'),
       'memory_limit'     => $self->o('rsem_memory_limit'),
