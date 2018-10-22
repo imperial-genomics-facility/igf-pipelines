@@ -264,15 +264,19 @@ sub pipeline_analyses {
   ## process star bams
   push @pipeline, {
     -logic_name  => 'process_star_bams',
-    -module      => 'ehive.runnable.IGFBaseProcess',
+    #-module      => 'ehive.runnable.IGFBaseProcess',
+    -module      => 'ehive.runnable.IGFBaseJobFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-       'dataflow_params' => {'finished_star'=>1},
+       #'dataflow_params' => {'finished_star'=>1},
+       'sub_tasks' => [{'pseudo_exp_id'=> '#experiment_igf_id#'}],
       },
     -flow_into   => {
-        1 => ['collect_star_genomic_bam_for_exp','collect_star_transcriptomic_bam_for_exp'],
+        '2->A' => ['collect_star_genomic_bam_for_exp',
+                   'collect_star_transcriptomic_bam_for_exp'],
+        'A->1' => ['mark_experiment_finished'],
       },
   };
   
@@ -647,9 +651,9 @@ sub pipeline_analyses {
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
-      -flow_into   => {
-         1 => ['mark_experiment_finished'],
-      },
+      #-flow_into   => {
+      #   1 => ['mark_experiment_finished'],
+      #},
   };
   
   
