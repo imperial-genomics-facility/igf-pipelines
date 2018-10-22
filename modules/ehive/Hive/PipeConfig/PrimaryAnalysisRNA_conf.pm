@@ -76,7 +76,7 @@ sub default_options {
     'rsem_exe_dir'         => undef,
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
     'rsem_analysis_name'   => 'rsem',
-    'rsem_threads'         => 4,
+    'rsem_threads'         => 8,
     'rsem_memory_limit'    => 4000,
     'rsem_analysis_name'   => undef,
     'rsem_collection_type' => undef,
@@ -706,7 +706,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunRSEM',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb4t',
+    -rc_name     => '4Gb8t',
     -analysis_capacity => 2,
     -parameters  => {
       'input_bams'     => '#bam_files#',
