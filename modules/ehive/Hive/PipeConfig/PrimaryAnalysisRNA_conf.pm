@@ -693,7 +693,7 @@ sub pipeline_analyses {
       'threads'          => $self->o('samtools_threads'),
      },
     -flow_into   => {
-        1 => {'run_rsem' => {'bam_file' => '#analysis_files#[0]'}},
+        1 => {'run_rsem' => {'bam_files' => '#analysis_files#'}},
       },
   };
   
@@ -707,7 +707,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_bam'       => '#bam_file#',
+      'input_bam'       => '#bam_files#',
       'samtools_command' => 'merge',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('rsem_reference_type'),
