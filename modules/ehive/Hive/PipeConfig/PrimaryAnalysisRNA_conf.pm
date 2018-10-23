@@ -350,7 +350,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-        'bam_file'        => '#bam_file#',
+        'bam_file'        => '#input_file#',
         'base_result_dir' => $self->o('base_results_dir'),
         'threads'         => $self->o('samtools_threads'),
         'samtools_exe'     => $self->o('samtools_exe'),
@@ -396,7 +396,7 @@ sub pipeline_analyses {
     -analysis_capacity => 1,
     -parameters  => {
       'star_exe'           => $self->o('star_exe'),
-      'input_bam'          => '#bam_file#',
+      'input_bam'          => '#input_file#',
       'output_prefix'      => '#experiment_igf_id#',
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
