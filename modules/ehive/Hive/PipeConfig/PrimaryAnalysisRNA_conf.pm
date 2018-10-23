@@ -306,7 +306,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '4Gb',
+    -rc_name     => '8Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
       'input_files'    => '#star_genomic_bams#',
@@ -706,7 +706,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunRSEM',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '4Gb8t',
+    -rc_name     => '8Gb8t',
     -analysis_capacity => 2,
     -parameters  => {
       'input_bams'     => '#bam_files#',
