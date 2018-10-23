@@ -318,7 +318,7 @@ sub pipeline_analyses {
       'SORT_ORDER'     => 'coordinate',
      },
     -flow_into => {
-          1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#analysis_files#' }},
+          1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#bam_files#' }},
      },
   };
   
