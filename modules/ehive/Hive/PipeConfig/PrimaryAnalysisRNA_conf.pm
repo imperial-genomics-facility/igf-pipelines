@@ -471,7 +471,7 @@ sub pipeline_analyses {
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
-        1 => {'picard_base_dist_summary_for_star => { 'input_files' => '#input_files#'}},
+        1 => {'picard_base_dist_summary_for_star' => { 'input_files' => '#input_files#'}},
       },
   };
   
