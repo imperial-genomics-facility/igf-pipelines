@@ -398,6 +398,7 @@ sub pipeline_analyses {
       'star_exe'           => $self->o('star_exe'),
       'input_bam'          => '#input_file#',
       'output_prefix'      => '#experiment_igf_id#',
+      'base_work_dir'      => $self->o('base_work_dir'),
       'reference_type'     => $self->o('star_reference_type'),
       'reference_gtf_type' => $self->o('reference_gtf_type'),
       'two_pass_mode'      => $self->o('star_two_pass_mode'),
