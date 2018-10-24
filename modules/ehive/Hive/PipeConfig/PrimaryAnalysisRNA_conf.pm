@@ -353,7 +353,7 @@ sub pipeline_analyses {
         'bam_file'        => '#input_file#',
         'base_result_dir' => $self->o('base_results_dir'),
         'threads'         => $self->o('samtools_threads'),
-        'samtools_exe'     => $self->o('samtools_exe'),
+        'samtools_exe'    => $self->o('samtools_exe'),
         'collection_name' => '#experiment_igf_id#',
         'collection_type' => $self->o('star_genomic_cram_type'),
         'collection_table'=> $self->o('star_collection_table'),
