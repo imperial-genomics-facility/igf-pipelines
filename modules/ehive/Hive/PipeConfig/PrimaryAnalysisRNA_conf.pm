@@ -336,7 +336,7 @@ sub pipeline_analyses {
         '2->A' => ['convert_star_genomic_bam_to_cram',
                    'star_bigwig'
                   ],
-        'A->1' => ['picard_aln_summary_for_star'], 
+        'A->1' => {'picard_aln_summary_for_star' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#'}}, 
       },
   };
   
@@ -461,7 +461,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'    => '#bam_files#',
+      'input_files'    => '#merged_star_genomic_bams#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -471,7 +471,7 @@ sub pipeline_analyses {
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
-        1 => {'picard_base_dist_summary_for_star' => { 'input_bams' => '#bam_files#' }},
+        1 => ['picard_base_dist_summary_for_star'],
       },
   };
   
@@ -485,7 +485,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'    => '#input_bams#',
+      'input_files'    => '#merged_star_genomic_bams#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -508,7 +508,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'    => '#input_bams#',
+      'input_files'    => '#merged_star_genomic_bams#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -532,7 +532,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'    => '#input_bams#',
+      'input_files'    => '#merged_star_genomic_bams#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -556,7 +556,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'    => '#input_bams#',
+      'input_files'    => '#merged_star_genomic_bams#',
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
@@ -581,7 +581,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#expr( $${#input_bams#}[0] )expr#',
+      'bam_file'         => '#expr( $${#merged_star_genomic_bams#}[0] )expr#',
       'samtools_command' => 'flagstat',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
@@ -603,7 +603,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#expr( $${#input_bams#}[0] )expr#',
+      'bam_file'         => '#expr( $${#merged_star_genomic_bams#}[0] )expr#',
       'samtools_command' => 'idxstats',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
