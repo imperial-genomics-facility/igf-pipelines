@@ -318,7 +318,8 @@ sub pipeline_analyses {
       'SORT_ORDER'     => 'coordinate',
      },
     -flow_into => {
-          1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#bam_files#' }},
+          1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#bam_files#',
+                                                         'analysis_files' => '#analysis_files#'}},
      },
   };
   
@@ -336,7 +337,8 @@ sub pipeline_analyses {
         '2->A' => ['convert_star_genomic_bam_to_cram',
                    'star_bigwig'
                   ],
-        'A->1' => {'picard_aln_summary_for_star' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#'}}, 
+        'A->1' => {'picard_aln_summary_for_star' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
+                                                     'analysis_files' => '#analysis_files#'}}, 
       },
   };
   
