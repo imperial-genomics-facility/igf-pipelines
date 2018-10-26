@@ -581,7 +581,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'       => '#expr( $${#merged_star_genomic_bams#}[0] )expr#',
+      'input_files'      => '#merged_star_genomic_bams#',
       'samtools_command' => 'flagstat',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
@@ -604,7 +604,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'       => '#expr( $${#merged_star_genomic_bams#}[0] )expr#',
+      'input_files'      => '#merged_star_genomic_bams#',
       'samtools_command' => 'idxstats',
       'base_work_dir'    => $self->o('base_work_dir'),
       'samtools_exe'     => $self->o('samtools_exe'),
@@ -688,7 +688,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'       => '#star_run_trans_bam_list_file#',
+      'input_files'      => ['#star_run_trans_bam_list_file#'],
       'samtools_command' => 'merge',
       'output_prefix'    => '#experiment_igf_id#',
       'sorted_by_name'   => 1,                                                  # enable read sorting by name for rsem
