@@ -30,7 +30,7 @@ sub default_options {
     'cleanup_bam_dir'     => 0,
     'cram_type'           => 'ANALYSIS_CRAM',
     'copy_input_to_temp'  => 0,
-    'patterned_flow_cell_list' => ['NEXTSEQ','HISEQ4000'],
+    'patterned_flow_cell_list'     => ['NEXTSEQ','HISEQ4000'],
     'rna_source'          => 'TRANSCRIPTOMIC',
     ## Irods
     'irods_exe_dir'       => undef,
@@ -38,8 +38,8 @@ sub default_options {
     'java_exe'            => undef,
     'java_param'          => '-Xmx4g',
     ## Picard
-    'picard_jar'             => undef,
-    'illumina_platform_name' => 'ILLUMINA',
+    'picard_jar'                   => undef,
+    'illumina_platform_name'       => 'ILLUMINA',
     ## MultiQC
     'multiqc_analysis'    => 'multiqc',
     'multiqc_exe'         => undef,
@@ -50,8 +50,8 @@ sub default_options {
     'reference_refFlat'   => 'GENE_REFFLAT',
     'reference_gtf_type'  => 'GENE_GTF',
     ## Fetch fastq
-    'fastq_collection_type'       => undef,
-    'fastq_collection_table'      => undef,
+    'fastq_collection_type'        => undef,
+    'fastq_collection_table'       => undef,
     ## Fastp adapter trimming
     'fastp_exe'            => undef,
     'fastp_options_list'   => ['--qualified_quality_phred=15','--length_required=15'],
@@ -68,10 +68,10 @@ sub default_options {
     'star_two_pass_mode'   => 1,
     'star_analysis_name'   => undef,
     'star_multiqc_type'    => undef,
-    'bedGraphToBigWig_path'   => undef,
-    'star_collection_table'   => undef,
-    'star_genomic_cram_type'  => undef,
-    'star_bw_collection_type' => undef,
+    'bedGraphToBigWig_path'        => undef,
+    'star_collection_table'        => undef,
+    'star_genomic_cram_type'       => undef,
+    'star_bw_collection_type'      => undef,
     ## RSEM
     'rsem_exe_dir'         => undef,
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
@@ -80,7 +80,16 @@ sub default_options {
     'rsem_memory_limit'    => 4000,
     'rsem_analysis_name'   => undef,
     'rsem_collection_type' => undef,
-    'rsem_collection_table' => undef,
+    'rsem_collection_table'        => undef,
+    ## Scanpy
+    'scanpy_type'          => 'SCANPY_RESULTS',
+    'scanpy_report_template'       => undef,
+    ## Demultiplexing pipeline
+    'demultiplexing_pipeline_name' => undef,
+    ## Remote dir settings
+    'seqrun_user'          => undef,
+    'remote_host'          => undef,
+    'remote_project_path'  => undef,
   };
 }
 
@@ -783,8 +792,47 @@ sub pipeline_analyses {
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         },
+       -flow_into    => {
+          1 => ['update_project_analysis'],
+      },
   };
   
+  ## update analysis page
+  push @pipeline, {
+      -logic_name   => 'update_project_analysis',
+      -module       => 'ehive.runnable.process.UpdateProjectAnalysisStats',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 1,
+      -parameters   => {
+        'collection_type_list' => [$self->o('multiqc_type'),
+                                   $self->o('scanpy_type')],
+        'remote_project_path'  => $self->o('remote_project_path'),
+        'remote_user'          => $self->o('seqrun_user'),
+        'remote_host'          => $self->o('remote_host'),
+      },
+      -flow_into    => {
+          1 => ['update_project_status'],
+      },
+  };
+  
+  ## update status page
+  push @pipeline, {
+      -logic_name   => 'update_project_status',
+      -module       => 'ehive.runnable.process.UpdateProjectStatus',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 1,
+      -parameters   => {
+        'remote_project_path'  => $self->o('remote_project_path'),
+        'remote_user'          => $self->o('seqrun_user'),
+        'remote_host'          => $self->o('remote_host'),
+        'demultiplexing_pipeline_name' => $self->o('demultiplexing_pipeline_name'),
+        'analysis_pipeline_name'       => $self->o('pipeline_name'),
+      },
+  };
   
   return \@pipeline;
 }
