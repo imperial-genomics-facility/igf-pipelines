@@ -787,6 +787,7 @@ sub pipeline_analyses {
         'task_id'       => '#project_igf_id#',
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
+        'rna_source'    => $self->o('rna_source'),
         },
        -flow_into    => {
           1 => WHEN('#library_source# eq #rna_source#' => ['config_genome_browser'],
