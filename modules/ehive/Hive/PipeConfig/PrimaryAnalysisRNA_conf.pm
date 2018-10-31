@@ -481,7 +481,6 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectAlignmentSummaryMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -505,7 +504,6 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectBaseDistributionByCycle',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -528,7 +526,6 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectGcBiasMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -552,7 +549,6 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'QualityScoreDistribution',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -577,7 +573,6 @@ sub pipeline_analyses {
       'picard_command' => 'CollectRnaSeqMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_refFlat' => $self->o('reference_refFlat'),
      },
     -flow_into   => {
@@ -601,7 +596,6 @@ sub pipeline_analyses {
       'reference_type'   => $self->o('reference_fasta_type'),
       'samtools_exe'     => $self->o('samtools_exe'),
       'threads'          => $self->o('samtools_threads'),
-      'copy_input'       => $self->o('copy_input_to_temp'),
      },
     -flow_into   => {
         1 => ['samtools_idxstat_summary_for_star'],
@@ -623,7 +617,6 @@ sub pipeline_analyses {
       'base_work_dir'    => $self->o('base_work_dir'),
       'samtools_exe'     => $self->o('samtools_exe'),
       'reference_type'   => $self->o('reference_fasta_type'),
-      'copy_input'       => $self->o('copy_input_to_temp'),
      },
     -flow_into   => {
         1 => ['multiqc_report_for_star'],
