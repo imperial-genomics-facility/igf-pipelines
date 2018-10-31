@@ -242,7 +242,6 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectAlignmentSummaryMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -259,13 +258,12 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_files'    => ['#bam_file#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectBaseDistributionByCycle',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -282,13 +280,12 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_files'    => ['#bam_file#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectGcBiasMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -305,13 +302,12 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_files'    => ['#bam_file#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'QualityScoreDistribution',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_type' => $self->o('reference_fasta_type'),
      },
     -flow_into   => {
@@ -328,14 +324,13 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_file'     => '#bam_file#',
+      'input_files'    => ['#bam_file#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'CollectRnaSeqMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'copy_input'     => $self->o('copy_input_to_temp'),
       'reference_refFlat' => $self->o('reference_refFlat'),
      },
     -flow_into   => {
@@ -352,12 +347,12 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#bam_file#',
+      'input_files'      => ['#bam_file#'],
+      'samtools_exe'     => $self->o('samtools_exe'),
       'samtools_command' => 'flagstat',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
       'threads'          => $self->o('samtools_threads'),
-      'copy_input'       => $self->o('copy_input_to_temp'),
      },
     -flow_into   => {
         1 => ['samtools_idxstat_summary_for_cellranger'],
@@ -373,11 +368,11 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'bam_file'         => '#bam_file#',
+      'input_files'      => ['#bam_file#'],
+      'samtools_exe'     => $self->o('samtools_exe'),
       'samtools_command' => 'idxstats',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
-      'copy_input'       => $self->o('copy_input_to_temp'),
      },
     -flow_into   => {
         1 => ['multiqc_report_for_cellranger'],
