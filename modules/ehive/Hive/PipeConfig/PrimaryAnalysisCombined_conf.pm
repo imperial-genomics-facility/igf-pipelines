@@ -86,7 +86,7 @@ sub default_options {
     'cellranger_exe'       => undef,
     'cellranger_param'     => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
     'cellranger_timeout'   => 43200,
-    'cellranger_collection_table'  => 'experiment'
+    'cellranger_collection_table'  => 'experiment',
     'cellranger_analysis_name'     => 'cellranger_count',
     ## Scanpy
     'scanpy_type'          => 'SCANPY_RESULTS',
