@@ -805,7 +805,7 @@ sub pipeline_analyses {
   ## configure genome browser
   push @pipeline, {
       -logic_name   => 'config_genome_browser',
-      -module       => 'ehive.runnable.process.BuildGenomeBrowserConfigForProject',
+      -module       => 'ehive.runnable.process.alignment.BuildGenomeBrowserConfigForProject',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
