@@ -90,7 +90,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
     -logic_name  => 'transfer_seqrun_file',
-    -module      => 'ehive.runnable.process.TransferAndCheckRemoteBclFile',
+    -module      => 'ehive.runnable.process.demultiplexing.TransferAndCheckRemoteBclFile',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '1Gb',
@@ -106,7 +106,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
     -logic_name  => 'check_samplesheet',
-    -module      => 'ehive.runnable.process.CheckAndProcessSampleSheet',
+    -module      => 'ehive.runnable.process.demultiplexing.CheckAndProcessSampleSheet',
     -language    => 'python3',
     -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
@@ -123,7 +123,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
     -logic_name  => 'change_single_cell_barcodes',
-    -module      => 'ehive.runnable.process.ReplaceSingleCellBarcodes',
+    -module      => 'ehive.runnable.process.demultiplexing.ReplaceSingleCellBarcodes',
     -language    => 'python3',
     -meadow_type  => 'LOCAL',
     -analysis_capacity => 2,
@@ -166,7 +166,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'calculate_bases_mask',
-      -module       => 'ehive.runnable.process.CalculateBasesMask',
+      -module       => 'ehive.runnable.process.demultiplexing.CalculateBasesMask',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
@@ -182,7 +182,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_bcl2fastq',
-      -module       => 'ehive.runnable.process.RunBcl2Fastq',
+      -module       => 'ehive.runnable.process.demultiplexing.RunBcl2Fastq',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '8Gb4t',
@@ -204,7 +204,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'merge_single_cell_fastq',
-      -module       => 'ehive.runnable.process.MergeSingleCellFastqFragments',
+      -module       => 'ehive.runnable.process.demultiplexing.MergeSingleCellFastqFragments',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
@@ -219,7 +219,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'check_demultiplexing_barcode',
-      -module       => 'ehive.runnable.process.CheckIndexStats',
+      -module       => 'ehive.runnable.process.demultiplexing.CheckIndexStats',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
@@ -233,7 +233,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'validate_all_lanes_for_project',
-      -module       => 'ehive.runnable.process.ValidateAllLanesForProject',
+      -module       => 'ehive.runnable.process.demultiplexing.ValidateAllLanesForProject',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
@@ -281,7 +281,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'collect_fastq_to_db_collection',
-      -module       => 'ehive.runnable.process.CollectFastqToDbCollection',
+      -module       => 'ehive.runnable.process.demultiplexing.CollectFastqToDbCollection',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '8Gb',
@@ -296,7 +296,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'upload_fastq_dir_to_irods',
-      -module       => 'ehive.runnable.process.UploadFastqToIrods',
+      -module       => 'ehive.runnable.process.demultiplexing.UploadFastqToIrods',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
@@ -326,7 +326,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqc_for_known_fastq',
-      -module       => 'ehive.runnable.process.RunFastqc',
+      -module       => 'ehive.runnable.process.demultiplexing.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '2Gb',
@@ -349,7 +349,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_fastqc_results_to_remote',
-      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -module       => 'ehive.runnable.process.demultiplexing.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
@@ -373,7 +373,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqscreen_for_known_fastq',
-      -module       => 'ehive.runnable.process.RunFastqscreen',
+      -module       => 'ehive.runnable.process.demultiplexing.RunFastqscreen',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb2t',
@@ -394,7 +394,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_fastqscreen_results_to_remote',
-      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -module       => 'ehive.runnable.process.demultiplexing.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
@@ -420,7 +420,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'collect_qc_data_for_known_fastq',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -module       => 'ehive.runnable.process.demultiplexing.CollectQcForFastqDir',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
@@ -437,7 +437,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_multiqc_for_know_fastq',
-      -module       => 'ehive.runnable.process.RunMutiQC',
+      -module       => 'ehive.runnable.process.demultiplexing.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
@@ -460,7 +460,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_known_multiqc_to_remote',
-      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -module       => 'ehive.runnable.process.demultiplexing.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
@@ -484,7 +484,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'prepare_and_copy_qc_page_for_lane',
-      -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
+      -module       => 'ehive.runnable.process.demultiplexing.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
@@ -505,7 +505,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'prepare_and_copy_qc_page_for_project',
-      -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
+      -module       => 'ehive.runnable.process.demultiplexing.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '2Gb',
@@ -546,7 +546,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'send_email_notification',
-      -module       => 'ehive.runnable.process.SendEmailToUser',
+      -module       => 'ehive.runnable.process.demultiplexing.SendEmailToUser',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
@@ -576,7 +576,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqc_for_undetermined_fastq',
-      -module       => 'ehive.runnable.process.RunFastqc',
+      -module       => 'ehive.runnable.process.demultiplexing.RunFastqc',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
@@ -594,7 +594,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_fastqscreen_for_undetermined_fastq',
-      -module       => 'ehive.runnable.process.RunFastqscreen',
+      -module       => 'ehive.runnable.process.demultiplexing.RunFastqscreen',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
@@ -615,7 +615,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'collect_qc_data_for_undetermined_fastq',
-      -module       => 'ehive.runnable.process.CollectQcForFastqDir',
+      -module       => 'ehive.runnable.process.demultiplexing.CollectQcForFastqDir',
       -language     => 'python3',
       -meadow_type  => 'LOCAL',
       -parameters  => {
@@ -629,7 +629,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'run_multiqc_for_undetermined_fastq',
-      -module       => 'ehive.runnable.process.RunMutiQC',
+      -module       => 'ehive.runnable.process.demultiplexing.RunMutiQC',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '4Gb',
@@ -651,7 +651,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'copy_undetermined_multiqc_to_remote',
-      -module       => 'ehive.runnable.process.CopyQCFileToRemote',
+      -module       => 'ehive.runnable.process.demultiplexing.CopyQCFileToRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '1Gb',
@@ -672,7 +672,7 @@ sub pipeline_analyses {
 
   push @pipeline, {
       -logic_name   => 'prepare_and_copy_qc_page_for_undetermined',
-      -module       => 'ehive.runnable.process.PrepareQcPageForRemote',
+      -module       => 'ehive.runnable.process.demultiplexing.PrepareQcPageForRemote',
       -language     => 'python3',
       -meadow_type  => 'PBSPro',
       -rc_name      => '2Gb',
