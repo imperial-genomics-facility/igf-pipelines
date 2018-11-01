@@ -91,6 +91,7 @@ sub default_options {
     'seqrun_user'          => undef,
     'remote_host'          => undef,
     'remote_project_path'  => undef,
+    'analysis_dir'         => 'analysis',
     ## Genome browser
     'genome_browser_template_file' => undef,
   };
@@ -458,6 +459,8 @@ sub pipeline_analyses {
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => '#analysis_output_list#',
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
@@ -657,14 +660,13 @@ sub pipeline_analyses {
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => ['#multiqc_html#'],
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
-      #-flow_into   => {
-      #   1 => ['mark_experiment_finished'],
-      #},
   };
   
   
@@ -769,7 +771,7 @@ sub pipeline_analyses {
       'file_list'     => '#analysis_output_list#',
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('rsem_analysis_name'),
-      'analysis_dir'  => 'analysis',
+      'analysis_dir'  => $self->o('analysis_dir'),
       'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
