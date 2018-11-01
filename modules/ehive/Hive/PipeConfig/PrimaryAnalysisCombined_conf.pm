@@ -97,6 +97,7 @@ sub default_options {
     'seqrun_user'          => undef,
     'remote_host'          => undef,
     'remote_project_path'  => undef,
+    'analysis_dir'         => 'analysis',
     ## Genome browser
     'genome_browser_template_file' => undef,
   };
@@ -465,6 +466,8 @@ sub pipeline_analyses {
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => '#analysis_output_list#',
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
@@ -664,6 +667,8 @@ sub pipeline_analyses {
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => ['#multiqc_html#'],
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
@@ -935,6 +940,8 @@ sub pipeline_analyses {
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => ['#output_report#'],
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
@@ -1135,6 +1142,8 @@ sub pipeline_analyses {
       -rc_name      => '1Gb',
       -analysis_capacity => 2,
       -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => ['#multiqc_html#'],
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
@@ -1158,6 +1167,7 @@ sub pipeline_analyses {
         'task_id'       => '#project_igf_id#',
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
+        'rna_source'    => $self->o('rna_source'),
         },
        -flow_into    => {
           1 => WHEN('#library_source# eq #rna_source#' => ['config_genome_browser'],
