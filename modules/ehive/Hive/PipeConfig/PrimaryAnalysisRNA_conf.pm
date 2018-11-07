@@ -195,7 +195,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-      'input_files'      => '#star_bigwigs#',
+      'input_files'      => ['#output_html_file#'],
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('fastp_analysis_name'),
       'collection_name'  => '#run_igf_id#',
