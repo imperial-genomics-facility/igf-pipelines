@@ -1,9 +1,9 @@
 =head1 NAME
-    ehive::Hive::PipeConfig::PrimaryAnalysis_conf
+    ehive::Hive::PipeConfig::PrimaryAnalysisSC_conf
 =cut
 
 
-package ehive::Hive::PipeConfig::PrimaryAnalysis_conf;
+package ehive::Hive::PipeConfig::PrimaryAnalysisSC_conf;
 
 use strict;
 use warnings;
@@ -15,7 +15,7 @@ sub default_options {
   my ($self) = @_;
   return {
     %{ $self->SUPER::default_options() },                                       # here we inherit anything from the base class
-    'pipeline_name'       => 'PrimaryAnalysis',
+    'pipeline_name'       => 'PrimaryAnalysisSC',
     'pipeseed_mode'       => 'alignment',
     'singlecell_source'   => 'TRANSCRIPTOMIC_SINGLE_CELL',
     'tenx_exp_type'       => 'TENX-TRANSCRIPTOME',
