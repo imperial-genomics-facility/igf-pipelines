@@ -251,7 +251,7 @@ sub pipeline_analyses {
     -rc_name     => '4Gb',
     -analysis_capacity => 10,
     -parameters  => {
-      'input_files'    => ['#bwa_genomic_bam#'],
+      'input_files'    => ['#bwa_bam#'],
       'java_exe'       => $self->o('java_exe'),
       'java_param'     => $self->o('java_param'),
       'picard_jar'     => $self->o('picard_jar'),
