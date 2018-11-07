@@ -58,6 +58,9 @@ sub default_options {
     'fastp_options_list'   => ['--qualified_quality_phred=15','--length_required=15'],
     'fastp_run_thread'     => 4,
     'split_by_lines_count' => 5000000,
+    'fastp_analysis_name'  => 'fastp',
+    'fastp_html_collection_type'   => 'FASTP_REPORT',
+    'fastp_collection_table'       => 'run',
     ## Samtools
     'samtools_exe'         => undef,
     'samtools_threads'     => 4,
@@ -178,12 +181,34 @@ sub pipeline_analyses {
       'input_fastq_list'     => '#fastq_files_list#',
     },
     -flow_into   => {
-        '1' => ['run_star'],
+        '1' => ['load_fastp_report'],
       },
   };
   
   
   ## collect fastp report
+  push @pipeline, {
+    -logic_name  => 'load_fastp_report',
+    -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#star_bigwigs#',
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('fastp_analysis_name'),
+      'collection_name'  => '#run_igf_id#',
+      'tag_name'         => '#species_name#',
+      'collection_type'  => $self->o('fastp_html_collection_type'),
+      'collection_table' => $self->o('fastp_collection_table'),
+     },
+    -flow_into   => {
+        1 => ['run_star'],
+      },
+  };
+  
+  
   ## copy report to remote dir
   
   
