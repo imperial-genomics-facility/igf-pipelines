@@ -341,7 +341,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-        'bam_file'        => '#merged_bwa_genomic_bams#',                       # FIX ME
+        'bam_files'       => '#merged_bwa_genomic_bams#',                       # fixed now
         'base_result_dir' => $self->o('base_results_dir'),
         'threads'         => $self->o('samtools_threads'),
         'samtools_exe'    => $self->o('samtools_exe'),
