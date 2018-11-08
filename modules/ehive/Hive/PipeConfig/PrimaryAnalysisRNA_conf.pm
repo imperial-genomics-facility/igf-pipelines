@@ -205,6 +205,7 @@ sub pipeline_analyses {
      },
     -flow_into   => {
         1 => ['run_star'],
+        1 => [ '?accu_name=fastp_report&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=output_json_file' ],
       },
   };
   
@@ -333,7 +334,25 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'picard_merge_and_mark_dup_genomic_bam' => {'star_genomic_bams' => '#exp_chunk_list#'}},
+        1 => {'collect_fastp_json_for_exp' => {'star_genomic_bams' => '#exp_chunk_list#'}},
+      },
+  };
+  
+  
+  ## collect fastp json
+  push @pipeline, {
+    -logic_name  => 'collect_fastp_json_for_exp',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#fastp_report#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => {'picard_merge_and_mark_dup_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
       },
   };
   
