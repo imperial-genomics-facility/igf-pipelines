@@ -204,8 +204,8 @@ sub pipeline_analyses {
       'collection_table' => $self->o('fastp_collection_table'),
      },
     -flow_into   => {
-        1 => ['run_star'],
-        1 => [ '?accu_name=fastp_report&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=output_json_file' ],
+        1 => ['run_star',
+              '?accu_name=fastp_report&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=output_json_file' ],
       },
   };
   
