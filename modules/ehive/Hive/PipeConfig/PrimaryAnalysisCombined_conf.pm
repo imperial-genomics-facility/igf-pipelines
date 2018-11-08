@@ -155,7 +155,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -rc_name     => '1Gb',
-    -analysis_capacity => 10,
+    -analysis_capacity => 5,
     -parameters  => {
       'fastq_collection_type'  => $self->o('fastq_collection_type'),
       'fastq_collection_table' => $self->o('fastq_collection_table'),
@@ -174,7 +174,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '1Gb4t',
-    -analysis_capacity => 10,
+    -analysis_capacity => 5,
     -parameters  => {
       'fastp_options_list'   => $self->o('fastp_options_list'),
       'split_by_lines_count' => $self->o('split_by_lines_count'),
@@ -200,7 +200,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '42Gb8t',
-    -analysis_capacity => 10,
+    -analysis_capacity => 5,
     -parameters  => {
       'star_exe'           => $self->o('star_exe'),
       'r1_read_file'       => '#output_read1#',
@@ -226,7 +226,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
-    -analysis_capacity => 10,
+    -analysis_capacity => 5,
     -parameters  => {
       'input_files'    => ['#star_genomic_bam#'],
       'java_exe'       => $self->o('java_exe'),
@@ -257,7 +257,7 @@ sub pipeline_analyses {
     -language    => 'python3',
     -meadow_type => 'PBSPro',
     -rc_name     => '4Gb',
-    -analysis_capacity => 10,
+    -analysis_capacity => 5,
     -parameters  => {
       'input_files'    => ['#star_transcriptomic_bam#'],
       'java_exe'       => $self->o('java_exe'),
