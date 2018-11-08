@@ -16,7 +16,7 @@ sub default_options {
   return {
     %{ $self->SUPER::default_options() },                                       # here we inherit anything from the base class
     ## Pipeline
-    'pipeline_name'       => 'PrimaryAnalysis',
+    'pipeline_name'       => 'PrimaryAnalysisCombined',
     'pipeseed_mode'       => 'alignment',
     'genomic_source'      => 'GENOMIC',
     'rna_source'          => 'TRANSCRIPTOMIC',
