@@ -68,7 +68,6 @@ sub default_options {
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
     'star_analysis_name'   => undef,
-    'star_multiqc_type'    => undef,
     'bedGraphToBigWig_path'        => undef,
     'star_collection_table'        => undef,
     'star_genomic_cram_type'       => undef,
@@ -645,7 +644,7 @@ sub pipeline_analyses {
     -parameters  => {
       'base_results_dir' => $self->o('base_results_dir'),
       'collection_name'  => '#experiment_igf_id#',
-      'collection_type'  => $self->o('star_multiqc_type'),
+      'collection_type'  => $self->o('multiqc_type'),
       'collection_table' => $self->o('star_collection_table'),
       'analysis_name'    => $self->o('multiqc_analysis'),
       'tag_name'         => '#species_name#',
