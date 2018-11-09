@@ -71,16 +71,16 @@ sub default_options {
     'star_run_thread'      => 8,
     'star_two_pass_mode'   => 1,
     'star_analysis_name'   => undef,
-    'star_multiqc_type'    => undef,
     'bedGraphToBigWig_path'        => undef,
     'star_collection_table'        => undef,
     'star_genomic_cram_type'       => undef,
     'star_bw_collection_type'      => undef,
     ## BWA
     'bwa_exe'              => undef,
-    'bwa_reference_type'   => undef,
+    'bwa_reference_type'   => 'GENOME_BWA',
     'bwa_run_thread'       => undef,
     'bwa_parameters'       => '{-"M":""}',
+    'bwa_genomic_cram_type'        => undef,
     ## RSEM
     'rsem_exe_dir'         => undef,
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
@@ -558,7 +558,7 @@ sub pipeline_analyses {
     -parameters  => {
       'base_results_dir' => $self->o('base_results_dir'),
       'collection_name'  => '#experiment_igf_id#',
-      'collection_type'  => $self->o('bwa_multiqc_type'),
+      'collection_type'  => $self->o('multiqc_type'),
       'collection_table' => $self->o('bwa_collection_table'),
       'analysis_name'    => $self->o('multiqc_analysis'),
       'tag_name'         => '#species_name#',
