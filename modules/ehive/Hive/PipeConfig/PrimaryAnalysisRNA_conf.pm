@@ -648,6 +648,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_files'      => '#merged_star_genomic_bams#',
       'samtools_command' => 'flagstat',
+      'output_prefix'    => '#experiment_igf_id#',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
       'samtools_exe'     => $self->o('samtools_exe'),
@@ -670,6 +671,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_files'      => '#merged_star_genomic_bams#',
       'samtools_command' => 'idxstats',
+      'output_prefix'    => '#experiment_igf_id#',
       'base_work_dir'    => $self->o('base_work_dir'),
       'samtools_exe'     => $self->o('samtools_exe'),
       'reference_type'   => $self->o('reference_fasta_type'),
