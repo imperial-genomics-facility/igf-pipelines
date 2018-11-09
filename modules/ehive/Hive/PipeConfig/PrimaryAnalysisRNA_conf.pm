@@ -373,7 +373,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'MarkDuplicates',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'SORT_ORDER'     => 'coordinate',
+      'picard_option'  => { 'SORT_ORDER' => 'coordinate'},
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'#MD#',
      },
     -flow_into => {
           1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#bam_files#',
