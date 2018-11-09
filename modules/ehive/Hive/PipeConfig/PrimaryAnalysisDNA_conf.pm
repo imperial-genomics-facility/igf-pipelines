@@ -76,6 +76,11 @@ sub default_options {
     'star_collection_table'        => undef,
     'star_genomic_cram_type'       => undef,
     'star_bw_collection_type'      => undef,
+    ## BWA
+    'bwa_exe'              => undef,
+    'bwa_reference_type'   => undef,
+    'bwa_run_thread'       => undef,
+    'bwa_parameters'       => '{-"M":""}',
     ## RSEM
     'rsem_exe_dir'         => undef,
     'rsem_reference_type'  => 'TRANSCRIPTOME_RSEM',
@@ -225,16 +230,15 @@ sub pipeline_analyses {
     -rc_name     => '4Gb8t',
     -analysis_capacity => 10,
     -parameters  => {
-      'star_exe'           => $self->o('star_exe'),
+      'bwa_exe'            => $self->o('bwa_exe'),
+      'samtools_exe'       => $self->o('samtools_exe'),
       'r1_read_file'       => '#output_read1#',
       'r2_read_file'       => '#output_read2#',
       'output_prefix'      => '#run_igf_id#',
       'base_work_dir'      => $self->o('base_work_dir'),
-      'reference_type'     => $self->o('star_reference_type'),
-      'reference_gtf_type' => $self->o('reference_gtf_type'),
-      'two_pass_mode'      => $self->o('star_two_pass_mode'),
-      'run_thread'         => $self->o('star_run_thread'),
-      'star_patameters'    => $self->o('star_patameters'),
+      'reference_type'     => $self->o('bwa_reference_type'),
+      'run_thread'         => $self->o('bwa_run_thread'),
+      'parameter_options'  => $self->o('bwa_parameters'),
     },
     -flow_into => {
           1 => ['picard_add_rg_tag_to_genomic_bam'],
