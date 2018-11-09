@@ -202,6 +202,7 @@ sub pipeline_analyses {
       'tag_name'         => '#species_name#',
       'collection_type'  => $self->o('fastp_html_collection_type'),
       'collection_table' => $self->o('fastp_collection_table'),
+      'file_suffix'      => 'html',
      },
     -flow_into   => {
         1 => ['run_star',
