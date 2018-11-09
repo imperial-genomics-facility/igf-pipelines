@@ -214,9 +214,11 @@ sub pipeline_analyses {
       'tag_name'         => '#species_name#',
       'collection_type'  => $self->o('fastp_html_collection_type'),
       'collection_table' => $self->o('fastp_collection_table'),
+      'file_suffix'      => 'html',
      },
     -flow_into   => {
-        1 => ['run_bwa'],
+        1 => ['run_bwa',
+              '?accu_name=bwa_fastp_report&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=output_json_file'],
       },
   };
   
@@ -307,14 +309,32 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'picard_merge_and_mark_dup_bwa_genomic_bam' => {'bwa_genomic_bams' => '#exp_chunk_list#'}},
+        1 => {'collect_bwa_fastp_json_for_exp' => {'bwa_genomic_bams' => '#exp_chunk_list#'}},
+      },
+  };
+  
+  
+  ## collect fastp json
+  push @pipeline, {
+    -logic_name  => 'collect_bwa_fastp_json_for_exp',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#fastp_report#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => {'picard_bwa_merge_and_mark_dup_bwa_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
       },
   };
   
   
   ## picard merge and mark duplicate genomic bam
   push @pipeline, {
-    -logic_name  => 'picard_merge_and_mark_dup_bwa_genomic_bam',
+    -logic_name  => 'picard_bwa_merge_and_mark_dup_bwa_genomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
