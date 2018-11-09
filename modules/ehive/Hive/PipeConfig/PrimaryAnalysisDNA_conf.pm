@@ -272,6 +272,7 @@ sub pipeline_analyses {
          'RGCN'       => 'Imperial Genomics Facility',
          'SORT_ORDER' => 'coordinate',
          },
+      'output_prefix'  => '#run_igf_id#'.'_'.'#RG#'.'_'.'genomic',
      },
     -flow_into => {
           1 => [ '?accu_name=bwa_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
@@ -347,7 +348,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'MarkDuplicates',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'SORT_ORDER'     => 'coordinate',
+      'picard_option'  => { 'SORT_ORDER' => 'coordinate'},
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'#MD#',
      },
     -flow_into => {
           1 => { 'convert_bwa_genomic_bam_to_cram' => {'merged_bwa_genomic_bams' => '#bam_files#',
@@ -420,6 +422,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectAlignmentSummaryMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'#ALN#',
      },
     -flow_into   => {
         1 => ['picard_base_dist_summary_for_bwa'],
@@ -443,29 +446,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectBaseDistributionByCycle',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-     },
-    -flow_into   => {
-        1 => ['picard_gc_bias_summary_for_bwa'],
-      },
-  };
-  
-  
-  ## picard base distribution summary metrics
-  push @pipeline, {
-    -logic_name  => 'picard_base_dist_summary_for_bwa',
-    -module      => 'ehive.runnable.process.alignment.RunPicard',
-    -language    => 'python3',
-    -meadow_type => 'PBSPro',
-    -rc_name     => '4Gb',
-    -analysis_capacity => 2,
-    -parameters  => {
-      'input_files'    => '#merged_bwa_genomic_bams#',
-      'java_exe'       => $self->o('java_exe'),
-      'java_param'     => $self->o('java_param'),
-      'picard_jar'     => $self->o('picard_jar'),
-      'picard_command' => 'CollectBaseDistributionByCycle',
-      'base_work_dir'  => $self->o('base_work_dir'),
-      'reference_type' => $self->o('reference_fasta_type'),
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'#BS#',
      },
     -flow_into   => {
         1 => ['picard_gc_bias_summary_for_bwa'],
@@ -489,6 +470,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectGcBiasMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'#GC#',
      },
     -flow_into   => {
         1 => ['picard_qual_dist_summary_for_bwa'],
@@ -512,6 +494,7 @@ sub pipeline_analyses {
       'picard_command' => 'QualityScoreDistribution',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'#QS#',
      },
     -flow_into   => {
         1 => ['samtools_flagstat_summary_for_bwa'],
@@ -530,6 +513,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_files'      => '#merged_bwa_genomic_bams#',
       'samtools_command' => 'flagstat',
+      'output_prefix'    => '#experiment_igf_id#',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
       'samtools_exe'     => $self->o('samtools_exe'),
@@ -552,6 +536,7 @@ sub pipeline_analyses {
     -parameters  => {
       'input_files'      => '#merged_bwa_genomic_bams#',
       'samtools_command' => 'idxstats',
+      'output_prefix'    => '#experiment_igf_id#',
       'base_work_dir'    => $self->o('base_work_dir'),
       'samtools_exe'     => $self->o('samtools_exe'),
       'reference_type'   => $self->o('reference_fasta_type'),
