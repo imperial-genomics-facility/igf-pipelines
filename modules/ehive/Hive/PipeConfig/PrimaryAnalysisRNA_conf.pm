@@ -211,9 +211,6 @@ sub pipeline_analyses {
   };
   
   
-  ## copy report to remote dir
-  
-  
   ## run star alignment
   push @pipeline, {
     -logic_name  => 'run_star',
@@ -339,7 +336,25 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'collect_fastp_json_for_exp' => {'star_genomic_bams' => '#exp_chunk_list#'}},
+        1 => {'collect_star_log_for_exp' => {'star_genomic_bams' => '#exp_chunk_list#'}},
+      },
+  };
+  
+  
+  ## collect star logs
+  push @pipeline, {
+    -logic_name  => 'collect_star_log_for_exp',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#star_logs#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => {'collect_fastp_json_for_exp' => {'analysis_files' => '#exp_chunk_list#'}},
       },
   };
   
