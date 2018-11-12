@@ -354,7 +354,7 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'collect_fastp_json_for_exp' => {'analysis_files' => '#exp_chunk_list#'}},
+        1 => {'collect_fastp_json_for_exp' => {'exp_chunk_list' => '#exp_chunk_list#'}},
       },
   };
   
