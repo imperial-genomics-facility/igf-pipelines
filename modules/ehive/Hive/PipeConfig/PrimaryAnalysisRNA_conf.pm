@@ -235,7 +235,9 @@ sub pipeline_analyses {
       'star_patameters'    => $self->o('star_patameters'),
     },
     -flow_into => {
-          1 => ['picard_add_rg_tag_to_genomic_bam','picard_add_rg_tag_to_transcriptomic_bam'],
+          1 => ['picard_add_rg_tag_to_genomic_bam',
+                'picard_add_rg_tag_to_transcriptomic_bam',
+                '?accu_name=star_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_log_file'],
     },
   };
   
