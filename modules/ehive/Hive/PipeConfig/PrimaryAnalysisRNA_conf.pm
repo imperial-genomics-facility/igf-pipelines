@@ -263,7 +263,7 @@ sub pipeline_analyses {
          'RGCN'       => 'Imperial Genomics Facility',
          'SORT_ORDER' => 'coordinate',
          },
-      'output_prefix'  => '#run_igf_id#'.'_'.'#RG#'.'_'.'genomic',
+      'output_prefix'  => '#run_igf_id#'.'_'.'RG'.'_'.'genomic',
      },
     -flow_into => {
           1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
@@ -295,7 +295,7 @@ sub pipeline_analyses {
          'RGCN'       => 'Imperial Genomics Facility',
          'SORT_ORDER' => 'unsorted',
          },
-      'output_prefix'  => '#run_igf_id#'.'_'.'#RG#'.'_'.'transcriptomic',
+      'output_prefix'  => '#run_igf_id#'.'_'.'RG'.'_'.'transcriptomic',
      },
     -flow_into => {
           1 => [ '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
@@ -392,8 +392,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'MarkDuplicates',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'picard_option'  => { 'SORT_ORDER' => 'coordinate'},
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#MD#',
+      'picard_option'  => { 'ASSUME_SORT_ORDER' => 'coordinate'},
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'MD',
      },
     -flow_into => {
           1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#bam_files#',
@@ -550,7 +550,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectAlignmentSummaryMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#ALN#',
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'ALN',
      },
     -flow_into   => {
         1 => ['picard_base_dist_summary_for_star'],
@@ -574,7 +574,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectBaseDistributionByCycle',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#BS#',
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'BS',
      },
     -flow_into   => {
         1 => ['picard_gc_bias_summary_for_star'],
@@ -597,7 +597,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectGcBiasMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#GC#',
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'GC',
      },
     -flow_into   => {
         1 => ['picard_qual_dist_summary_for_star'],
@@ -621,7 +621,7 @@ sub pipeline_analyses {
       'picard_command' => 'QualityScoreDistribution',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#QS#',
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'QS',
      },
     -flow_into   => {
         1 => ['picard_rna_metrics_summary_for_star'],
@@ -646,7 +646,7 @@ sub pipeline_analyses {
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
       'reference_refFlat' => $self->o('reference_refFlat'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#RNA#',
+      'output_prefix'  => '#experiment_igf_id#'.'_'.'RNA',
      },
     -flow_into   => {
         1 => ['samtools_flagstat_summary_for_star'],
