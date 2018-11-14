@@ -667,14 +667,14 @@ sub pipeline_analyses {
       'output_prefix'  => '#experiment_igf_id#'.'_'.'RNA',
      },
     -flow_into   => {
-        1 => ['samtools_flagstat_summary_for_star'],
+        1 => ['samtools_stats_summary_for_star'],
       },
   };
   
   
-  ## samtools flagstat metrics
+  ## samtools stats metrics
   push @pipeline, {
-    -logic_name  => 'samtools_flagstat_summary_for_star',
+    -logic_name  => 'samtools_stats_summary_for_star',
     -module      => 'ehive.runnable.process.alignment.RunSamtools',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -682,7 +682,7 @@ sub pipeline_analyses {
     -analysis_capacity => 2,
     -parameters  => {
       'input_files'      => '#merged_star_genomic_bams#',
-      'samtools_command' => 'flagstat',
+      'samtools_command' => 'stats',
       'output_prefix'    => '#experiment_igf_id#',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
