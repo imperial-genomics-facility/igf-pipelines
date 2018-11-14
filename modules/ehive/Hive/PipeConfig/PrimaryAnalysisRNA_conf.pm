@@ -354,6 +354,24 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
+        1 => {'collect_rsem_log_for_exp' => {'exp_chunk_list' => '#exp_chunk_list#'}},
+      },
+  };
+  
+  
+  ## collect rsem logs
+  push @pipeline, {
+    -logic_name  => 'collect_rsem_log_for_exp',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#rsem_logs#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
         1 => {'collect_fastp_json_for_exp' => {'exp_chunk_list' => '#exp_chunk_list#'}},
       },
   };
@@ -803,7 +821,8 @@ sub pipeline_analyses {
       'memory_limit'   => $self->o('rsem_memory_limit'),
      },
     -flow_into   => {
-        1 => ['load_rsem_results'],
+        1 => ['load_rsem_results',
+              '?accu_name=rsem_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=rsem_log_file' ],
       },
   };
   
