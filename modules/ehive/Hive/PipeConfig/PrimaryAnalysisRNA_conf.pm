@@ -45,6 +45,8 @@ sub default_options {
     'multiqc_exe'         => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'multiqc_type'        => 'MULTIQC_HTML',
+    'tool_order_list'     => ['fastp','star','picard','samtools','rsem'],
+    'multiqc_template_file'        => undef,
     ## Ref genome
     'reference_fasta_type'=> 'GENOME_FASTA',
     'reference_refFlat'   => 'GENE_REFFLAT',
@@ -734,6 +736,8 @@ sub pipeline_analyses {
       'tag_name'         => '#species_name#',
       'multiqc_exe'      => $self->o('multiqc_exe'),
       'multiqc_options'  => $self->o('multiqc_options'),
+      'tool_order_list'  => $self->o('tool_order_list'),
+      'multiqc_template_file'  => $self->o('multiqc_template_file'),
      },
     -flow_into   => {
         1 => ['copy_star_multiqc_to_remote'],
