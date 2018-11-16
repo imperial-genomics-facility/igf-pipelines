@@ -32,6 +32,7 @@ sub default_options {
     'copy_input_to_temp'  => 0,
     'patterned_flow_cell_list'     => ['NEXTSEQ','HISEQ4000'],
     'rna_source'          => 'TRANSCRIPTOMIC',
+    'center_name'         => 'Imperial BRC Genomics Facility',
     ## Irods
     'irods_exe_dir'       => undef,
     ## Java
@@ -262,7 +263,7 @@ sub pipeline_analyses {
          'RGPL'       => $self->o('illumina_platform_name'),
          'RGPU'       => '#run_igf_id#',
          'RGSM'       => '#sample_igf_id#',
-         'RGCN'       => 'Imperial Genomics Facility',
+         'RGCN'       => $self->o('center_name'),
          'SORT_ORDER' => 'coordinate',
          },
       'output_prefix'  => '#run_igf_id#'.'_'.'genomic',
@@ -294,7 +295,7 @@ sub pipeline_analyses {
          'RGPL'       => $self->o('illumina_platform_name'),
          'RGPU'       => '#run_igf_id#',
          'RGSM'       => '#sample_igf_id#',
-         'RGCN'       => 'Imperial Genomics Facility',
+         'RGCN'       => $self->o('center_name'),
          'SORT_ORDER' => 'unsorted',
          },
       'output_prefix'  => '#run_igf_id#'.'_'.'transcriptomic',
