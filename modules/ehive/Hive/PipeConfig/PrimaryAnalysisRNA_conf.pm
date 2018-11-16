@@ -417,8 +417,8 @@ sub pipeline_analyses {
         '2->A' => ['convert_star_genomic_bam_to_cram',
                    'star_bigwig'
                   ],
-        'A->1' => {'collect_rsem_log_for_exp' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
-                                                  'analysis_files' => '#analysis_files#'}}, 
+        'A->1' => {'picard_aln_summary_for_star' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
+                                                     'analysis_files' => '#analysis_files#'}}, 
       },
   };
   
@@ -533,25 +533,6 @@ sub pipeline_analyses {
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
-  };
-  
-  
-  ## collect rsem logs
-  push @pipeline, {
-    -logic_name  => 'collect_rsem_log_for_exp',
-    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language    => 'python3',
-    -meadow_type => 'LOCAL',
-    -analysis_capacity => 2,
-    -parameters  => {
-       'accu_data'      => '#rsem_logs#',
-       'exp_chunk_list' => '#analysis_files#',
-       'output_mode'    => 'list',
-       'base_work_dir'  => $self->o('base_work_dir'),
-      },
-    -flow_into   => {
-        1 => {'picard_aln_summary_for_star' => {'analysis_files' => '#exp_chunk_list#'}},
-      },
   };
   
   
