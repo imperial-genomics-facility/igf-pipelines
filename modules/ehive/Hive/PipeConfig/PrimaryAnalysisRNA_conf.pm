@@ -46,7 +46,7 @@ sub default_options {
     'multiqc_exe'         => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'multiqc_type'        => 'MULTIQC_HTML',
-    'tool_order_list'     => ['fastp','star','picard','samtools'],
+    'tool_order_list_rnaseq'       => ['fastp','star','picard','samtools'],
     'multiqc_template_file'        => undef,
     ## Ref genome
     'reference_fasta_type'=> 'GENOME_FASTA',
@@ -154,12 +154,10 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.FetchFastqForRun',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
-    -rc_name     => '1Gb',
-    -analysis_capacity => 10,
+    -analysis_capacity => 2,
     -parameters  => {
       'fastq_collection_type'  => $self->o('fastq_collection_type'),
       'fastq_collection_table' => $self->o('fastq_collection_table'),
-      'rna_source'             => $self->o('rna_source'),
     },
     -flow_into   => {
         1 => ['adapter_trim_without_fastq_split_rnaseq'],
@@ -309,13 +307,11 @@ sub pipeline_analyses {
   ## process star bams
   push @pipeline, {
     -logic_name  => 'process_star_bams',
-    #-module      => 'ehive.runnable.IGFBaseProcess',
     -module      => 'ehive.runnable.IGFBaseJobFactory',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-       #'dataflow_params' => {'finished_star'=>1},
        'sub_tasks' => [{'pseudo_exp_id'=> '#experiment_igf_id#'}],
       },
     -flow_into   => {
@@ -719,7 +715,7 @@ sub pipeline_analyses {
       'tag_name'         => '#species_name#',
       'multiqc_exe'      => $self->o('multiqc_exe'),
       'multiqc_options'  => $self->o('multiqc_options'),
-      'tool_order_list'  => $self->o('tool_order_list'),
+      'tool_order_list'  => $self->o('tool_order_list_rnaseq'),
       'multiqc_template_file'  => $self->o('multiqc_template_file'),
      },
     -flow_into   => {

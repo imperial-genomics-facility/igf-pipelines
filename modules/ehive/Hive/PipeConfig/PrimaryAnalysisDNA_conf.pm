@@ -32,6 +32,8 @@ sub default_options {
     'copy_input_to_temp'  => 0,
     'patterned_flow_cell_list'     => ['NEXTSEQ','HISEQ4000'],
     'rna_source'          => 'TRANSCRIPTOMIC',
+    'dna_source'          => 'GENOMICMIC',
+    'center_name'         => 'Imperial BRC Genomics Facility',
     ## Irods
     'irods_exe_dir'       => undef,
     ## Java
@@ -45,6 +47,8 @@ sub default_options {
     'multiqc_exe'         => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'multiqc_type'        => 'MULTIQC_HTML',
+    'tool_order_list_dnaseq'       => ['fastp','picard','samtools'],
+    'multiqc_template_file'        => undef,
     ## Ref genome
     'reference_fasta_type'=> 'GENOME_FASTA',
     'reference_refFlat'   => 'GENE_REFFLAT',
@@ -152,7 +156,7 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -flow_into   => {
-        '2->A' => ['fetch_fastq_for_run'],
+        '2->A' => ['fetch_fastq_for_dnaseq_run'],
         'A->1' => ['process_bwa_bams'],
       },
   };
@@ -160,25 +164,24 @@ sub pipeline_analyses {
   
   ## fetch fastq files for a run
   push @pipeline, {
-    -logic_name  => 'fetch_fastq_for_run',
+    -logic_name  => 'fetch_fastq_for_dnaseq_run',
     -module      => 'ehive.runnable.process.alignment.FetchFastqForRun',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
-    -rc_name     => '1Gb',
-    -analysis_capacity => 5,
+    -analysis_capacity => 2,
     -parameters  => {
       'fastq_collection_type'  => $self->o('fastq_collection_type'),
       'fastq_collection_table' => $self->o('fastq_collection_table'),
     },
     -flow_into   => {
-        1 => ['adapter_trim_without_fastq_split'],
+        1 => ['adapter_trim_without_fastq_split_dnaseq'],
       },
   };
   
   
   ## adapter trim without fastq splitting
   push @pipeline, {
-    -logic_name  => 'adapter_trim_without_fastq_split',
+    -logic_name  => 'adapter_trim_without_fastq_split_dnaseq',
     -module      => 'ehive.runnable.process.alignment.RunFastp',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -193,14 +196,14 @@ sub pipeline_analyses {
       'input_fastq_list'     => '#fastq_files_list#',
     },
     -flow_into   => {
-        '1' => ['load_fastp_report'],
+        '1' => ['load_fastp_report_dnaseq'],
       },
   };
   
   
   ## collect fastp report
   push @pipeline, {
-    -logic_name  => 'load_fastp_report',
+    -logic_name  => 'load_fastp_report_dnaseq',
     -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -243,14 +246,14 @@ sub pipeline_analyses {
       'parameter_options'  => $self->o('bwa_parameters'),
     },
     -flow_into => {
-          1 => ['picard_add_rg_tag_to_genomic_bam'],
+          1 => ['picard_add_rg_tag_to_bwa_genomic_bam'],
     },
   };
   
   
-  ## picard add rg tag to run star genomic bam
+  ## picard add rg tag to run bwa genomic bam
   push @pipeline, {
-    -logic_name  => 'picard_add_rg_tag_to_genomic_bam',
+    -logic_name  => 'picard_add_rg_tag_to_bwa_genomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -269,10 +272,10 @@ sub pipeline_analyses {
          'RGPL'       => $self->o('illumina_platform_name'),
          'RGPU'       => '#run_igf_id#',
          'RGSM'       => '#sample_igf_id#',
-         'RGCN'       => 'Imperial Genomics Facility',
+         'RGCN'       => $self->o('center_name'),
          'SORT_ORDER' => 'coordinate',
          },
-      'output_prefix'  => '#run_igf_id#'.'_'.'#RG#'.'_'.'genomic',
+      'output_prefix'  => '#run_igf_id#'.'_'.'genomic',
      },
     -flow_into => {
           1 => [ '?accu_name=bwa_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
@@ -297,7 +300,7 @@ sub pipeline_analyses {
   };
   
   
-  ## collect star genomic bam
+  ## collect bwa genomic bam
   push @pipeline, {
     -logic_name  => 'collect_bwa_genomic_bam_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
@@ -348,8 +351,8 @@ sub pipeline_analyses {
       'picard_jar'     => $self->o('picard_jar'),
       'picard_command' => 'MarkDuplicates',
       'base_work_dir'  => $self->o('base_work_dir'),
-      'picard_option'  => { 'SORT_ORDER' => 'coordinate'},
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#MD#',
+      'picard_option'  => { 'ASSUME_SORT_ORDER' => 'coordinate'},
+      'output_prefix'  => '#experiment_igf_id#',
      },
     -flow_into => {
           1 => { 'convert_bwa_genomic_bam_to_cram' => {'merged_bwa_genomic_bams' => '#bam_files#',
@@ -384,7 +387,7 @@ sub pipeline_analyses {
   };
   
   
-  ## copy star genomic cram to irods
+  ## copy bwa genomic cram to irods
   push @pipeline, {
     -logic_name  => 'upload_bwa_genomic_cram_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
@@ -422,7 +425,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectAlignmentSummaryMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#ALN#',
+      'output_prefix'  => '#experiment_igf_id#',
      },
     -flow_into   => {
         1 => ['picard_base_dist_summary_for_bwa'],
@@ -446,7 +449,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectBaseDistributionByCycle',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#BS#',
+      'output_prefix'  => '#experiment_igf_id#',
      },
     -flow_into   => {
         1 => ['picard_gc_bias_summary_for_bwa'],
@@ -470,7 +473,7 @@ sub pipeline_analyses {
       'picard_command' => 'CollectGcBiasMetrics',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#GC#',
+      'output_prefix'  => '#experiment_igf_id#',
      },
     -flow_into   => {
         1 => ['picard_qual_dist_summary_for_bwa'],
@@ -494,17 +497,17 @@ sub pipeline_analyses {
       'picard_command' => 'QualityScoreDistribution',
       'base_work_dir'  => $self->o('base_work_dir'),
       'reference_type' => $self->o('reference_fasta_type'),
-      'output_prefix'  => '#experiment_igf_id#'.'_'.'#QS#',
+      'output_prefix'  => '#experiment_igf_id#',
      },
     -flow_into   => {
-        1 => ['samtools_flagstat_summary_for_bwa'],
+        1 => ['samtools_stats_summary_for_bwa'],
       },
   };
   
   
-  ## samtools flagstat metrics
+  ## samtools stats metrics
   push @pipeline, {
-    -logic_name  => 'samtools_flagstat_summary_for_bwa',
+    -logic_name  => 'samtools_stats_summary_for_bwa',
     -module      => 'ehive.runnable.process.alignment.RunSamtools',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -512,7 +515,7 @@ sub pipeline_analyses {
     -analysis_capacity => 2,
     -parameters  => {
       'input_files'      => '#merged_bwa_genomic_bams#',
-      'samtools_command' => 'flagstat',
+      'samtools_command' => 'stats',
       'output_prefix'    => '#experiment_igf_id#',
       'base_work_dir'    => $self->o('base_work_dir'),
       'reference_type'   => $self->o('reference_fasta_type'),
@@ -523,7 +526,6 @@ sub pipeline_analyses {
         1 => ['samtools_idxstat_summary_for_bwa'],
       },
   };
-  
   
   ## samtools idxstat metrics
   push @pipeline, {
@@ -564,6 +566,8 @@ sub pipeline_analyses {
       'tag_name'         => '#species_name#',
       'multiqc_exe'      => $self->o('multiqc_exe'),
       'multiqc_options'  => $self->o('multiqc_options'),
+      'tool_order_list'  => $self->o('tool_order_list_dnaseq'),
+      'multiqc_template_file'  => $self->o('multiqc_template_file'),
      },
     -flow_into   => {
         1 => ['copy_bwa_multiqc_to_remote'],
