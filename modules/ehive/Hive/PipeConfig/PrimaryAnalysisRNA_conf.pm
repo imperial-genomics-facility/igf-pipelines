@@ -45,7 +45,7 @@ sub default_options {
     'multiqc_exe'         => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'multiqc_type'        => 'MULTIQC_HTML',
-    'tool_order_list'     => ['fastp','star','picard','samtools','rsem'],
+    'tool_order_list'     => ['fastp','star','picard','samtools'],
     'multiqc_template_file'        => undef,
     ## Ref genome
     'reference_fasta_type'=> 'GENOME_FASTA',
