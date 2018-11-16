@@ -141,7 +141,7 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -flow_into   => {
-        '2->A' => ['fetch_fastq_for_run'],
+        '2->A' => ['fetch_fastq_for_rnaseq_run'],
         'A->1' => ['process_star_bams'],
       },
   };
@@ -149,7 +149,7 @@ sub pipeline_analyses {
   
   ## fetch fastq files for a run
   push @pipeline, {
-    -logic_name  => 'fetch_fastq_for_run',
+    -logic_name  => 'fetch_fastq_for_rnaseq_run',
     -module      => 'ehive.runnable.process.alignment.FetchFastqForRun',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
@@ -161,14 +161,14 @@ sub pipeline_analyses {
       'rna_source'             => $self->o('rna_source'),
     },
     -flow_into   => {
-        1 => ['adapter_trim_without_fastq_split'],
+        1 => ['adapter_trim_without_fastq_split_rnaseq'],
       },
   };
   
   
   ## adapter trim without fastq splitting
   push @pipeline, {
-    -logic_name  => 'adapter_trim_without_fastq_split',
+    -logic_name  => 'adapter_trim_without_fastq_split_rnaseq',
     -module      => 'ehive.runnable.process.alignment.RunFastp',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -183,14 +183,14 @@ sub pipeline_analyses {
       'input_fastq_list'     => '#fastq_files_list#',
     },
     -flow_into   => {
-        '1' => ['load_fastp_report'],
+        '1' => ['load_fastp_report_rnaseq'],
       },
   };
   
   
   ## collect fastp report
   push @pipeline, {
-    -logic_name  => 'load_fastp_report',
+    -logic_name  => 'load_fastp_report_rnaseq',
     -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -234,8 +234,8 @@ sub pipeline_analyses {
       'star_patameters'    => $self->o('star_patameters'),
     },
     -flow_into => {
-          1 => ['picard_add_rg_tag_to_genomic_bam',
-                'picard_add_rg_tag_to_transcriptomic_bam',
+          1 => ['picard_add_rg_tag_to_star_genomic_bam',
+                'picard_add_rg_tag_to_star_transcriptomic_bam',
                 '?accu_name=star_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_log_file'],
     },
   };
@@ -243,7 +243,7 @@ sub pipeline_analyses {
   
   ## picard add rg tag to run star genomic bam
   push @pipeline, {
-    -logic_name  => 'picard_add_rg_tag_to_genomic_bam',
+    -logic_name  => 'picard_add_rg_tag_to_star_genomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -275,7 +275,7 @@ sub pipeline_analyses {
   
   ## picard add rg tag to run star transcriptomic bam
   push @pipeline, {
-    -logic_name  => 'picard_add_rg_tag_to_transcriptomic_bam',
+    -logic_name  => 'picard_add_rg_tag_to_star_transcriptomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
@@ -356,14 +356,14 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => ['collect_fastp_json_for_exp'],
+        1 => ['collect_fastp_json_for_exp_rnaseq'],
       },
   };
   
   
   ## collect fastp json
   push @pipeline, {
-    -logic_name  => 'collect_fastp_json_for_exp',
+    -logic_name  => 'collect_fastp_json_for_exp_rnaseq',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
@@ -374,14 +374,14 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'picard_merge_and_mark_dup_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
+        1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
       },
   };
   
   
   ## picard merge and mark duplicate genomic bam
   push @pipeline, {
-    -logic_name  => 'picard_merge_and_mark_dup_genomic_bam',
+    -logic_name  => 'picard_merge_and_mark_dup_star_genomic_bam',
     -module      => 'ehive.runnable.process.alignment.RunPicard',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
