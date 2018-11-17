@@ -3,7 +3,7 @@
 =cut
 
 
-package ehive::Hive::PipeConfig::PrimaryAnalysisCombinedDNA_conf;
+package ehive::Hive::PipeConfig::PrimaryAnalysisDNA_conf;
 
 use strict;
 use warnings;
