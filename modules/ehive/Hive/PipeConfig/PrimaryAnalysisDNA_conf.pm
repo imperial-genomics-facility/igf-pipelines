@@ -80,7 +80,7 @@ sub default_options {
     ## BWA
     'bwa_exe'              => undef,
     'bwa_reference_type'   => 'GENOME_BWA',
-    'bwa_run_thread'       => undef,
+    'bwa_run_thread'       => 8,
     'bwa_parameters'       => '{-"M":""}',
     'bwa_genomic_cram_type'        => undef,
     ## RSEM
