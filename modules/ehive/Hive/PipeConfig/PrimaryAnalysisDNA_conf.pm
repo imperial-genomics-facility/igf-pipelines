@@ -81,7 +81,7 @@ sub default_options {
     'bwa_exe'              => undef,
     'bwa_reference_type'   => 'GENOME_BWA',
     'bwa_run_thread'       => 8,
-    'bwa_parameters'       => '{-"M":""}',
+    'bwa_parameters'       => '{"-M":""}',
     'bwa_analysis_name'    => undef,
     'bwa_collection_table' => undef,
     'bwa_genomic_cram_type'        => undef,
