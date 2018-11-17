@@ -16,7 +16,7 @@ sub default_options {
   return {
     %{ $self->SUPER::default_options() },                                       # here we inherit anything from the base class
     ## Pipeline
-    'pipeline_name'       => 'PrimaryAnalysis',
+    'pipeline_name'       => 'PrimaryAnalysisDNA',
     'pipeseed_mode'       => 'alignment',
     'genomic_source'      => 'GENOMIC',
     'rna_source'          => 'TRANSCRIPTOMIC',
@@ -31,8 +31,6 @@ sub default_options {
     'cram_type'           => 'ANALYSIS_CRAM',
     'copy_input_to_temp'  => 0,
     'patterned_flow_cell_list'     => ['NEXTSEQ','HISEQ4000'],
-    'rna_source'          => 'TRANSCRIPTOMIC',
-    'dna_source'          => 'GENOMICMIC',
     'center_name'         => 'Imperial BRC Genomics Facility',
     ## Irods
     'irods_exe_dir'       => undef,
