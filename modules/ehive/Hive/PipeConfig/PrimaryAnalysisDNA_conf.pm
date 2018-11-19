@@ -326,7 +326,7 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-       'accu_data'     => '#fastp_report#',
+       'accu_data'     => '#bwa_fastp_report#',
        'output_mode'   => 'list',
        'base_work_dir' => $self->o('base_work_dir'),
       },
