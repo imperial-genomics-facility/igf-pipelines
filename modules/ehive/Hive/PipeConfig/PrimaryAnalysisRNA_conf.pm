@@ -236,6 +236,7 @@ sub pipeline_analyses {
           1 => ['picard_add_rg_tag_to_star_genomic_bam',
                 'picard_add_rg_tag_to_star_transcriptomic_bam',
                 '?accu_name=star_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_log_file'],
+                '?accu_name=star_gene_counts&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_gene_count_file'],
     },
   };
   
