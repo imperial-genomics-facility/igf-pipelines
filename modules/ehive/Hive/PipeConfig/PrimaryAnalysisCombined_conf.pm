@@ -684,11 +684,8 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
+        1 => {'picard_aln_summary_for_star' => {'analysis_files' => '#exp_chunk_list#'}},
       },
-      -flow_into   => {
-        1 => ['picard_aln_summary_for_star'],
-      }
   };
   
   
