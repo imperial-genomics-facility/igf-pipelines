@@ -991,7 +991,7 @@ sub pipeline_analyses {
   };
   
   
-  ## copy rsem results to irods
+  ## RNA-SEQ: copy rsem results to irods
   push @pipeline, {
     -logic_name  => 'upload_rsem_results_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
@@ -1463,6 +1463,375 @@ sub pipeline_analyses {
   
   #############################  DNA-SEQ END      ##############################
   #############################  SINGLECELL START ##############################
+  
+  
+  ## SINGLECELL: run cellranger for each experiments
+  push @pipeline, {
+    -logic_name  => 'run_cellranger_count_for_experiment',
+    -module      => 'ehive.runnable.process.alignment.RunCellrangerCount',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 1,
+    -parameters  => {
+      'cellranger_exe'     => $self->o('cellranger_exe'),
+      'cellranger_options' => $self->o('cellranger_param'),
+      'base_work_dir'      => $self->o('base_work_dir'),
+      'base_results_dir'   => $self->o('base_results_dir'),
+      'job_timeout'        => $self->o('cellranger_timeout'),
+      },
+    -flow_into   => {
+        1 => ['load_cellranger_count_output_for_experiment'],
+      },
+  };
+  
+  
+  ## SINGLECELL: load cellranger output for each experiments
+  push @pipeline, {
+    -logic_name  => 'load_cellranger_count_output_for_experiment',
+    -module      => 'ehive.runnable.process.alignment.ProcessCellrangerCountOutput',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 1,
+    -parameters  => {
+      'base_work_dir'      => $self->o('base_work_dir'),
+      'base_results_dir'   => $self->o('base_results_dir'),
+      },
+    -flow_into   => {
+        1 => ['single_cell_analysis_factory_1'],
+        #1 => ['upload_cellranger_results_to_irods'],
+      },
+  };
+  
+  
+  ## SINGLECELL: single cell analysis factory 1
+  push @pipeline, {
+    -logic_name  => 'single_cell_analysis_factory_1',
+    -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -parameters  => {
+      'file_list' => ['#bam_file#'],
+      },
+    -flow_into   => {
+        '2->A' => ['upload_cellranger_results_to_irods',
+                   'convert_cellranger_bam_to_cram',
+                   'scanpy_report_generation'
+                   ],
+        'A->1' => ['picard_aln_summary_for_cellranger'], 
+      },
+  };
+  
+  
+  ## SINGLECELL: upload cellranger resilts to irods
+  push @pipeline, {
+    -logic_name  => 'upload_cellranger_results_to_irods',
+    -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'file_list'     => '#analysis_output_list#',
+      'irods_exe_dir' => $self->o('irods_exe_dir'),
+      'analysis_name' => $self->o('cellranger_analysis_name'),
+      'analysis_dir'  => $self->o('analysis_dir'),
+      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+     },
+  };
+  
+  
+  ## SINGLECELL: convert bam file to cram
+  push @pipeline, {
+    -logic_name  => 'convert_cellranger_bam_to_cram',
+    -module      => 'ehive.runnable.process.alignment.ConvertBamToCram',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+        'bam_file'        => '#bam_file#',
+        'samtools_exe'    => $self->o('samtools_exe'),
+        'base_result_dir' => $self->o('base_results_dir'),
+        'threads'         => $self->o('samtools_threads'),
+        'collection_name' => '#experiment_igf_id#',
+        'collection_type' => $self->o('cram_type'),
+        'collection_table'=> $self->o('cellranger_collection_table'),
+        'analysis_name'   => $self->o('cellranger_analysis_name'),
+        'tag_name'        => '#species_name#',
+        'reference_type'  => $self->o('reference_fasta_type'),
+        'copy_input'      => $self->o('copy_input_to_temp'),
+     },
+     -flow_into   => {
+        1 => ['upload_cellranger_cram_to_irods'],
+      },
+  };
+  
+  
+  ## SINGLECELL: upload cram file to irods server
+  push @pipeline, {
+    -logic_name  => 'upload_cellranger_cram_to_irods',
+    -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'file_list'     => '#output_cram_list#',
+      'irods_exe_dir' => $self->o('irods_exe_dir'),
+      'analysis_name' => $self->o('cellranger_analysis_name'),
+      'analysis_dir'  => $self->o('analysis_dir'),
+      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+     },
+  };
+  
+  
+  ## SINGLECELL: scanpy report
+  push @pipeline, {
+    -logic_name  => 'scanpy_report_generation',
+    -module      => 'ehive.runnable.process.alignment.RunScanpy',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'report_template_file'   => $self->o('scanpy_report_template'),
+      'base_result_dir'        => $self->o('base_results_dir'),
+      'scanpy_collection_type' => $self->o('scanpy_type'),
+     },
+    -flow_into   => {
+        1 => ['copy_scanpy_report_to_remote'],
+      },
+  };
+  
+  
+  ## SINGLECELL: copy scanpy report to remote
+  push @pipeline, {
+      -logic_name   => 'copy_scanpy_report_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+        'file_list'           => ['#output_report#'],
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
+  };
+  
+  
+  ## SINGLECELL: picard alignment summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_aln_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'    => ['#bam_file#'],
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectAlignmentSummaryMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_base_dist_summary_for_cellranger'],
+      },
+  };
+  
+  
+  ## SINGLECELL: picard base distribution summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_base_dist_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'    => ['#bam_file#'],
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectBaseDistributionByCycle',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_gc_bias_summary_for_cellranger'],
+      },
+  };
+  
+  
+  ## SINGLECELL: picard gc bias summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_gc_bias_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'    => ['#bam_file#'],
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectGcBiasMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_qual_dist_summary_for_cellranger'],
+      },
+  };
+  
+  
+  ## SINGLECELL: picard quality distribution summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_qual_dist_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'    => ['#bam_file#'],
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'QualityScoreDistribution',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type' => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['picard_rna_metrics_summary_for_cellranger'],
+      },
+  };
+  
+  
+  ## SINGLECELL: picard rna metrics summary metrics
+  push @pipeline, {
+    -logic_name  => 'picard_rna_metrics_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunPicard',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '4Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'    => ['#bam_file#'],
+      'java_exe'       => $self->o('java_exe'),
+      'java_param'     => $self->o('java_param'),
+      'picard_jar'     => $self->o('picard_jar'),
+      'picard_command' => 'CollectRnaSeqMetrics',
+      'base_work_dir'  => $self->o('base_work_dir'),
+      'reference_type' => $self->o('reference_fasta_type'),
+      'reference_refFlat' => $self->o('reference_refFlat'),
+     },
+    -flow_into   => {
+        1 => ['samtools_flagstat_summary_for_cellranger'],
+      },
+  };
+  
+  
+  ## SINGLECELL: samtools stats metrics
+  push @pipeline, {
+    -logic_name  => 'samtools_flagstat_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => ['#bam_file#'],
+      'samtools_exe'     => $self->o('samtools_exe'),
+      'samtools_command' => 'stats',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+      'threads'          => $self->o('samtools_threads'),
+     },
+    -flow_into   => {
+        1 => ['samtools_idxstat_summary_for_cellranger'],
+      },
+  };
+  
+  
+  ## SINGLECELL: samtools idxstat metrics
+  push @pipeline, {
+    -logic_name  => 'samtools_idxstat_summary_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => ['#bam_file#'],
+      'samtools_exe'     => $self->o('samtools_exe'),
+      'samtools_command' => 'idxstats',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+     },
+    -flow_into   => {
+        1 => ['multiqc_report_for_cellranger'],
+      },
+  };
+  
+  
+  ## SINGLECELL: multiqc report building
+  push @pipeline, {
+    -logic_name  => 'multiqc_report_for_cellranger',
+    -module      => 'ehive.runnable.process.alignment.RunAnalysisMultiQC',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'base_results_dir' => $self->o('base_results_dir'),
+      'collection_name'  => '#experiment_igf_id#',
+      'collection_type'  => $self->o('multiqc_type'),
+      'collection_table' => $self->o('cellranger_collection_table'),
+      'analysis_name'    => $self->o('multiqc_analysis'),
+      'tag_name'         => '#species_name#',
+      'multiqc_exe'      => $self->o('multiqc_exe'),
+      'multiqc_options'  => $self->o('multiqc_options'),
+     },
+    -flow_into   => {
+        1 => ['copy_sample_multiqc_for_singlecell_to_remote'],
+      },
+  };
+  
+  
+  ## SINGLECELL: copy multiqc to remote
+  push @pipeline, {
+      -logic_name   => 'copy_sample_multiqc_for_singlecell_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+        'file_list'           => ['#multiqc_html#'],
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
+      -flow_into    => {
+          1 => ['mark_experiment_finished'],
+      },
+  };
+  
+  
   #############################  SINGLECELL END   ##############################
   
   
