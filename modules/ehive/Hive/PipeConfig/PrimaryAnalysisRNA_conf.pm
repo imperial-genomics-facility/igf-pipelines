@@ -88,6 +88,11 @@ sub default_options {
     'rsem_analysis_name'   => undef,
     'rsem_collection_type' => undef,
     'rsem_collection_table'        => undef,
+    ## featureCounts
+    'featurecounts_exe'    => undef,
+    'featurecounts_param'  => undef,
+    'featurecounts_threads'        => 4,
+    'featurecounts_analysis_name'  => 'featureCounts',
     ## Scanpy
     'scanpy_type'          => 'SCANPY_RESULTS',
     'scanpy_report_template'       => undef,
@@ -415,8 +420,8 @@ sub pipeline_analyses {
         '2->A' => ['convert_star_genomic_bam_to_cram',
                    'star_bigwig'
                   ],
-        'A->1' => {'picard_aln_summary_for_star' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
-                                                     'analysis_files' => '#analysis_files#'}}, 
+        'A->1' => {'collect_featureCounts_for_exp_rnaseq' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
+                                                              'analysis_files' => '#analysis_files#'}}, 
       },
   };
   
@@ -459,6 +464,51 @@ sub pipeline_analyses {
       'file_list'     => '#output_cram_list#',
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('star_analysis_name'),
+      'analysis_dir'  => 'analysis',
+      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+     },
+     -flow_into   => {
+        1 => ['run_featureCounts_for_rnaseq'],
+      },
+  };
+  
+  
+  ## run feature counts
+  push @pipeline, {
+    -logic_name  => 'run_featureCounts_for_rnaseq',
+    -module      => 'ehive.runnable.process.alignment.RunFeatureCounts',
+    -language    => 'python3',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'featurecounts_exe'  => $self->o('featurecounts_exe'),
+      'input_files'        => ['#input_file#'],
+      'reference_gtf'      => $self->o('reference_gtf_type'),
+      'run_thread'         => $self->o('featurecounts_threads'),
+      'parameter_options'  => $self->o('featurecounts_param'),
+      'output_prefix'      => '#experiment_igf_id#',
+    },
+    -flow_into   => {
+        1 => ['upload_featurecounts_results_to_irods',
+              '?accu_name=feature_count_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=featureCounts_summary'
+             ],
+      },
+  };
+  
+  
+  ## copy star genomic cram to irods
+  push @pipeline, {
+    -logic_name  => 'upload_featurecounts_results_to_irods',
+    -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'file_list'     => ['#featureCounts_output#'],
+      'irods_exe_dir' => $self->o('irods_exe_dir'),
+      'analysis_name' => $self->o('featurecounts_analysis_name'),
       'analysis_dir'  => 'analysis',
       'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
       'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
@@ -531,6 +581,28 @@ sub pipeline_analyses {
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
         },
+  };
+  
+  
+  ## collect featureCounts summary
+  push @pipeline, {
+    -logic_name  => 'collect_featureCounts_for_exp_rnaseq',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'exp_chunk_list'  => '#analysis_files#',
+       'accu_data'     => '#feature_count_logs#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
+      },
+      -flow_into   => {
+        1 => ['picard_aln_summary_for_star'],
+      }
   };
   
   
