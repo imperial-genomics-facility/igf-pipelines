@@ -573,6 +573,7 @@ sub pipeline_analyses {
       'analysis_name'    => $self->o('featurecounts_analysis_name'),
       'collection_name'  => '#experiment_igf_id#',
       'tag_name'         => '#species_name#',
+      'file_suffix'      => 'txt',
       'collection_type'  => $self->o('featurecounts_collection_type'),
       'collection_table' => $self->o('featurecounts_collection_table'),
      },
