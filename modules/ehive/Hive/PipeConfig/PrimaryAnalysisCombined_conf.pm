@@ -158,3 +158,24 @@ sub default_options {
     'genome_browser_template_file'   => undef,
   };
 }
+
+
+sub pipeline_wide_parameters {
+    my ($self) = @_;
+    return {
+        %{$self->SUPER::pipeline_wide_parameters},                              # here we inherit anything from the base class
+        'singlecell_source' => $self->o('singlecell_source'),
+        'tenx_exp_type' => $self->o('tenx_exp_type'),
+    };
+}
+
+
+sub pipeline_analyses {
+  my ($self) = @_;
+  my @pipeline;
+  
+  return \@pipeline;
+}
+
+1;
+
