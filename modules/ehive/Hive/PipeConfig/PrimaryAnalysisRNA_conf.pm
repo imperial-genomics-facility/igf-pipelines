@@ -91,10 +91,12 @@ sub default_options {
     ## featureCounts
     'featurecounts_exe'    => undef,
     'featurecounts_param'  => undef,
-    'featurecounts_threads'        => 4,
-    'featurecounts_analysis_name'  => 'featureCounts',
+    'featurecounts_threads'          => 4,
+    'featurecounts_analysis_name'    => 'featureCounts',
+    'featurecounts_collection_type'  => 'FEATURE_COUNTS',
+    'featurecounts_collection_table' => 'experiment',
     ## Scanpy
-    'scanpy_type'          => 'SCANPY_RESULTS',
+    'scanpy_type'                  => 'SCANPY_RESULTS',
     'scanpy_report_template'       => undef,
     ## Demultiplexing pipeline
     'demultiplexing_pipeline_name' => undef,
@@ -490,14 +492,37 @@ sub pipeline_analyses {
       'output_prefix'      => '#experiment_igf_id#',
     },
     -flow_into   => {
-        1 => ['upload_featurecounts_results_to_irods',
+        1 => ['load_featurecounts_results',
               '?accu_name=feature_count_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=featureCounts_summary'
              ],
       },
   };
   
   
-  ## copy star genomic cram to irods
+  ## Load featureCounts results
+  push @pipeline, {
+    -logic_name  => 'load_featurecounts_results',
+    -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => ['#featureCounts_output#'],
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('featurecounts_analysis_name'),
+      'collection_name'  => '#experiment_igf_id#',
+      'tag_name'         => '#species_name#',
+      'collection_type'  => $self->o('featurecounts_collection_type'),
+      'collection_table' => $self->o('featurecounts_collection_table'),
+     },
+    -flow_into   => {
+        1 => ['upload_featurecounts_results_to_irods'],
+      },
+  };
+  
+  
+  ## copy featurecounts results to irods
   push @pipeline, {
     -logic_name  => 'upload_featurecounts_results_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
@@ -506,7 +531,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb',
     -analysis_capacity => 2,
     -parameters  => {
-      'file_list'     => ['#featureCounts_output#'],
+      'file_list'     => '#analysis_output_list#',
       'irods_exe_dir' => $self->o('irods_exe_dir'),
       'analysis_name' => $self->o('featurecounts_analysis_name'),
       'analysis_dir'  => 'analysis',
