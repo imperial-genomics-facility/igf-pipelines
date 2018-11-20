@@ -549,6 +549,7 @@ sub pipeline_analyses {
       'run_thread'         => $self->o('featurecounts_threads'),
       'parameter_options'  => $self->o('featurecounts_param'),
       'output_prefix'      => '#experiment_igf_id#',
+      'base_work_dir'      => $self->o('base_work_dir'),
     },
     -flow_into   => {
         1 => ['load_featurecounts_results',
