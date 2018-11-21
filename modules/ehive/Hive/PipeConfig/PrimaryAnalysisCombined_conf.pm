@@ -1518,7 +1518,8 @@ sub pipeline_analyses {
     -flow_into   => {
         '2->A' => ['upload_cellranger_results_to_irods',
                    'convert_cellranger_bam_to_cram',
-                   'scanpy_report_generation'
+                   'scanpy_report_generation',
+                   'load_cellranger_report'
                    ],
         'A->1' => ['picard_aln_summary_for_cellranger'], 
       },
@@ -1621,6 +1622,48 @@ sub pipeline_analyses {
         'analysis_dir'        => $self->o('analysis_dir'),
         'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => ['#output_report#'],
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
+  };
+  
+  
+  ## SINGLECELL: load cellranger report
+  push @pipeline, {
+    -logic_name  => 'load_cellranger_report',
+    -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb4t',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => ['#cellranger_report#'],
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('cellranger_analysis_name'),
+      'collection_name'  => '#experiment_igf_id#',
+      'tag_name'         => '#species_name#',
+      'collection_type'  => $self->o('cellranger_report_type'),
+      'collection_table' => $self->o('cellranger_collection_table'),
+     },
+    -flow_into   => {
+        1 => ['copy_cellranger_report_to_remote'],
+      },
+  };
+  
+  
+  ## SINGLECELL: copy cellranger report to remote
+  push @pipeline, {
+      -logic_name   => 'copy_cellranger_report_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+        'file_list'           => '#analysis_output_list#',
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
@@ -1911,6 +1954,7 @@ sub pipeline_analyses {
       -analysis_capacity => 1,
       -parameters   => {
         'collection_type_list' => [$self->o('multiqc_type'),
+                                   $self->o('cellranger_report_type'),
                                    $self->o('scanpy_type'),
                                    $self->o('star_bw_collection_type')],
         'remote_project_path'  => $self->o('remote_project_path'),
