@@ -56,6 +56,8 @@ sub default_options {
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'multiqc_type'        => 'MULTIQC_HTML',
     'tool_order_list_dnaseq'         => ['fastp','picard','samtools'],
+    'tool_order_list_rnaseq'         => ['fastp','star','picard','samtools','featureCounts'],
+    'tool_order_list_singlecell'     => ['picard','samtools'],
     'multiqc_template_file'          => undef,
     #
     ## REF GENOME
@@ -402,43 +404,7 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'collect_star_log_for_exp' => {'star_genomic_bams' => '#exp_chunk_list#'}},
-      },
-  };
-  
-  
-  ## RNA-SEQ: collect star logs
-  push @pipeline, {
-    -logic_name  => 'collect_star_log_for_exp',
-    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language    => 'python3',
-    -meadow_type => 'LOCAL',
-    -analysis_capacity => 2,
-    -parameters  => {
-       'accu_data'     => '#star_logs#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
-      },
-    -flow_into   => {
-        1 => ['collect_fastp_json_for_exp_rnaseq'],
-      },
-  };
-  
-  
-  ## RNA-SEQ: collect fastp json
-  push @pipeline, {
-    -logic_name  => 'collect_fastp_json_for_exp_rnaseq',
-    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language    => 'python3',
-    -meadow_type => 'LOCAL',
-    -analysis_capacity => 2,
-    -parameters  => {
-       'accu_data'     => '#fastp_report_rna#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
-      },
-    -flow_into   => {
-        1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
+        1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'star_genomic_bams' => '#exp_chunk_list#'}},
       },
   };
   
@@ -481,8 +447,8 @@ sub pipeline_analyses {
         '2->A' => ['convert_star_genomic_bam_to_cram',
                    'star_bigwig'
                   ],
-        'A->1' => {'collect_featureCounts_for_exp_rnaseq' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
-                                                              'analysis_files' => '#analysis_files#'}}, 
+        'A->1' => {'collect_star_log_for_exp' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
+                                                  'analysis_files' => '#analysis_files#'}},
       },
   };
   
@@ -583,7 +549,7 @@ sub pipeline_analyses {
   };
   
   
-  ## RNA-SEQ: copy featurecounts results to irods
+  ## RNA-SEQ: copy featureCounts results to irods
   push @pipeline, {
     -logic_name  => 'upload_featurecounts_results_to_irods',
     -module      => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
@@ -670,6 +636,43 @@ sub pipeline_analyses {
   };
   
   
+  ## RNA-SEQ: collect star logs
+  push @pipeline, {
+    -logic_name  => 'collect_star_log_for_exp',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'exp_chunk_list'  => '#analysis_files#',
+       'accu_data'       => '#star_logs#',
+       'output_mode'     => 'list',
+       'base_work_dir'   => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => ['collect_fastp_json_for_exp_rnaseq'],
+      },
+  };
+  
+  
+  ## RNA-SEQ: collect fastp json
+  push @pipeline, {
+    -logic_name  => 'collect_fastp_json_for_exp_rnaseq',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#fastp_report_rna#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => ['collect_featureCounts_for_exp_rnaseq'],
+      },
+  };
+  
+  
   ## RNA-SEQ: collect featureCounts summary
   push @pipeline, {
     -logic_name  => 'collect_featureCounts_for_exp_rnaseq',
@@ -678,7 +681,6 @@ sub pipeline_analyses {
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
-       'exp_chunk_list'  => '#analysis_files#',
        'accu_data'     => '#feature_count_logs#',
        'output_mode'   => 'list',
        'base_work_dir' => $self->o('base_work_dir'),
