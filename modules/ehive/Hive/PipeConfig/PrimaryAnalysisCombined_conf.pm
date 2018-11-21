@@ -1850,10 +1850,93 @@ sub pipeline_analyses {
         'new_status'    => 'FINISHED',
         'pipeline_name' => $self->o('pipeline_name'),
         'rna_source'    => $self->o('rna_source'),
-        
+      },
+      -flow_into    => {
+          1 => WHEN('#library_source# eq #rna_source#' => ['config_genome_browser_rnaseq'],
+                    ELSE ['update_project_analysis']),
+      },
+  };
+  
+  
+  ## GENERIC: configure genome browser
+  push @pipeline, {
+      -logic_name   => 'config_genome_browser_rnaseq',
+      -module       => 'ehive.runnable.process.alignment.BuildGenomeBrowserConfigForProject',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 1,
+      -parameters   => {
+        'star_bw_type'         => $self->o('star_bw_collection_type'),
+        'collection_type_list' => ['#star_bw_type#'],
+        'ref_genome_type'      => $self->o('two_bit_genome_type'),
+        'collection_table'     => 'experiment',
+        'pipeline_name'        => $self->o('pipeline_name'),
+        'base_work_dir'        => $self->o('base_work_dir'),
+        'template_file'        => $self->o('genome_browser_template_file'),
+      },
+      -flow_into    => {
+          1 => WHEN('#genome_browser_config# eq ""' => ['update_project_analysis'],
+                       ELSE ['copy_track_config_to_remote']),
+      },
+  };
+  
+  ## GENERIC: copy track config file to remote
+  push @pipeline, {
+      -logic_name   => 'copy_track_config_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 1,
+      -parameters  => {
+        'file_list'           => ['#genome_browser_config#'],
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
         },
-       -flow_into    => {
-          1 => ['update_project_analysis'],
+      -flow_into   => {
+         1 => ['update_project_analysis'],
+      },
+  };
+  
+  
+  ## GENERIC: update analysis page
+  push @pipeline, {
+      -logic_name   => 'update_project_analysis',
+      -module       => 'ehive.runnable.process.UpdateProjectAnalysisStats',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 1,
+      -parameters   => {
+        'collection_type_list' => [$self->o('multiqc_type'),
+                                   $self->o('scanpy_type'),
+                                   $self->o('star_bw_collection_type')],
+        'remote_project_path'  => $self->o('remote_project_path'),
+        'remote_user'          => $self->o('seqrun_user'),
+        'remote_host'          => $self->o('remote_host'),
+      },
+      -flow_into    => {
+          1 => ['update_project_status'],
+      },
+  };
+  
+  
+  ## GENERIC: update status page
+  push @pipeline, {
+      -logic_name   => 'update_project_status',
+      -module       => 'ehive.runnable.process.UpdateProjectStatus',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 1,
+      -parameters   => {
+        'remote_project_path'  => $self->o('remote_project_path'),
+        'remote_user'          => $self->o('seqrun_user'),
+        'remote_host'          => $self->o('remote_host'),
+        'demultiplexing_pipeline_name' => $self->o('demultiplexing_pipeline_name'),
+        'analysis_pipeline_name'       => $self->o('pipeline_name'),
       },
   };
   
