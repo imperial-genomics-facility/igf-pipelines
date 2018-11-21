@@ -1804,6 +1804,8 @@ sub pipeline_analyses {
       'tag_name'         => '#species_name#',
       'multiqc_exe'      => $self->o('multiqc_exe'),
       'multiqc_options'  => $self->o('multiqc_options'),
+      'tool_order_list'  => $self->o('tool_order_list_singlecell'),
+      'multiqc_template_file'  => $self->o('multiqc_template_file'),
      },
     -flow_into   => {
         1 => ['copy_sample_multiqc_for_singlecell_to_remote'],
