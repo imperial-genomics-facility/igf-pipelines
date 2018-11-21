@@ -868,7 +868,7 @@ sub pipeline_analyses {
     -parameters  => {
       'base_results_dir' => $self->o('base_results_dir'),
       'collection_name'  => '#experiment_igf_id#',
-      'collection_type'  => $self->o('star_multiqc_type'),
+      'collection_type'  => $self->o('multiqc_type'),
       'collection_table' => $self->o('star_collection_table'),
       'analysis_name'    => $self->o('multiqc_analysis'),
       'tag_name'         => '#species_name#',
