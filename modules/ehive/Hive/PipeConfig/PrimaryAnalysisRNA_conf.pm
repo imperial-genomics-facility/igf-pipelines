@@ -46,7 +46,7 @@ sub default_options {
     'multiqc_exe'         => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'multiqc_type'        => 'MULTIQC_HTML',
-    'tool_order_list_rnaseq'       => ['fastp','star','picard','samtools','feature_counts'],
+    'tool_order_list_rnaseq'       => ['fastp','star','picard','samtools','featureCounts'],
     'multiqc_template_file'        => undef,
     ## Ref genome
     'reference_fasta_type'=> 'GENOME_FASTA',
@@ -194,7 +194,7 @@ sub pipeline_analyses {
   };
   
   
-  ## collect fastp report
+  ## load fastp report
   push @pipeline, {
     -logic_name  => 'load_fastp_report_rnaseq',
     -module      => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
@@ -214,7 +214,7 @@ sub pipeline_analyses {
      },
     -flow_into   => {
         1 => ['run_star',
-              '?accu_name=fastp_report&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=output_json_file' ],
+              '?accu_name=fastp_report_rna&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=output_json_file' ],
       },
   };
   
@@ -344,45 +344,45 @@ sub pipeline_analyses {
        'base_work_dir' => $self->o('base_work_dir'),
       },
     -flow_into   => {
-        1 => {'collect_star_log_for_exp' => {'star_genomic_bams' => '#exp_chunk_list#'}},
+        1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'star_genomic_bams' => '#exp_chunk_list#'}},
       },
   };
   
   
   ## collect star logs
-  push @pipeline, {
-    -logic_name  => 'collect_star_log_for_exp',
-    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language    => 'python3',
-    -meadow_type => 'LOCAL',
-    -analysis_capacity => 2,
-    -parameters  => {
-       'accu_data'     => '#star_logs#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
-      },
-    -flow_into   => {
-        1 => ['collect_fastp_json_for_exp_rnaseq'],
-      },
-  };
+  #push @pipeline, {
+  #  -logic_name  => 'collect_star_log_for_exp',
+  #  -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+  #  -language    => 'python3',
+  #  -meadow_type => 'LOCAL',
+  #  -analysis_capacity => 2,
+  #  -parameters  => {
+  #     'accu_data'     => '#star_logs#',
+  #     'output_mode'   => 'list',
+  #     'base_work_dir' => $self->o('base_work_dir'),
+  #    },
+  #  -flow_into   => {
+  #      1 => ['collect_fastp_json_for_exp_rnaseq'],
+  #    },
+  #};
   
   
   ## collect fastp json
-  push @pipeline, {
-    -logic_name  => 'collect_fastp_json_for_exp_rnaseq',
-    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language    => 'python3',
-    -meadow_type => 'LOCAL',
-    -analysis_capacity => 2,
-    -parameters  => {
-       'accu_data'     => '#fastp_report#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
-      },
-    -flow_into   => {
-        1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
-      },
-  };
+  #push @pipeline, {
+  #  -logic_name  => 'collect_fastp_json_for_exp_rnaseq',
+  #  -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+  #  -language    => 'python3',
+  #  -meadow_type => 'LOCAL',
+  #  -analysis_capacity => 2,
+  #  -parameters  => {
+  #     'accu_data'     => '#fastp_report_rna#',
+  #     'output_mode'   => 'list',
+  #     'base_work_dir' => $self->o('base_work_dir'),
+  #    },
+  #  -flow_into   => {
+  #      1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'analysis_files' => '#exp_chunk_list#'}},
+  #    },
+  #};
   
   
   ## picard merge and mark duplicate genomic bam
@@ -423,8 +423,8 @@ sub pipeline_analyses {
         '2->A' => ['convert_star_genomic_bam_to_cram',
                    'star_bigwig'
                   ],
-        'A->1' => {'collect_featureCounts_for_exp_rnaseq' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
-                                                              'analysis_files' => '#analysis_files#'}}, 
+        'A->1' => {'collect_star_log_for_exp' => {'merged_star_genomic_bams' => '#merged_star_genomic_bams#',
+                                                  'analysis_files' => '#analysis_files#'}}, 
       },
   };
   
@@ -612,18 +612,54 @@ sub pipeline_analyses {
   };
   
   
-  ## collect featureCounts summary
+  ## collect star logs
   push @pipeline, {
-    -logic_name  => 'collect_featureCounts_for_exp_rnaseq',
+    -logic_name  => 'collect_star_log_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
     -meadow_type => 'LOCAL',
     -analysis_capacity => 2,
     -parameters  => {
        'exp_chunk_list'  => '#analysis_files#',
-       'accu_data'     => '#feature_count_logs#',
+       'accu_data'       => '#star_logs#',
+       'output_mode'     => 'list',
+       'base_work_dir'   => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => ['collect_fastp_json_for_exp_rnaseq'],
+      },
+  };
+  
+  
+  ## collect fastp json
+  push @pipeline, {
+    -logic_name  => 'collect_fastp_json_for_exp_rnaseq',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#fastp_report_rna#',
        'output_mode'   => 'list',
        'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => ['collect_featureCounts_for_exp_rnaseq'],
+      },
+  };
+  
+  
+  ## collect featureCounts summary
+  push @pipeline, {
+    -logic_name     => 'collect_featureCounts_for_exp_rnaseq',
+    -module         => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language       => 'python3',
+    -meadow_type    => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters   => {
+       'accu_data'       => '#feature_count_logs#',
+       'output_mode'     => 'list',
+       'base_work_dir'   => $self->o('base_work_dir'),
       },
     -flow_into   => {
         1 => {'picard_aln_summary_for_star' => {'analysis_files' => '#exp_chunk_list#'}},
