@@ -1554,7 +1554,7 @@ sub pipeline_analyses {
     -rc_name     => '2Gb4t',
     -analysis_capacity => 2,
     -parameters  => {
-        'bam_file'        => '#bam_file#',
+        'bam_files'       => ['#input_file#'],
         'samtools_exe'    => $self->o('samtools_exe'),
         'base_result_dir' => $self->o('base_results_dir'),
         'threads'         => $self->o('samtools_threads'),
