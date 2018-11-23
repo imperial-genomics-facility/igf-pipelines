@@ -1099,7 +1099,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunBWA',                  # FIX ME
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '4Gb8t',
+    -rc_name     => '8Gb8t',
     -analysis_capacity => 10,
     -parameters  => {
       'bwa_exe'            => $self->o('bwa_exe'),
