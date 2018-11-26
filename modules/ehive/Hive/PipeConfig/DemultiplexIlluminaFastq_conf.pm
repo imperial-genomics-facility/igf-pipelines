@@ -35,6 +35,8 @@ sub default_options {
     'fastqscreen_options' => '{"--aligner" : "bowtie2","--force" : "","--quiet" : "","--subset" : "100000","--threads" : "1"}',
     'fastqscreen_conf'    => undef,
     'multiqc_exe'         => undef,
+    'tool_order_list'     => ['bcl2fastq','fastqc','fastq_screen'],
+    'multiqc_template'    => undef,
     'user_info_file'      => undef,
     'multiqc_options'     => '{"--zip-data-dir" : ""}',
     'cleanup_bcl_dir'     => 0,
@@ -448,6 +450,8 @@ sub pipeline_analyses {
         'multiqc_exe'      => $self->o('multiqc_exe'),
         'multiqc_options'  => $self->o('multiqc_options'),
         'tag'              => 'known',
+        'tool_order_list'  => $self->o('tool_order_list'),
+        'multiqc_template_file' => $self->o('multiqc_template'),
         },
       -flow_into    => {
           1 => {'copy_known_multiqc_to_remote' =>
@@ -640,6 +644,8 @@ sub pipeline_analyses {
         'multiqc_exe'      => $self->o('multiqc_exe'),
         'multiqc_options'  => $self->o('multiqc_options'),
         'tag'              => 'undetermined',
+        'tool_order_list'  => $self->o('tool_order_list'),
+        'multiqc_template_file' => $self->o('multiqc_template'),
         },
       -flow_into    => {
           1 => {'copy_undetermined_multiqc_to_remote' => 
