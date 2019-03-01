@@ -29,7 +29,6 @@ dependencies:
     - numba==0.39.0
     - louvain==0.6.1
     - pandas==0.23.0
-    - python-igraph==0.7.1.post6
     - numpy==1.14.0
     - bioservices==1.5.2
     - scanpy==1.2.2
