@@ -112,11 +112,25 @@ sub pipeline_analyses {
       'base_results_dir'   => $self->o('base_results_dir'),
       },
     -flow_into   => {
-        1 => ['single_cell_analysis_factory_1'],
+        1 => ['load_cellranger_metrics_to_db'],
         #1 => ['upload_cellranger_results_to_irods'],
       },
   };
   
+  ## load cellranger metrics to collection attribute table
+  push @pipeline, {
+    -logic_name  => 'load_cellranger_metrics_to_db',
+    -module      => 'ehive.runnable.process.alignment.LoadCellrangerMetricsToCollection',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '1Gb',
+    -analysis_capacity => 2,
+    -parameters  => {},
+    -flow_into   => {
+        1 => ['single_cell_analysis_factory_1'],
+    },
+  };
+
   ## single cell analysis factory 1
   push @pipeline, {
     -logic_name  => 'single_cell_analysis_factory_1',
