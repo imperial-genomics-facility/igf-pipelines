@@ -367,9 +367,30 @@ sub pipeline_analyses {
        'tag_name'         => 'star_gene_count',
        'template_report_file' => $self->o('batch_efffect_template'),
        'rscript_path'     => $self->o('batch_effect_rscript_path'),
-
+      },
+    -flow_into   => {
+        1 => ['copy_batch_effect_report_to_remote'],
       },
   };
+
+  ## copy batch effect result to remote
+  push @pipeline, {
+      -logic_name   => 'copy_batch_effect_report_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+        'file_list'           => '#batch_effect_reports#',
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
+  };
+
 
   ## collect star genomic bam
   push @pipeline, {
