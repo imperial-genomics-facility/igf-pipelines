@@ -325,12 +325,28 @@ sub pipeline_analyses {
       },
     -flow_into   => {
         '2->A' => ['collect_star_genomic_bam_for_exp',
-                   'collect_star_transcriptomic_bam_for_exp'],
+                   'collect_star_transcriptomic_bam_for_exp',
+                   'collect_star_gene_count_for_exp'
+                  ],
         'A->1' => ['mark_experiment_finished'],
       },
   };
   
   
+  ## collect star gene count
+  push @pipeline, {
+    -logic_name  => 'collect_star_gene_count_for_exp',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#star_gene_counts#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+  };
+
   ## collect star genomic bam
   push @pipeline, {
     -logic_name  => 'collect_star_genomic_bam_for_exp',
