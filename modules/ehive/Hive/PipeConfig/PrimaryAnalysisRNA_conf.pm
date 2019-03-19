@@ -345,6 +345,30 @@ sub pipeline_analyses {
        'output_mode'   => 'list',
        'base_work_dir' => $self->o('base_work_dir'),
       },
+    -flow_into   => {
+        1 => {'check_batch_effect_for_exp' => {'star_gene_counts' => '#exp_chunk_list#'}},
+      },
+  };
+
+  ## generate batch effect report
+  push @pipeline, {
+    -logic_name  => 'check_batch_effect_for_exp',
+    -module      => 'ehive.runnable.process.alignment.Check_batch_effect_for_lane',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'input_files'     => '#star_gene_counts#',
+       'strand_info'     => 'reverse_strand',
+       'read_threshold'  => 5,
+       'collection_type' => 'RNA_BATCH_EFFECT_HTML',
+       'collection_table' => 'experiment',
+       'analysis_name'    => 'batch_effect',
+       'tag_name'         => 'star_gene_count',
+       'template_report_file' => $self->o('batch_efffect_template'),
+       'rscript_path'     => $self->o('batch_effect_rscript_path'),
+
+      },
   };
 
   ## collect star genomic bam
