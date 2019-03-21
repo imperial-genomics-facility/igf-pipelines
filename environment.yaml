@@ -2,6 +2,8 @@ name: pipeline-env
 channels:
   - conda-forge
   - defaults
+  - r
+  - bioconda
 dependencies:
   - python=3.5.2
   - python-igraph==0.7.1.post6
@@ -32,3 +34,5 @@ dependencies:
     - numpy==1.14.0
     - bioservices==1.5.2
     - scanpy==1.2.2
+  - r-base==3.4.1
+  - bioconductor-edger
