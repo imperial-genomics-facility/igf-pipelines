@@ -318,7 +318,8 @@ sub pipeline_analyses {
       -meadow_type  => 'LOCAL',
       -analysis_capacity => 2,
       -parameters  => {
-        'filter_keyword' => 'Undetermined*',
+        'filter_keyword'   => 'Undetermined*',
+        'required_keyword' => undef,
         },
       -flow_into    => {
           '2->A' => ['run_fastqc_for_known_fastq'],
@@ -571,6 +572,7 @@ sub pipeline_analyses {
       -analysis_capacity => 2,
       -parameters  => {
         'required_keyword' => 'Undetermined*',
+        'filter_keyword'   => undef,
         },
       -flow_into    => {
           '2->A' => ['run_fastqc_for_undetermined_fastq'],
