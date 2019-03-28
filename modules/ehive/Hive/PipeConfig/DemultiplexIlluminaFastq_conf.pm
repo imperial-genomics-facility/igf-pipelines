@@ -692,6 +692,7 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'page_type'           => 'undetermined',
         'remote_project_path' => $self->o('remote_project_path'),
+        'fastq_dir'           => undef,
         },
   };
 
