@@ -201,7 +201,8 @@ sub pipeline_analyses {
     -logic_name  => 'find_new_experiment_for_analysis',
     -module      => 'ehive.runnable.jobfactory.PipeseedFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -parameters  => {
       'pipeline_name' => $self->o('pipeline_name'),
       'pipeseed_mode' => $self->o('pipeseed_mode'),
@@ -225,7 +226,8 @@ sub pipeline_analyses {
     -logic_name  => 'run_factory_for_rnaseq',
     -module      => 'ehive.runnable.jobfactory.alignment.RunFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -flow_into   => {
         '2->A' => ['fetch_fastq_for_rnaseq_run'],
@@ -239,7 +241,8 @@ sub pipeline_analyses {
     -logic_name  => 'fetch_fastq_for_rnaseq_run',
     -module      => 'ehive.runnable.process.alignment.FetchFastqForRun',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
       'fastq_collection_type'  => $self->o('fastq_collection_type'),
@@ -397,7 +400,8 @@ sub pipeline_analyses {
     -logic_name  => 'process_star_bams',
     -module      => 'ehive.runnable.IGFBaseJobFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'sub_tasks' => [{'pseudo_exp_id'=> '#experiment_igf_id#'}],
@@ -417,7 +421,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_star_gene_count_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data'     => '#star_gene_counts#',
@@ -435,7 +440,8 @@ sub pipeline_analyses {
     -logic_name  => 'check_batch_effect_for_exp',
     -module      => 'ehive.runnable.process.alignment.Check_batch_effect_for_lane',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'input_files'          => '#star_gene_counts#',
@@ -478,7 +484,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_star_genomic_bam_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data'     => '#star_aligned_genomic_bam#',
@@ -521,7 +528,8 @@ sub pipeline_analyses {
     -logic_name  => 'star_genomic_bam_analysis_factory',
     -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -parameters  => {
       'file_list' => '#merged_star_genomic_bams#',
       },
@@ -723,7 +731,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_star_log_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'exp_chunk_list'  => '#analysis_files#',
@@ -742,7 +751,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_fastp_json_for_exp_rnaseq',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data'     => '#fastp_report_rna#',
@@ -760,7 +770,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_featureCounts_for_exp_rnaseq',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data'     => '#feature_count_logs#',
@@ -989,7 +1000,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_star_transcriptomic_bam_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data'      => '#star_aligned_trans_bam#',
@@ -1102,7 +1114,8 @@ sub pipeline_analyses {
     -logic_name  => 'run_factory_for_dnaseq',
     -module      => 'ehive.runnable.jobfactory.alignment.RunFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -flow_into   => {
         '2->A' => ['fetch_fastq_for_dnaseq_run'],
@@ -1116,7 +1129,8 @@ sub pipeline_analyses {
     -logic_name  => 'fetch_fastq_for_dnaseq_run',
     -module      => 'ehive.runnable.process.alignment.FetchFastqForRun',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
       'fastq_collection_type'  => $self->o('fastq_collection_type'),
@@ -1237,7 +1251,8 @@ sub pipeline_analyses {
     -logic_name  => 'process_bwa_bams',
     -module      => 'ehive.runnable.IGFBaseJobFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'sub_tasks' => [{'pseudo_exp_id'=> '#experiment_igf_id#'}],
@@ -1254,7 +1269,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_bwa_genomic_bam_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data'     => '#bwa_aligned_genomic_bam#',
@@ -1272,7 +1288,8 @@ sub pipeline_analyses {
     -logic_name  => 'collect_bwa_fastp_json_for_exp',
     -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters  => {
        'accu_data'     => '#bwa_fastp_report#',
@@ -1606,7 +1623,8 @@ sub pipeline_analyses {
     -logic_name  => 'single_cell_analysis_factory_1',
     -module      => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
     -language    => 'python3',
-    -meadow_type => 'LOCAL',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
     -parameters  => {
       'file_list' => ['#bam_file#'],
       },
