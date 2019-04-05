@@ -169,6 +169,14 @@ sub default_options {
     'batch_effect_collection_table'    => 'experiment',
     'batch_effect_analysis_name'       => 'batch_effect',
     'batch_effect_tag_name'            => 'star_gene_count',
+    #
+    ## ANALYSIS PAGE
+    #---------------------------------------------------------------------------
+    'analysis_page_collection_list'    => [$self->o('multiqc_type'),
+                                           $self->o('cellranger_report_type'),
+                                           $self->o('batch_effect_collection_type'),
+                                           $self->o('scanpy_type'),
+                                           $self->o('star_bw_collection_type')],
   };
 }
 
@@ -2040,10 +2048,7 @@ sub pipeline_analyses {
       -rc_name      => '1Gb',
       -analysis_capacity => 1,
       -parameters   => {
-        'collection_type_list' => [$self->o('multiqc_type'),
-                                   $self->o('cellranger_report_type'),
-                                   $self->o('scanpy_type'),
-                                   $self->o('star_bw_collection_type')],
+        'collection_type_list' => $self->o('analysis_page_collection_list'),
         'remote_project_path'  => $self->o('remote_project_path'),
         'remote_user'          => $self->o('seqrun_user'),
         'remote_host'          => $self->o('remote_host'),
