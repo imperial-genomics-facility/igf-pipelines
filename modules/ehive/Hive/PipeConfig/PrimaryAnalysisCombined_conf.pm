@@ -97,8 +97,8 @@ sub default_options {
     'star_analysis_name'         => undef,
     'bedGraphToBigWig_path'      => undef,
     'star_collection_table'      => undef,
-    'star_genomic_cram_type'     => undef,
-    'star_bw_collection_type'    => undef,
+    'star_genomic_cram_type'     => 'STAR_GENOME_CRAM',
+    'star_bw_collection_type'    => 'STAR_BIGWIG',
     #
     ## BWA
     #---------------------------------------------------------------------------
@@ -108,7 +108,7 @@ sub default_options {
     'bwa_parameters'             => '{"-M":""}',
     'bwa_analysis_name'          => undef,
     'bwa_collection_table'       => undef,
-    'bwa_genomic_cram_type'      => undef,
+    'bwa_genomic_cram_type'      => 'BWA_GENOME_CRAM',
     #
     ## RSEM
     #---------------------------------------------------------------------------
@@ -118,7 +118,7 @@ sub default_options {
     'rsem_threads'               => 8,
     'rsem_memory_limit'          => 4000,
     'rsem_analysis_name'         => undef,
-    'rsem_collection_type'       => undef,
+    'rsem_collection_type'       => 'RSEM_COUNT',
     'rsem_collection_table'      => undef,
     #
     ## FEATURECOUNTS
@@ -172,11 +172,7 @@ sub default_options {
     #
     ## ANALYSIS PAGE
     #---------------------------------------------------------------------------
-    'analysis_page_collection_list'    => [$self->o('multiqc_type'),
-                                           $self->o('cellranger_report_type'),
-                                           $self->o('batch_effect_collection_type'),
-                                           $self->o('scanpy_type'),
-                                           $self->o('star_bw_collection_type')],
+    'analysis_page_collection_list'    => ['MULTIQC_HTML','CELLRANGER_REPORT','RNA_BATCH_EFFECT_HTML','SCANPY_RESULTS','STAR_BIGWIG'],
   };
 }
 
