@@ -158,6 +158,17 @@ sub default_options {
     ## GENOME BROWSER
     #---------------------------------------------------------------------------
     'genome_browser_template_file'   => undef,
+    #
+    ## RNA-SEQ BATCH EFFECT
+    #---------------------------------------------------------------------------
+    'batch_effect_rscript_path'     => undef,
+    'batch_effect_template'         => undef,
+    'batch_effect_strand_info'      => 'reverse_strand',
+    'batch_effect_read_threshold'   => 5,
+    'batch_effect_collection_type'  => 'RNA_BATCH_EFFECT_HTML',
+    'batch_effect_collection_table' => 'experiment',
+    'batch_effect_analysis_name'    => 'batch_effect',
+    'batch_effect_tag_name'         => 'star_gene_count',
   };
 }
 
@@ -385,12 +396,75 @@ sub pipeline_analyses {
       },
     -flow_into   => {
         '2->A' => ['collect_star_genomic_bam_for_exp',
-                   'collect_star_transcriptomic_bam_for_exp'],
+                   'collect_star_transcriptomic_bam_for_exp',
+                   'collect_star_gene_count_for_exp'
+                  ],
         'A->1' => ['mark_experiment_finished'],
       },
   };
   
+
+  ## RNA-SEQ: collect star gene count
+  push @pipeline, {
+    -logic_name  => 'collect_star_gene_count_for_exp',
+    -module      => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'accu_data'     => '#star_gene_counts#',
+       'output_mode'   => 'list',
+       'base_work_dir' => $self->o('base_work_dir'),
+      },
+    -flow_into   => {
+        1 => {'check_batch_effect_for_exp' => {'star_gene_counts' => '#exp_chunk_list#'}},
+      },
+  };
+
+
+  ## RNA-SEQ: generate batch effect report
+  push @pipeline, {
+    -logic_name  => 'check_batch_effect_for_exp',
+    -module      => 'ehive.runnable.process.alignment.Check_batch_effect_for_lane',
+    -language    => 'python3',
+    -meadow_type => 'LOCAL',
+    -analysis_capacity => 2,
+    -parameters  => {
+       'input_files'          => '#star_gene_counts#',
+       'strand_info'          => $self->o('batch_effect_strand_info'),
+       'read_threshold'       => $self->o('batch_effect_read_threshold'),
+       'collection_type'      => $self->o('batch_effect_collection_type'),
+       'collection_table'     => $self->o('batch_effect_collection_table'),
+       'analysis_name'        => $self->o('batch_effect_analysis_name'),
+       'tag_name'             => $self->o('batch_effect_tag_name'),
+       'rscript_path'         => $self->o('batch_effect_rscript_path'),
+       'template_report_file' => $self->o('batch_effect_template'),
+      },
+    -flow_into   => {
+        1 => ['copy_batch_effect_report_to_remote'],
+      },
+  };
+
   
+    ## RNA-SEQ: copy batch effect result to remote
+  push @pipeline, {
+      -logic_name   => 'copy_batch_effect_report_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+        'file_list'           => '#batch_effect_reports#',
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        },
+  };
+
+
   ## RNA-SEQ: collect star genomic bam
   push @pipeline, {
     -logic_name  => 'collect_star_genomic_bam_for_exp',
