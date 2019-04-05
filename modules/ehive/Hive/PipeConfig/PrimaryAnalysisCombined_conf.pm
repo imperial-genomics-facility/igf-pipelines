@@ -454,7 +454,7 @@ sub pipeline_analyses {
   };
 
   
-    ## RNA-SEQ: copy batch effect result to remote
+  ## RNA-SEQ: copy batch effect result to remote
   push @pipeline, {
       -logic_name   => 'copy_batch_effect_report_to_remote',
       -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
