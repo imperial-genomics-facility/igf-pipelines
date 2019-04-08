@@ -449,6 +449,7 @@ sub pipeline_analyses {
        'tag_name'             => $self->o('batch_effect_tag_name'),
        'rscript_path'         => $self->o('batch_effect_rscript_path'),
        'template_report_file' => $self->o('batch_effect_template'),
+       'base_results_dir'     => $self->o('base_results_dir'),
       },
     -flow_into   => {
         1 => ['copy_batch_effect_report_to_remote'],
