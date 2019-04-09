@@ -134,7 +134,7 @@ sub default_options {
     #---------------------------------------------------------------------------
     'cellranger_exe'             => undef,
     'cellranger_param'           => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
-    'cellranger_timeout'         => 86400,
+    'cellranger_timeout'         => 259200,
     'cellranger_collection_table'      => 'experiment',
     'cellranger_analysis_name'         => 'cellranger_count',
     'cellranger_report_type'           => 'CELLRANGER_REPORT',
@@ -1568,7 +1568,7 @@ sub pipeline_analyses {
     -module      => 'ehive.runnable.process.alignment.RunCellrangerCount',
     -language    => 'python3',
     -meadow_type => 'PBSPro',
-    -rc_name     => '2Gb',
+    -rc_name     => '2Gb72hr',
     -analysis_capacity => 1,
     -parameters  => {
       'cellranger_exe'     => $self->o('cellranger_exe'),
@@ -1601,7 +1601,7 @@ sub pipeline_analyses {
       },
   };
   
-  ## load cellranger metrics to collection attribute table
+  ## SINGLECELL: load cellranger metrics to collection attribute table
   push @pipeline, {
     -logic_name  => 'load_cellranger_metrics_to_db',
     -module      => 'ehive.runnable.process.alignment.LoadCellrangerMetricsToCollection',
