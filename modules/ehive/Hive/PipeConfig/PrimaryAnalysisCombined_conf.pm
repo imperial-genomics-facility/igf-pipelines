@@ -172,7 +172,11 @@ sub default_options {
     #
     ## ANALYSIS PAGE
     #---------------------------------------------------------------------------
-    'analysis_page_collection_list'    => ['MULTIQC_HTML','CELLRANGER_REPORT','RNA_BATCH_EFFECT_HTML','SCANPY_RESULTS','STAR_BIGWIG'],
+    'analysis_page_collection_list'    => [$self->o('multiqc_type'),
+                                           $self->o('cellranger_report_type'),
+                                           $self->o('batch_effect_collection_type'),
+                                           $self->o('scanpy_type'),
+                                           $self->o('star_bw_collection_type')],
   };
 }
 
