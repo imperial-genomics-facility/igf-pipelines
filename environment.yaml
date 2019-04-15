@@ -4,7 +4,7 @@ channels:
   - r
   - bioconda
 dependencies:
-  - python=3.5.2
+  - python=3.6.0
   - python-igraph==0.7.1.post6
   - louvain==0.6.1
   - pip
@@ -32,6 +32,6 @@ dependencies:
     - pandas==0.23.0
     - numpy==1.14.0
     - bioservices==1.5.2
-    - scanpy==1.2.2
+    - scanpy==1.4
   - r-base==3.4.1
   - bioconductor-edger
