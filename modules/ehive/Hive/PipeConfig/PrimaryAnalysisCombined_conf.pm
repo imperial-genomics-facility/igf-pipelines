@@ -55,6 +55,7 @@ sub default_options {
     'multiqc_exe'                => undef,
     'multiqc_options'            => '{"--zip-data-dir" : ""}',
     'multiqc_type'               => 'MULTIQC_HTML',
+    'ftp_multiqc_type'           => 'FTP_MULTIQC_HTML',
     'tool_order_list_dnaseq'     => ['fastp','picard','samtools'],
     'tool_order_list_rnaseq'     => ['fastp','star','picard','samtools','featureCounts'],
     'tool_order_list_singlecell' => ['picard','samtools'],
@@ -99,6 +100,7 @@ sub default_options {
     'star_collection_table'      => undef,
     'star_genomic_cram_type'     => 'STAR_GENOME_CRAM',
     'star_bw_collection_type'    => 'STAR_BIGWIG',
+    'ftp_star_bw_collection_type'      => 'FTP_STAR_BIGWIG',
     #
     ## BWA
     #---------------------------------------------------------------------------
@@ -138,10 +140,12 @@ sub default_options {
     'cellranger_collection_table'      => 'experiment',
     'cellranger_analysis_name'         => 'cellranger_count',
     'cellranger_report_type'           => 'CELLRANGER_REPORT',
+    'ftp_cellranger_report_type'       => 'FTP_CELLRANGER_REPORT',
     #
     ## SCANPY
     #---------------------------------------------------------------------------
     'scanpy_type'                => 'SCANPY_RESULTS',
+    'ftp_scanpy_type'            => 'FTP_SCANPY_RESULTS',
     'scanpy_report_template'     => undef,
     #
     ## DEMULTIPLEXING
@@ -166,6 +170,7 @@ sub default_options {
     'batch_effect_strand_info'         => 'reverse_strand',
     'batch_effect_read_threshold'      => 5,
     'batch_effect_collection_type'     => 'RNA_BATCH_EFFECT_HTML',
+    'ftp_batch_effect_collection_type' => 'FTP_RNA_BATCH_EFFECT_HTML',
     'batch_effect_collection_table'    => 'experiment',
     'batch_effect_analysis_name'       => 'batch_effect',
     'batch_effect_tag_name'            => 'star_gene_count',
@@ -476,6 +481,10 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_batch_effect_collection_type'),
+        'collection_table'    => $self->o('batch_effect_collection_table'),
         },
   };
 
@@ -723,6 +732,10 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_star_bw_collection_type'),
+        'collection_table'    => $self->o('star_collection_table'),
         },
   };
   
@@ -992,6 +1005,10 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_multiqc_type'),
+        'collection_table'    => $self->o('star_collection_table'),
         },
   };
   
@@ -1558,6 +1575,10 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_multiqc_type'),
+        'collection_table'    => $self->o('bwa_collection_table'),
         },
   };
   
@@ -1739,6 +1760,10 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_scanpy_type'),
+        'collection_table'    => $self->o('cellranger_collection_table'),
         },
   };
   
@@ -1781,6 +1806,10 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_cellranger_report_type'),
+        'collection_table'    => $self->o('cellranger_collection_table'),
         },
   };
   
@@ -1987,6 +2016,10 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'remote_host'         => $self->o('remote_host'),
         'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_multiqc_type'),
+        'collection_table'    => $self->o('cellranger_collection_table'),
         },
       -flow_into    => {
           1 => ['mark_experiment_finished'],
