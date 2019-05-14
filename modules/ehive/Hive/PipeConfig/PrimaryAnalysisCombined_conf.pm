@@ -1527,12 +1527,19 @@ sub pipeline_analyses {
       'base_work_dir'    => $self->o('base_work_dir'),
       'samtools_exe'     => $self->o('samtools_exe'),
       'reference_type'   => $self->o('reference_fasta_type'),
+      'chip_library_strategy'  => $self->o('chip_library_strategy'),
+      'atac_library_strategy'  => $self->o('atac_library_strategy'),
+      'dnase_library_strategy'  => $self->o('dnase_library_strategy'),
      },
     -flow_into   => {
-        1 => ['multiqc_report_for_bwa'],
+        1 => WHEN('#library_strategy# eq #chip_library_strategy#' => ['filter_bwa_bam_for_epigenome'],
+                  '#library_strategy# eq #atac_library_strategy#' => ['filter_bwa_bam_for_epigenome'],
+                  '#library_strategy# eq #dnase_library_strategy#' => ['filter_bwa_bam_for_epigenome'],
+                   ELSE ['multiqc_report_for_bwa']),
       },
   };
   
+  ## DNA-SEQ: filter bwa bam for epigenome data
   
   ## DNA-SEQ: multiqc report building
   push @pipeline, {
