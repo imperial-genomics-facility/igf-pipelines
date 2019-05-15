@@ -1614,8 +1614,108 @@ sub pipeline_analyses {
         'collection_type'     => $self->o('ftp_ppqt_collection_type'),
         'collection_table'    => $self->o('bwa_collection_table'),
         },
+      -flow_into   => {
+        1 => ['deeptools_plot_coverage_for_epigenome'],
+      },
   };
 
+
+  ## DNA-SEQ: deeptool plotCovarage epigenome data
+  push @pipeline, {
+    -logic_name  => 'deeptools_plot_coverage_for_epigenome',
+    -module      => 'ehive.runnable.process.alignment.RunDeeptools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#merged_bwa_genomic_bams#',
+      'output_prefix'    => '#experiment_igf_id#',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'deeptools_params' => $self->o('deeptools_params'),
+      'deeptools_command'         => 'plotCoverage',
+      'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
+
+     },
+    -flow_into   => {
+        1 => ['deeptools_bam_coverage_for_epigenome'],
+      },
+  };
+
+
+  ## DNA-SEQ: deeptool bamCovarage epigenome data
+  push @pipeline, {
+    -logic_name  => 'deeptools_bam_coverage_for_epigenome',
+    -module      => 'ehive.runnable.process.alignment.RunDeeptools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#merged_bwa_genomic_bams#',
+      'output_prefix'    => '#experiment_igf_id#',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'base_result_dir'  => $self->o('base_results_dir'),
+      'deeptools_params' => $self->o('deeptools_params'),
+      'collection_table' => $self->o('bwa_collection_table'),
+      'deeptools_command'         => 'bamCoverage',
+      'signal_collection_type'    => $self->o('deeptool_signal_collection_type'),
+      'load_signal_bigwig'        => $self->o('load_deeptools_signal_bigwig'),
+      'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
+
+     },
+    -flow_into   => {
+        1 => ['copy_deeptools_bigwig_to_remote'],
+      },
+  };
+
+
+  ## DNA-SEQ: copy ppqt to remote
+  push @pipeline, {
+      -logic_name   => 'copy_deeptools_bigwig_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+        'file_list'           => '#signal_files#',
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_deeptool_signal_collection_type'),
+        'collection_table'    => $self->o('bwa_collection_table'),
+        },
+      -flow_into   => {
+        1 => ['deeptools_plot_fingerprint_for_epigenome'],
+      },
+  };
+
+  ## DNA-SEQ: deeptool plotCovarage epigenome data
+  push @pipeline, {
+    -logic_name  => 'deeptools_plot_coverage_for_epigenome',
+    -module      => 'ehive.runnable.process.alignment.RunDeeptools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#merged_bwa_genomic_bams#',
+      'output_prefix'    => '#experiment_igf_id#',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'deeptools_params' => $self->o('deeptools_params'),
+      'deeptools_command'         => 'plotFingerprint',
+      'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
+
+     },
+    -flow_into   => {
+        1 => ['multiqc_report_for_bwa'],
+      },
+  };
 
   ## DNA-SEQ: multiqc report building
   push @pipeline, {
