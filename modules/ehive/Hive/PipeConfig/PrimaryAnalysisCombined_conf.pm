@@ -1594,6 +1594,29 @@ sub pipeline_analyses {
   };
 
 
+  ## DNA-SEQ: copy ppqt to remote
+  push @pipeline, {
+      -logic_name   => 'copy_ppqt_to_remote',
+      -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+      -language     => 'python3',
+      -meadow_type  => 'PBSPro',
+      -rc_name      => '1Gb',
+      -analysis_capacity => 2,
+      -parameters  => {
+        'analysis_dir'        => $self->o('analysis_dir'),
+        'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+        'file_list'           => '#output_ppqt_list#',
+        'remote_user'         => $self->o('seqrun_user'),
+        'remote_host'         => $self->o('remote_host'),
+        'remote_project_path' => $self->o('remote_project_path'),
+        'collect_remote_file' => 1,
+        'collection_name'     => '#experiment_igf_id#',
+        'collection_type'     => $self->o('ftp_ppqt_collection_type'),
+        'collection_table'    => $self->o('bwa_collection_table'),
+        },
+  };
+
+
   ## DNA-SEQ: multiqc report building
   push @pipeline, {
     -logic_name  => 'multiqc_report_for_bwa',
