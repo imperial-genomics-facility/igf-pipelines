@@ -165,7 +165,7 @@ sub default_options {
     #
     ## RNA-SEQ BATCH EFFECT
     #---------------------------------------------------------------------------
-    'batch_effect_rscript_path'        => undef,
+    'rscript_path'                     => undef,
     'batch_effect_template'            => undef,
     'batch_effect_strand_info'         => 'reverse_strand',
     'batch_effect_read_threshold'      => 5,
@@ -456,9 +456,9 @@ sub pipeline_analyses {
        'collection_table'     => $self->o('batch_effect_collection_table'),
        'analysis_name'        => $self->o('batch_effect_analysis_name'),
        'tag_name'             => $self->o('batch_effect_tag_name'),
-       'rscript_path'         => $self->o('batch_effect_rscript_path'),
+       'rscript_path'         => $self->o('rscript_path'),
        'template_report_file' => $self->o('batch_effect_template'),
-       'base_results_dir'     => $self->o('base_results_dir'),
+       'base_result_dir'      => $self->o('base_results_dir'),
       },
     -flow_into   => {
         1 => ['copy_batch_effect_report_to_remote'],
@@ -1505,6 +1505,8 @@ sub pipeline_analyses {
       'reference_type'   => $self->o('reference_fasta_type'),
       'samtools_exe'     => $self->o('samtools_exe'),
       'threads'          => $self->o('samtools_threads'),
+      'cram_collection_type'   => $self->o('cram_collection_type'),
+      'load_metrics_to_cram'   => $self->o('load_metrics_to_cram'),
      },
     -flow_into   => {
         1 => ['samtools_idxstat_summary_for_bwa'],
@@ -1540,7 +1542,58 @@ sub pipeline_analyses {
   };
   
   ## DNA-SEQ: filter bwa bam for epigenome data
-  
+  push @pipeline, {
+    -logic_name  => 'filter_bwa_bam_for_epigenome',
+    -module      => 'ehive.runnable.process.alignment.RunSamtools',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#merged_bwa_genomic_bams#',
+      'samtools_command' => 'view_filterBam',
+      'output_prefix'    => '#experiment_igf_id#',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'samtools_exe'     => $self->o('samtools_exe'),
+      'reference_type'   => $self->o('reference_fasta_type'),
+      'samFlagInclude'   => $self->o('samFlagInclude_for_epigenome'),
+      'samFlagExclude'   => $self->o('samFlagExclude_for_epigenome'),
+      'mapq_threshold'   => $self->o('mapq_threshold_for_epigenome'),
+      'use_encode_filter'      => $self->o('use_encode_filter_for_epigenome'),
+      'encodePeExcludeFlag'    => $self->o('encodePeExcludeFlag'),
+      'encodeSeExcludeFlag'    => $self->o('encodeSeExcludeFlag'),
+     },
+    -flow_into   => {
+        1 => ['ppqt_for_epigenome'],
+      },
+  };
+
+
+  ## DNA-SEQ: ppqt for epigenome data
+  push @pipeline, {
+    -logic_name  => 'ppqt_for_epigenome',
+    -module      => 'ehive.runnable.process.alignment.RunPPQT',
+    -language    => 'python3',
+    -meadow_type => 'PBSPro',
+    -rc_name     => '2Gb',
+    -analysis_capacity => 2,
+    -parameters  => {
+      'input_files'      => '#merged_bwa_genomic_bams#',
+      'output_prefix'    => '#experiment_igf_id#',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'rscript_path'     => $self->o('rscript_path'),
+      'ppqt_exe'         => $self->o('ppqt_exe'),
+      'base_result_dir'  => $self->o('base_results_dir'),
+      'ppqt_collection_type'   => $self->o('ppqt_collection_type'),
+      'cram_collection_type'   => $self->o('cram_collection_type'),
+      'load_metrics_to_cram'   => $self->o('load_metrics_to_cram'),
+     },
+    -flow_into   => {
+        1 => ['copy_ppqt_to_remote'],
+      },
+  };
+
+
   ## DNA-SEQ: multiqc report building
   push @pipeline, {
     -logic_name  => 'multiqc_report_for_bwa',
