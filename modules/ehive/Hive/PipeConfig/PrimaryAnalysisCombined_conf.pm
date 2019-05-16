@@ -173,9 +173,13 @@ sub default_options {
     #---------------------------------------------------------------------------
     'genome_browser_template_file'     => undef,
     #
-    ## RNA-SEQ BATCH EFFECT
+    ## R
     #---------------------------------------------------------------------------
     'rscript_path'                     => undef,
+    #
+    ## RNA-SEQ BATCH EFFECT
+    #---------------------------------------------------------------------------
+    'batch_effect_rscript_path'        => undef,
     'batch_effect_template'            => undef,
     'batch_effect_strand_info'         => 'reverse_strand',
     'batch_effect_read_threshold'      => 5,
@@ -478,16 +482,17 @@ sub pipeline_analyses {
     -rc_name      => '1Gb',
     -analysis_capacity => 2,
     -parameters   => {
-       'input_files'          => '#star_gene_counts#',
-       'strand_info'          => $self->o('batch_effect_strand_info'),
-       'read_threshold'       => $self->o('batch_effect_read_threshold'),
-       'collection_type'      => $self->o('batch_effect_collection_type'),
-       'collection_table'     => $self->o('batch_effect_collection_table'),
-       'analysis_name'        => $self->o('batch_effect_analysis_name'),
-       'tag_name'             => $self->o('batch_effect_tag_name'),
-       'rscript_path'         => $self->o('rscript_path'),
-       'template_report_file' => $self->o('batch_effect_template'),
-       'base_result_dir'      => $self->o('base_results_dir'),
+       'input_files'               => '#star_gene_counts#',
+       'strand_info'               => $self->o('batch_effect_strand_info'),
+       'read_threshold'            => $self->o('batch_effect_read_threshold'),
+       'collection_type'           => $self->o('batch_effect_collection_type'),
+       'collection_table'          => $self->o('batch_effect_collection_table'),
+       'analysis_name'             => $self->o('batch_effect_analysis_name'),
+       'tag_name'                  => $self->o('batch_effect_tag_name'),
+       'rscript_path'              => $self->o('rscript_path'),
+       'batch_effect_rscript_path' => $self->o('batch_effect_rscript_path'),
+       'template_report_file'      => $self->o('batch_effect_template'),
+       'base_result_dir'           => $self->o('base_results_dir'),
       },
     -flow_into    => {
         1 => ['copy_batch_effect_report_to_remote'],
