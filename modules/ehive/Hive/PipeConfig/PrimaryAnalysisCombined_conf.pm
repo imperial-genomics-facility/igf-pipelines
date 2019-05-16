@@ -156,6 +156,7 @@ sub default_options {
     #---------------------------------------------------------------------------
     'scanpy_type'                => 'SCANPY_RESULTS',
     'ftp_scanpy_type'            => 'FTP_SCANPY_RESULTS',
+    'ftp_cellbrowser_dir'        => 'FTP_CELLBROWSER_DIR',
     'scanpy_report_template'     => undef,
     #
     ## DEMULTIPLEXING
@@ -1952,6 +1953,7 @@ sub pipeline_analyses {
       'report_template_file'   => $self->o('scanpy_report_template'),
       'base_result_dir'        => $self->o('base_results_dir'),
       'scanpy_collection_type' => $self->o('scanpy_type'),
+      'base_work_dir'          => $self->o('base_work_dir'),
      },
     -flow_into    => {
         1 => ['copy_scanpy_report_to_remote'],
@@ -1979,9 +1981,35 @@ sub pipeline_analyses {
       'collection_type'     => $self->o('ftp_scanpy_type'),
       'collection_table'    => $self->o('cellranger_collection_table'),
       },
+    -flow_into    => {
+        1 => ['copy_cellbrowser_dir_to_remote'],
+      },
   };
   
   
+  ## SINGLECELL: copy cellbrowser dir to remote
+  push @pipeline, {
+    -logic_name   => 'copy_cellbrowser_dir_to_remote',
+    -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+    -language     => 'python3',
+    -meadow_type  => 'PBSPro',
+    -rc_name      => '1Gb',
+    -analysis_capacity => 2,
+    -parameters   => {
+      'analysis_dir'        => $self->o('analysis_dir'),
+      'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+      'file_list'           => ['#cellbrowser_dir#'],
+      'remote_user'         => $self->o('seqrun_user'),
+      'remote_host'         => $self->o('remote_host'),
+      'remote_project_path' => $self->o('remote_project_path'),
+      'collect_remote_file' => 1,
+      'collection_name'     => '#experiment_igf_id#',
+      'collection_type'     => $self->o('ftp_cellbrowser_dir'),
+      'collection_table'    => $self->o('cellranger_collection_table'),
+      },
+  };
+
+
   ## SINGLECELL: load cellranger report
   push @pipeline, {
     -logic_name   => 'load_cellranger_report',
