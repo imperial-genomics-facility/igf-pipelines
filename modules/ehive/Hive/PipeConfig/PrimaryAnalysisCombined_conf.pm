@@ -1539,8 +1539,8 @@ sub pipeline_analyses {
       'reference_type'         => $self->o('reference_fasta_type'),
       'samtools_exe'           => $self->o('samtools_exe'),
       'threads'                => $self->o('samtools_threads'),
-      'cram_collection_type'   => $self->o('cram_collection_type'),
-      'load_metrics_to_cram'   => $self->o('load_metrics_to_cram'),
+      'cram_collection_type'   => $self->o('cram_type'),
+      'load_metrics_to_cram'   => 1,
      },
     -flow_into    => {
         1 => ['samtools_idxstat_summary_for_bwa'],
@@ -1616,8 +1616,8 @@ sub pipeline_analyses {
       'ppqt_exe'               => $self->o('ppqt_exe'),
       'base_result_dir'        => $self->o('base_results_dir'),
       'ppqt_collection_type'   => $self->o('ppqt_collection_type'),
-      'cram_collection_type'   => $self->o('cram_collection_type'),
-      'load_metrics_to_cram'   => $self->o('load_metrics_to_cram'),
+      'cram_collection_type'   => $self->o('cram_type'),
+      'load_metrics_to_cram'   => 1,
      },
     -flow_into    => {
         1 => ['copy_ppqt_to_remote'],
