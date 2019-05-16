@@ -1728,7 +1728,7 @@ sub pipeline_analyses {
 
   ## DNA-SEQ: deeptool plotCovarage epigenome data
   push @pipeline, {
-    -logic_name   => 'deeptools_plot_coverage_for_epigenome',
+    -logic_name   => 'deeptools_plot_fingerprint_for_epigenome',
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
