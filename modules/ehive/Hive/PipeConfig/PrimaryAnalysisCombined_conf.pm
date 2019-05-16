@@ -2258,7 +2258,10 @@ sub pipeline_analyses {
       'rna_source'    => $self->o('rna_source'),
     },
     -flow_into    => {
-        1 => WHEN('#library_source# eq #rna_source#' => ['config_genome_browser_rnaseq'],
+        1 => WHEN('#library_source# eq #rna_source#' => ['config_genome_browser'],
+                  '#library_strategy# eq #chip_library_strategy#' => ['config_genome_browser'],
+                  '#library_strategy# eq #atac_library_strategy#' => ['config_genome_browser'],
+                  '#library_strategy# eq #dnase_library_strategy#' => ['config_genome_browser'],
                   ELSE ['update_project_analysis']),
     },
   };
@@ -2266,7 +2269,7 @@ sub pipeline_analyses {
   
   ## GENERIC: configure genome browser
   push @pipeline, {
-    -logic_name   => 'config_genome_browser_rnaseq',
+    -logic_name   => 'config_genome_browser',
     -module       => 'ehive.runnable.process.alignment.BuildGenomeBrowserConfigForProject',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
@@ -2274,7 +2277,8 @@ sub pipeline_analyses {
     -analysis_capacity => 1,
     -parameters   => {
       'star_bw_type'         => $self->o('star_bw_collection_type'),
-      'collection_type_list' => ['#star_bw_type#'],
+      'deeptools_bw_type'    => $self->o('deeptool_signal_collection_type'),
+      'collection_type_list' => ['#star_bw_type#','#deeptools_bw_type#'],
       'ref_genome_type'      => $self->o('two_bit_genome_type'),
       'collection_table'     => 'experiment',
       'pipeline_name'        => $self->o('pipeline_name'),
