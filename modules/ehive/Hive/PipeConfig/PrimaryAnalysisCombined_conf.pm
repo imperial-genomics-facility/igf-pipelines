@@ -495,7 +495,7 @@ sub pipeline_analyses {
        'base_result_dir'           => $self->o('base_results_dir'),
       },
     -flow_into    => {
-        1 => ['copy_batch_effect_report_to_remote'],
+        1 => WHEN('#expr( scalar @{#batch_effect_reports#} > 0 ) expr#' => ['copy_batch_effect_report_to_remote']),
       },
   };
 
