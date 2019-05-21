@@ -37,6 +37,7 @@ sub default_options {
     'copy_input_to_temp'         => 0,
     'patterned_flow_cell_list'   => ['NEXTSEQ','HISEQ4000'],
     'center_name'                => 'Imperial BRC Genomics Facility',
+    'load_metrics_to_cram'       => 1,
     #
     ## IRODS
     #---------------------------------------------------------------------------
@@ -848,6 +849,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_base_dist_summary_for_star'],
@@ -873,6 +875,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_gc_bias_summary_for_star'],
@@ -898,6 +901,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_qual_dist_summary_for_star'],
@@ -923,6 +927,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_rna_metrics_summary_for_star'],
@@ -949,6 +954,7 @@ sub pipeline_analyses {
       'reference_refFlat'    => $self->o('reference_refFlat'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['samtools_stats_summary_for_star'],
@@ -973,6 +979,7 @@ sub pipeline_analyses {
       'samtools_exe'         => $self->o('samtools_exe'),
       'threads'              => $self->o('samtools_threads'),
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['samtools_idxstat_summary_for_star'],
@@ -1248,7 +1255,7 @@ sub pipeline_analyses {
   ## DNA-SEQ: run bwa alignment
   push @pipeline, {
     -logic_name   => 'run_bwa',
-    -module       => 'ehive.runnable.process.alignment.RunBWA',                  # FIX ME
+    -module       => 'ehive.runnable.process.alignment.RunBWA',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
     -rc_name      => '8Gb8t',
@@ -1449,6 +1456,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_base_dist_summary_for_bwa'],
@@ -1474,6 +1482,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_gc_bias_summary_for_bwa'],
@@ -1499,6 +1508,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_qual_dist_summary_for_bwa'],
@@ -1524,6 +1534,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'output_prefix'        => '#experiment_igf_id#',
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['samtools_stats_summary_for_bwa'],
@@ -1548,8 +1559,7 @@ sub pipeline_analyses {
       'samtools_exe'           => $self->o('samtools_exe'),
       'threads'                => $self->o('samtools_threads'),
       'cram_collection_type'   => $self->o('cram_type'),
-      'load_metrics_to_cram'   => 1,
-      'cram_collection_type'   => $self->o('cram_type'),
+      'load_metrics_to_cram'   => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['samtools_idxstat_summary_for_bwa'],
@@ -1626,7 +1636,7 @@ sub pipeline_analyses {
       'base_result_dir'        => $self->o('base_results_dir'),
       'ppqt_collection_type'   => $self->o('ppqt_collection_type'),
       'cram_collection_type'   => $self->o('cram_type'),
-      'load_metrics_to_cram'   => 1,
+      'load_metrics_to_cram'   => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['copy_ppqt_to_remote'],
@@ -1675,7 +1685,6 @@ sub pipeline_analyses {
       'deeptools_params'          => $self->o('deeptools_params'),
       'deeptools_command'         => 'plotCoverage',
       'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
-
      },
     -flow_into    => {
         1 => ['deeptools_bam_coverage_for_epigenome'],
@@ -1702,7 +1711,6 @@ sub pipeline_analyses {
       'signal_collection_type'    => $self->o('deeptool_signal_collection_type'),
       'load_signal_bigwig'        => $self->o('load_deeptools_signal_bigwig'),
       'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
-
      },
     -flow_into    => {
         1 => ['copy_deeptools_bigwig_to_remote'],
@@ -2081,6 +2089,7 @@ sub pipeline_analyses {
       'base_work_dir'        => $self->o('base_work_dir'),
       'reference_type'       => $self->o('reference_fasta_type'),
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_base_dist_summary_for_cellranger'],
@@ -2105,6 +2114,7 @@ sub pipeline_analyses {
       'base_work_dir'        => $self->o('base_work_dir'),
       'reference_type'       => $self->o('reference_fasta_type'),
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_gc_bias_summary_for_cellranger'],
@@ -2129,6 +2139,7 @@ sub pipeline_analyses {
       'base_work_dir'        => $self->o('base_work_dir'),
       'reference_type'       => $self->o('reference_fasta_type'),
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_qual_dist_summary_for_cellranger'],
@@ -2153,6 +2164,7 @@ sub pipeline_analyses {
       'base_work_dir'        => $self->o('base_work_dir'),
       'reference_type'       => $self->o('reference_fasta_type'),
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['picard_rna_metrics_summary_for_cellranger'],
@@ -2178,6 +2190,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'reference_refFlat'    => $self->o('reference_refFlat'),
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['samtools_flagstat_summary_for_cellranger'],
@@ -2202,6 +2215,7 @@ sub pipeline_analyses {
       'reference_type'       => $self->o('reference_fasta_type'),
       'threads'              => $self->o('samtools_threads'),
       'cram_collection_type' => $self->o('cram_type'),
+      'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
         1 => ['samtools_idxstat_summary_for_cellranger'],
