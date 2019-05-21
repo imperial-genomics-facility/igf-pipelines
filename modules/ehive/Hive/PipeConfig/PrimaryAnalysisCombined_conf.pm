@@ -740,7 +740,7 @@ sub pipeline_analyses {
       'analysis_name'    => $self->o('star_analysis_name'),
       'collection_name'  => '#experiment_igf_id#',
       'tag_name'         => '#species_name#',
-      'collection_type'  => $self->o('bw_collection_type'),
+      'collection_type'  => $self->o('star_bw_collection_type'),
       'collection_table' => $self->o('star_collection_table'),
      },
     -flow_into    => {
