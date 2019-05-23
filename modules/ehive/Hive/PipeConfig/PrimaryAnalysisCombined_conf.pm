@@ -1682,6 +1682,7 @@ sub pipeline_analyses {
       'input_files'               => '#merged_bwa_genomic_bams#',
       'output_prefix'             => '#experiment_igf_id#',
       'base_work_dir'             => $self->o('base_work_dir'),
+      'base_results_dir'           => $self->o('base_results_dir'),
       'deeptools_params'          => $self->o('deeptools_params'),
       'deeptools_command'         => 'plotCoverage',
       'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
