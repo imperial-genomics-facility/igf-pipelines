@@ -200,6 +200,7 @@ sub default_options {
     'load_deeptools_signal_bigwig'     => 1,
     'blacklist_reference_type'         => 'BLACKLIST_BED',
     'deeptool_signal_collection_type'  => 'DEEPTOOLS_BIGWIG',
+    'deeptools_threads'                => 8,
     'deeptools_params'                 => undef,
     'ftp_deeptool_signal_collection_type'  => 'FTP_DEEPTOOLS_BIGWIG',
     #
@@ -1676,7 +1677,7 @@ sub pipeline_analyses {
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
+    -rc_name      => '2Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1685,6 +1686,7 @@ sub pipeline_analyses {
       'base_results_dir'           => $self->o('base_results_dir'),
       'deeptools_params'          => $self->o('deeptools_params'),
       'deeptools_command'         => 'plotCoverage',
+      'threads'                   => $self->o('deeptools_threads'),
       'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
      },
     -flow_into    => {
@@ -1699,7 +1701,7 @@ sub pipeline_analyses {
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
+    -rc_name      => '2Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1709,6 +1711,7 @@ sub pipeline_analyses {
       'deeptools_params'          => $self->o('deeptools_params'),
       'collection_table'          => $self->o('bwa_collection_table'),
       'deeptools_command'         => 'bamCoverage',
+      'threads'                   => $self->o('deeptools_threads'),
       'signal_collection_type'    => $self->o('deeptool_signal_collection_type'),
       'load_signal_bigwig'        => $self->o('load_deeptools_signal_bigwig'),
       'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
@@ -1750,7 +1753,7 @@ sub pipeline_analyses {
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
+    -rc_name      => '2Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1758,6 +1761,7 @@ sub pipeline_analyses {
       'base_work_dir'             => $self->o('base_work_dir'),
       'deeptools_params'          => $self->o('deeptools_params'),
       'deeptools_command'         => 'plotFingerprint',
+      'threads'                   => $self->o('deeptools_threads'),
       'blacklist_reference_type'  => $self->o('blacklist_reference_type'),
      },
     -flow_into    => {
