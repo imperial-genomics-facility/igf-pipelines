@@ -1677,7 +1677,7 @@ sub pipeline_analyses {
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb8t',
+    -rc_name      => '4Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1701,7 +1701,7 @@ sub pipeline_analyses {
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb8t',
+    -rc_name      => '4Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1753,7 +1753,7 @@ sub pipeline_analyses {
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
     -language     => 'python3',
     -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb8t',
+    -rc_name      => '4Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'input_files'               => '#merged_bwa_genomic_bams#',
