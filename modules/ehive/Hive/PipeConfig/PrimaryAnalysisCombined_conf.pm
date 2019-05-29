@@ -1724,7 +1724,7 @@ sub pipeline_analyses {
   };
 
 
-  ## DNA-SEQ: copy ppqt to remote
+  ## DNA-SEQ: copy deeptool bigwig to remote
   push @pipeline, {
     -logic_name   => 'copy_deeptools_bigwig_to_remote',
     -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
@@ -1749,7 +1749,7 @@ sub pipeline_analyses {
     },
   };
 
-  ## DNA-SEQ: deeptool plotCovarage epigenome data
+  ## DNA-SEQ: deeptool plotFingerprint epigenome data
   push @pipeline, {
     -logic_name   => 'deeptools_plot_fingerprint_for_epigenome',
     -module       => 'ehive.runnable.process.alignment.RunDeeptools',
@@ -1761,6 +1761,7 @@ sub pipeline_analyses {
       'input_files'               => '#merged_bwa_genomic_bams#',
       'output_prefix'             => '#experiment_igf_id#',
       'base_work_dir'             => $self->o('base_work_dir'),
+      'base_results_dir'          => $self->o('base_results_dir'),
       'deeptools_params'          => $self->o('deeptools_params'),
       'deeptools_command'         => 'plotFingerprint',
       'threads'                   => $self->o('deeptools_threads'),
