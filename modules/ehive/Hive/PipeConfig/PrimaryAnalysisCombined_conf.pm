@@ -194,6 +194,7 @@ sub default_options {
     'ppqt_exe'                         => undef,
     'ppqt_collection_type'             => 'PPQT_REPORT',
     'ftp_ppqt_collection_type'         => 'FTP_PPQT_REPORT',
+    'ppqt_threads'                     => 0,
     #
     ## DEEPTOOLS
     #---------------------------------------------------------------------------
@@ -1637,6 +1638,7 @@ sub pipeline_analyses {
       'base_result_dir'        => $self->o('base_results_dir'),
       'ppqt_collection_type'   => $self->o('ppqt_collection_type'),
       'cram_collection_type'   => $self->o('cram_type'),
+      'threads'                => $self->o('ppqt_threads'),
       'load_metrics_to_cram'   => $self->o('load_metrics_to_cram'),
      },
     -flow_into    => {
