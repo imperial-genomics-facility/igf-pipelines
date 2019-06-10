@@ -263,13 +263,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: run factory for genomic and transcriptomic data
   push @pipeline, {
-    -logic_name   => 'run_factory_for_rnaseq',
-    -module       => 'ehive.runnable.jobfactory.alignment.RunFactory',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'run_factory_for_rnaseq',
+    -module            => 'ehive.runnable.jobfactory.alignment.RunFactory',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
     -analysis_capacity => 2,
-    -flow_into    => {
+    -flow_into         => {
         '2->A' => ['fetch_fastq_for_rnaseq_run'],
         'A->1' => ['process_star_bams'],
       },
@@ -278,17 +278,17 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: fetch fastq files for a run
   push @pipeline, {
-    -logic_name   => 'fetch_fastq_for_rnaseq_run',
-    -module       => 'ehive.runnable.process.alignment.FetchFastqForRun',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'fetch_fastq_for_rnaseq_run',
+    -module            => 'ehive.runnable.process.alignment.FetchFastqForRun',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
     -analysis_capacity => 2,
-    -parameters   => {
+    -parameters        => {
       'fastq_collection_type'  => $self->o('fastq_collection_type'),
       'fastq_collection_table' => $self->o('fastq_collection_table'),
     },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['adapter_trim_without_fastq_split_rnaseq'],
       },
   };
@@ -296,13 +296,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: adapter trim without fastq splitting
   push @pipeline, {
-    -logic_name   => 'adapter_trim_without_fastq_split_rnaseq',
-    -module       => 'ehive.runnable.process.alignment.RunFastp',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb4t',
-    -analysis_capacity => 10,
-    -parameters   => {
+    -logic_name        => 'adapter_trim_without_fastq_split_rnaseq',
+    -module            => 'ehive.runnable.process.alignment.RunFastp',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 50,
+    -parameters        => {
       'fastp_options_list'   => $self->o('fastp_options_list'),
       'split_by_lines_count' => $self->o('split_by_lines_count'),
       'run_thread'           => $self->o('fastp_run_thread'),
@@ -310,7 +310,7 @@ sub pipeline_analyses {
       'fastp_exe'            => $self->o('fastp_exe'),
       'input_fastq_list'     => '#fastq_files_list#',
     },
-    -flow_into    => {
+    -flow_into         => {
         '1' => ['load_fastp_report_rnaseq'],
       },
   };
@@ -318,13 +318,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: collect fastp report
   push @pipeline, {
-    -logic_name   => 'load_fastp_report_rnaseq',
-    -module       => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'load_fastp_report_rnaseq',
+    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 5,
+    -parameters        => {
       'input_files'      => ['#output_html_file#'],
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('fastp_analysis_name'),
@@ -334,7 +334,7 @@ sub pipeline_analyses {
       'collection_table' => $self->o('fastp_collection_table'),
       'file_suffix'      => 'html',
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['run_star',
               '?accu_name=fastp_report_rna&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=output_json_file' ],
       },
@@ -343,13 +343,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: run star alignment
   push @pipeline, {
-    -logic_name   => 'run_star',
-    -module       => 'ehive.runnable.process.alignment.RunSTAR',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '42Gb8t',
-    -analysis_capacity => 10,
-    -parameters   => {
+    -logic_name        => 'run_star',
+    -module            => 'ehive.runnable.process.alignment.RunSTAR',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '42Gb8t',
+    -analysis_capacity => 50,
+    -parameters        => {
       'star_exe'           => $self->o('star_exe'),
       'r1_read_file'       => '#output_read1#',
       'r2_read_file'       => '#output_read2#',
@@ -361,7 +361,7 @@ sub pipeline_analyses {
       'run_thread'         => $self->o('star_run_thread'),
       'star_patameters'    => $self->o('star_patameters'),
     },
-    -flow_into    => {
+    -flow_into         => {
           1 => ['picard_add_rg_tag_to_star_genomic_bam',
                 'picard_add_rg_tag_to_star_transcriptomic_bam',
                 '?accu_name=star_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=star_log_file',
@@ -373,31 +373,31 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard add rg tag to run star genomic bam
   push @pipeline, {
-    -logic_name   => 'picard_add_rg_tag_to_star_genomic_bam',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '4Gb',
-    -analysis_capacity => 10,
-    -parameters   => {
-      'input_files'    => ['#star_genomic_bam#'],
-      'java_exe'       => $self->o('java_exe'),
-      'java_param'     => $self->o('java_param'),
-      'picard_jar'     => $self->o('picard_jar'),
-      'picard_command' => 'AddOrReplaceReadGroups',
-      'base_work_dir'  => $self->o('base_work_dir'),
-      'picard_option'  => {
-         'RGID'          => '#run_igf_id#',
-         'RGLB'          => '#library_name#',
-         'RGPL'          => $self->o('illumina_platform_name'),
-         'RGPU'          => '#run_igf_id#',
-         'RGSM'          => '#sample_igf_id#',
-         'RGCN'          => $self->o('center_name'),
-         'SORT_ORDER'    => 'coordinate',
+    -logic_name        => 'picard_add_rg_tag_to_star_genomic_bam',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 50,
+    -parameters        => {
+      'input_files'      => ['#star_genomic_bam#'],
+      'java_exe'         => $self->o('java_exe'),
+      'java_param'       => $self->o('java_param'),
+      'picard_jar'       => $self->o('picard_jar'),
+      'picard_command'   => 'AddOrReplaceReadGroups',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'picard_option'    => {
+         'RGID'            => '#run_igf_id#',
+         'RGLB'            => '#library_name#',
+         'RGPL'            => $self->o('illumina_platform_name'),
+         'RGPU'            => '#run_igf_id#',
+         'RGSM'            => '#sample_igf_id#',
+         'RGCN'            => $self->o('center_name'),
+         'SORT_ORDER'      => 'coordinate',
          },
-      'output_prefix'  => '#run_igf_id#'.'_'.'genomic',
+      'output_prefix'    => '#run_igf_id#'.'_'.'genomic',
      },
-    -flow_into    => {
+    -flow_into         => {
           1 => [ '?accu_name=star_aligned_genomic_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
      },
   };
@@ -405,31 +405,31 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard add rg tag to run star transcriptomic bam
   push @pipeline, {
-    -logic_name   => 'picard_add_rg_tag_to_star_transcriptomic_bam',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '4Gb',
-    -analysis_capacity => 10,
-    -parameters   => {
-      'input_files'    => ['#star_transcriptomic_bam#'],
-      'java_exe'       => $self->o('java_exe'),
-      'java_param'     => $self->o('java_param'),
-      'picard_jar'     => $self->o('picard_jar'),
-      'picard_command' => 'AddOrReplaceReadGroups',
-      'base_work_dir'  => $self->o('base_work_dir'),
-      'picard_option'  => {
-         'RGID'          => '#run_igf_id#',
-         'RGLB'          => '#library_name#',
-         'RGPL'          => $self->o('illumina_platform_name'),
-         'RGPU'          => '#run_igf_id#',
-         'RGSM'          => '#sample_igf_id#',
-         'RGCN'          => $self->o('center_name'),
-         'SORT_ORDER'    => 'unsorted',
+    -logic_name        => 'picard_add_rg_tag_to_star_transcriptomic_bam',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 50,
+    -parameters        => {
+      'input_files'      => ['#star_transcriptomic_bam#'],
+      'java_exe'         => $self->o('java_exe'),
+      'java_param'       => $self->o('java_param'),
+      'picard_jar'       => $self->o('picard_jar'),
+      'picard_command'   => 'AddOrReplaceReadGroups',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'picard_option'    => {
+         'RGID'            => '#run_igf_id#',
+         'RGLB'            => '#library_name#',
+         'RGPL'            => $self->o('illumina_platform_name'),
+         'RGPU'            => '#run_igf_id#',
+         'RGSM'            => '#sample_igf_id#',
+         'RGCN'            => $self->o('center_name'),
+         'SORT_ORDER'      => 'unsorted',
          },
-      'output_prefix'  => '#run_igf_id#'.'_'.'transcriptomic',
+      'output_prefix'    => '#run_igf_id#'.'_'.'transcriptomic',
      },
-    -flow_into    => {
+    -flow_into         => {
           1 => [ '?accu_name=star_aligned_trans_bam&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=analysis_files' ],
      },
   };
@@ -437,16 +437,16 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: process star bams
   push @pipeline, {
-    -logic_name   => 'process_star_bams',
-    -module       => 'ehive.runnable.IGFBaseJobFactory',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'process_star_bams',
+    -module            => 'ehive.runnable.IGFBaseJobFactory',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
+    -parameters        => {
        'sub_tasks' => [{'pseudo_exp_id'=> '#experiment_igf_id#'}],
       },
-    -flow_into    => {
+    -flow_into         => {
         '2->A' => ['collect_star_genomic_bam_for_exp',
                    'collect_star_transcriptomic_bam_for_exp',
                    'collect_star_gene_count_for_exp'
@@ -458,18 +458,18 @@ sub pipeline_analyses {
 
   ## RNA-SEQ: collect star gene count
   push @pipeline, {
-    -logic_name   => 'collect_star_gene_count_for_exp',
-    -module       => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'collect_star_gene_count_for_exp',
+    -module            => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
-       'accu_data'     => '#star_gene_counts#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
+    -parameters        => {
+       'accu_data'       => '#star_gene_counts#',
+       'output_mode'     => 'list',
+       'base_work_dir'   => $self->o('base_work_dir'),
       },
-    -flow_into    => {
+    -flow_into         => {
         1 => {'check_batch_effect_for_exp' => {'star_gene_counts' => '#exp_chunk_list#'}},
       },
   };
@@ -477,13 +477,13 @@ sub pipeline_analyses {
 
   ## RNA-SEQ: generate batch effect report
   push @pipeline, {
-    -logic_name   => 'check_batch_effect_for_exp',
-    -module       => 'ehive.runnable.process.alignment.Check_batch_effect_for_lane',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'check_batch_effect_for_exp',
+    -module            => 'ehive.runnable.process.alignment.Check_batch_effect_for_lane',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 10,
+    -parameters        => {
        'input_files'               => '#star_gene_counts#',
        'strand_info'               => $self->o('batch_effect_strand_info'),
        'read_threshold'            => $self->o('batch_effect_read_threshold'),
@@ -496,7 +496,7 @@ sub pipeline_analyses {
        'template_report_file'      => $self->o('batch_effect_template'),
        'base_result_dir'           => $self->o('base_results_dir'),
       },
-    -flow_into    => {
+    -flow_into         => {
         1 => WHEN('#batch_effect_reports# ne ""' => ['copy_batch_effect_report_to_remote']),
       },
   };
@@ -504,13 +504,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: copy batch effect result to remote
   push @pipeline, {
-    -logic_name   => 'copy_batch_effect_report_to_remote',
-    -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'copy_batch_effect_report_to_remote',
+    -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
+    -parameters        => {
         'analysis_dir'        => $self->o('analysis_dir'),
         'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
         'file_list'           => '#batch_effect_reports#',
@@ -527,18 +527,18 @@ sub pipeline_analyses {
 
   ## RNA-SEQ: collect star genomic bam
   push @pipeline, {
-    -logic_name   => 'collect_star_genomic_bam_for_exp',
-    -module       => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'collect_star_genomic_bam_for_exp',
+    -module            => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
-       'accu_data'     => '#star_aligned_genomic_bam#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
+    -parameters        => {
+       'accu_data'       => '#star_aligned_genomic_bam#',
+       'output_mode'     => 'list',
+       'base_work_dir'   => $self->o('base_work_dir'),
       },
-    -flow_into    => {
+    -flow_into         => {
         1 => {'picard_merge_and_mark_dup_star_genomic_bam' => {'star_genomic_bams' => '#exp_chunk_list#'}},
       },
   };
@@ -546,23 +546,23 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard merge and mark duplicate genomic bam
   push @pipeline, {
-    -logic_name   => 'picard_merge_and_mark_dup_star_genomic_bam',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '8Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
-      'input_files'    => '#star_genomic_bams#',
-      'java_exe'       => $self->o('java_exe'),
-      'java_param'     => $self->o('java_param'),
-      'picard_jar'     => $self->o('picard_jar'),
-      'picard_command' => 'MarkDuplicates',
-      'base_work_dir'  => $self->o('base_work_dir'),
-      'picard_option'  => { 'ASSUME_SORT_ORDER' => 'coordinate'},
-      'output_prefix'  => '#experiment_igf_id#',
+    -logic_name        => 'picard_merge_and_mark_dup_star_genomic_bam',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '8Gb4t',
+    -analysis_capacity => 10,
+    -parameters        => {
+      'input_files'      => '#star_genomic_bams#',
+      'java_exe'         => $self->o('java_exe'),
+      'java_param'       => $self->o('java_param'),
+      'picard_jar'       => $self->o('picard_jar'),
+      'picard_command'   => 'MarkDuplicates',
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'picard_option'    => { 'ASSUME_SORT_ORDER' => 'coordinate'},
+      'output_prefix'    => '#experiment_igf_id#',
      },
-    -flow_into => {
+    -flow_into         => {
           1 => { 'star_genomic_bam_analysis_factory' => {'merged_star_genomic_bams' => '#bam_files#',
                                                          'analysis_files' => '#analysis_files#'}},
      },
@@ -571,15 +571,15 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: star genomic bam analysis factory
   push @pipeline, {
-    -logic_name   => 'star_genomic_bam_analysis_factory',
-    -module       => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
-    -parameters   => {
+    -logic_name        => 'star_genomic_bam_analysis_factory',
+    -module            => 'ehive.runnable.jobfactory.alignment.AnalysisFactory',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -parameters        => {
       'file_list' => '#merged_star_genomic_bams#',
       },
-    -flow_into    => {
+    -flow_into         => {
         '2->A' => ['convert_star_genomic_bam_to_cram',
                    'star_bigwig'
                   ],
@@ -591,13 +591,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: convert genomic bam to cram
   push @pipeline, {
-    -logic_name   => 'convert_star_genomic_bam_to_cram',
-    -module       => 'ehive.runnable.process.alignment.ConvertBamToCram',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'convert_star_genomic_bam_to_cram',
+    -module            => 'ehive.runnable.process.alignment.ConvertBamToCram',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 10,
+    -parameters        => {
         'bam_files'       => ['#input_file#'],                                  # updated
         'base_result_dir' => $self->o('base_results_dir'),
         'threads'         => $self->o('samtools_threads'),
@@ -609,7 +609,7 @@ sub pipeline_analyses {
         'tag_name'        => '#species_name#',
         'reference_type'  => $self->o('reference_fasta_type'),
      },
-     -flow_into   => {
+     -flow_into        => {
         1 => ['upload_star_genomic_cram_to_irods'],
       },
   };
@@ -617,21 +617,21 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: copy star genomic cram to irods
   push @pipeline, {
-    -logic_name   => 'upload_star_genomic_cram_to_irods',
-    -module       => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
+    -logic_name        => 'upload_star_genomic_cram_to_irods',
+    -module            => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
     -analysis_capacity => 2,
-    -parameters   => {
-      'file_list'     => '#output_cram_list#',
-      'irods_exe_dir' => $self->o('irods_exe_dir'),
-      'analysis_name' => $self->o('star_analysis_name'),
-      'analysis_dir'  => 'analysis',
-      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
-      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+    -parameters        => {
+      'file_list'        => '#output_cram_list#',
+      'irods_exe_dir'    => $self->o('irods_exe_dir'),
+      'analysis_name'    => $self->o('star_analysis_name'),
+      'analysis_dir'     => 'analysis',
+      'dir_path_list'    => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'         => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
-     -flow_into   => {
+     -flow_into        => {
         1 => ['run_featureCounts_for_rnaseq'],
       },
   };
@@ -639,12 +639,12 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: run feature counts
   push @pipeline, {
-    -logic_name   => 'run_featureCounts_for_rnaseq',
-    -module       => 'ehive.runnable.process.alignment.RunFeatureCounts',
-    -language     => 'python3',
-    -rc_name      => '2Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'run_featureCounts_for_rnaseq',
+    -module            => 'ehive.runnable.process.alignment.RunFeatureCounts',
+    -language          => 'python3',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 20,
+    -parameters        => {
       'featurecounts_exe'  => $self->o('featurecounts_exe'),
       'input_files'        => ['#input_file#'],
       'reference_gtf'      => $self->o('reference_gtf_type'),
@@ -653,7 +653,7 @@ sub pipeline_analyses {
       'output_prefix'      => '#experiment_igf_id#',
       'base_work_dir'      => $self->o('base_work_dir'),
     },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['load_featurecounts_results',
               '?accu_name=feature_count_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=featureCounts_summary'
              ],
@@ -663,13 +663,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: load featureCounts results
   push @pipeline, {
-    -logic_name   => 'load_featurecounts_results',
-    -module       => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'load_featurecounts_results',
+    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 5,
+    -parameters        => {
       'input_files'      => ['#featureCounts_output#'],
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('featurecounts_analysis_name'),
@@ -679,7 +679,7 @@ sub pipeline_analyses {
       'collection_type'  => $self->o('featurecounts_collection_type'),
       'collection_table' => $self->o('featurecounts_collection_table'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['upload_featurecounts_results_to_irods'],
       },
   };
@@ -687,32 +687,32 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: copy featureCounts results to irods
   push @pipeline, {
-    -logic_name   => 'upload_featurecounts_results_to_irods',
-    -module       => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
+    -logic_name        => 'upload_featurecounts_results_to_irods',
+    -module            => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
     -analysis_capacity => 2,
-    -parameters   => {
-      'file_list'     => '#analysis_output_list#',
-      'irods_exe_dir' => $self->o('irods_exe_dir'),
-      'analysis_name' => $self->o('featurecounts_analysis_name'),
-      'analysis_dir'  => 'analysis',
-      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
-      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+    -parameters        => {
+      'file_list'        => '#analysis_output_list#',
+      'irods_exe_dir'    => $self->o('irods_exe_dir'),
+      'analysis_name'    => $self->o('featurecounts_analysis_name'),
+      'analysis_dir'     => 'analysis',
+      'dir_path_list'    => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'         => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
   };
   
   
   ## RNA-SEQ: star bigwig
   push @pipeline, {
-    -logic_name   => 'star_bigwig',
-    -module       => 'ehive.runnable.process.alignment.RunSTAR',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '42Gb8t',
-    -analysis_capacity => 1,
-    -parameters   => {
+    -logic_name        => 'star_bigwig',
+    -module            => 'ehive.runnable.process.alignment.RunSTAR',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '42Gb8t',
+    -analysis_capacity => 20,
+    -parameters        => {
       'star_exe'              => $self->o('star_exe'),
       'input_bam'             => '#input_file#',
       'output_prefix'         => '#experiment_igf_id#',
@@ -724,7 +724,7 @@ sub pipeline_analyses {
       'run_mode'              => 'generate_rna_bigwig',
       'bedGraphToBigWig_path' => $self->o('bedGraphToBigWig_path'),
     },
-   -flow_into     => {
+   -flow_into          => {
         1 => ['load_star_bigwig'],
       },
   };
@@ -732,13 +732,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: load star bigwig
   push @pipeline, {
-    -logic_name   => 'load_star_bigwig',
-    -module       => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'load_star_bigwig',
+    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 5,
+    -parameters        => {
       'input_files'      => '#star_bigwigs#',
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('star_analysis_name'),
@@ -747,7 +747,7 @@ sub pipeline_analyses {
       'collection_type'  => $self->o('star_bw_collection_type'),
       'collection_table' => $self->o('star_collection_table'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['copy_star_bigwig_to_remote'],
       },
   };
@@ -755,13 +755,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: copy star bigwig to remote
   push @pipeline, {
-    -logic_name   => 'copy_star_bigwig_to_remote',
-    -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'copy_star_bigwig_to_remote',
+    -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
     -analysis_capacity => 2,
-    -parameters   => {
+    -parameters        => {
       'analysis_dir'        => $self->o('analysis_dir'),
       'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
       'file_list'           => '#analysis_output_list#',
@@ -778,19 +778,19 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: collect star logs
   push @pipeline, {
-    -logic_name   => 'collect_star_log_for_exp',
-    -module       => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'collect_star_log_for_exp',
+    -module            => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
+    -parameters        => {
        'exp_chunk_list'  => '#analysis_files#',
        'accu_data'       => '#star_logs#',
        'output_mode'     => 'list',
        'base_work_dir'   => $self->o('base_work_dir'),
       },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['collect_fastp_json_for_exp_rnaseq'],
       },
   };
@@ -798,18 +798,18 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: collect fastp json
   push @pipeline, {
-    -logic_name   => 'collect_fastp_json_for_exp_rnaseq',
-    -module       => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'collect_fastp_json_for_exp_rnaseq',
+    -module            => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
-       'accu_data'     => '#fastp_report_rna#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
+    -parameters        => {
+       'accu_data'       => '#fastp_report_rna#',
+       'output_mode'     => 'list',
+       'base_work_dir'   => $self->o('base_work_dir'),
       },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['collect_featureCounts_for_exp_rnaseq'],
       },
   };
@@ -817,18 +817,18 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: collect featureCounts summary
   push @pipeline, {
-    -logic_name   => 'collect_featureCounts_for_exp_rnaseq',
-    -module       => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'collect_featureCounts_for_exp_rnaseq',
+    -module            => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
-       'accu_data'     => '#feature_count_logs#',
-       'output_mode'   => 'list',
-       'base_work_dir' => $self->o('base_work_dir'),
+    -parameters        => {
+       'accu_data'       => '#feature_count_logs#',
+       'output_mode'     => 'list',
+       'base_work_dir'   => $self->o('base_work_dir'),
       },
-    -flow_into    => {
+    -flow_into         => {
         1 => {'picard_aln_summary_for_star' => {'analysis_files' => '#exp_chunk_list#'}},
       },
   };
@@ -836,13 +836,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard alignment summary metrics for star
   push @pipeline, {
-    -logic_name   => 'picard_aln_summary_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '4Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'picard_aln_summary_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 20,
+    -parameters        => {
       'input_files'          => '#merged_star_genomic_bams#',
       'java_exe'             => $self->o('java_exe'),
       'java_param'           => $self->o('java_param'),
@@ -854,7 +854,7 @@ sub pipeline_analyses {
       'cram_collection_type' => $self->o('cram_type'),
       'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['picard_base_dist_summary_for_star'],
       },
   };
@@ -862,13 +862,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard base distribution summary metrics
   push @pipeline, {
-    -logic_name   => 'picard_base_dist_summary_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '4Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'picard_base_dist_summary_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 20,
+    -parameters        => {
       'input_files'          => '#merged_star_genomic_bams#',
       'java_exe'             => $self->o('java_exe'),
       'java_param'           => $self->o('java_param'),
@@ -880,7 +880,7 @@ sub pipeline_analyses {
       'cram_collection_type' => $self->o('cram_type'),
       'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['picard_gc_bias_summary_for_star'],
       },
   };
@@ -888,12 +888,12 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard gc bias summary metrics
   push @pipeline, {
-    -logic_name   => 'picard_gc_bias_summary_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '4Gb',
-    -analysis_capacity => 2,
+    -logic_name        => 'picard_gc_bias_summary_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 20,
     -parameters   => {
       'input_files'          => '#merged_star_genomic_bams#',
       'java_exe'             => $self->o('java_exe'),
@@ -906,7 +906,7 @@ sub pipeline_analyses {
       'cram_collection_type' => $self->o('cram_type'),
       'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['picard_qual_dist_summary_for_star'],
       },
   };
@@ -914,13 +914,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard quality distribution summary metrics
   push @pipeline, {
-    -logic_name   => 'picard_qual_dist_summary_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '4Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'picard_qual_dist_summary_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 20,
+    -parameters        => {
       'input_files'          => '#merged_star_genomic_bams#',
       'java_exe'             => $self->o('java_exe'),
       'java_param'           => $self->o('java_param'),
@@ -932,7 +932,7 @@ sub pipeline_analyses {
       'cram_collection_type' => $self->o('cram_type'),
       'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['picard_rna_metrics_summary_for_star'],
       },
   };
@@ -940,13 +940,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: picard rna metrics summary metrics
   push @pipeline, {
-    -logic_name   => 'picard_rna_metrics_summary_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunPicard',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '4Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'picard_rna_metrics_summary_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunPicard',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
+    -analysis_capacity => 20,
+    -parameters        => {
       'input_files'          => '#merged_star_genomic_bams#',
       'java_exe'             => $self->o('java_exe'),
       'java_param'           => $self->o('java_param'),
@@ -959,7 +959,7 @@ sub pipeline_analyses {
       'cram_collection_type' => $self->o('cram_type'),
       'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['samtools_stats_summary_for_star'],
       },
   };
@@ -967,13 +967,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: samtools stats metrics
   push @pipeline, {
-    -logic_name   => 'samtools_stats_summary_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunSamtools',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'samtools_stats_summary_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunSamtools',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 20,
+    -parameters        => {
       'input_files'          => '#merged_star_genomic_bams#',
       'samtools_command'     => 'stats',
       'output_prefix'        => '#experiment_igf_id#',
@@ -984,7 +984,7 @@ sub pipeline_analyses {
       'cram_collection_type' => $self->o('cram_type'),
       'load_metrics_to_cram' => $self->o('load_metrics_to_cram'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['samtools_idxstat_summary_for_star'],
       },
   };
@@ -992,13 +992,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: samtools idxstat metrics
   push @pipeline, {
-    -logic_name   => 'samtools_idxstat_summary_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunSamtools',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'samtools_idxstat_summary_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunSamtools',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 20,
+    -parameters        => {
       'input_files'      => '#merged_star_genomic_bams#',
       'samtools_command' => 'idxstats',
       'output_prefix'    => '#experiment_igf_id#',
@@ -1006,7 +1006,7 @@ sub pipeline_analyses {
       'samtools_exe'     => $self->o('samtools_exe'),
       'reference_type'   => $self->o('reference_fasta_type'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['multiqc_report_for_star'],
       },
   };
@@ -1014,13 +1014,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: multiqc report building
   push @pipeline, {
-    -logic_name   => 'multiqc_report_for_star',
-    -module       => 'ehive.runnable.process.alignment.RunAnalysisMultiQC',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'multiqc_report_for_star',
+    -module            => 'ehive.runnable.process.alignment.RunAnalysisMultiQC',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 20,
+    -parameters        => {
       'base_results_dir'       => $self->o('base_results_dir'),
       'collection_name'        => '#experiment_igf_id#',
       'collection_type'        => $self->o('multiqc_type'),
@@ -1032,7 +1032,7 @@ sub pipeline_analyses {
       'tool_order_list'        => $self->o('tool_order_list'),
       'multiqc_template_file'  => $self->o('multiqc_template_file'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['copy_star_multiqc_to_remote'],
       },
   };
@@ -1040,13 +1040,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: copy multiqc to remote
   push @pipeline, {
-    -logic_name   => 'copy_star_multiqc_to_remote',
-    -module       => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'copy_star_multiqc_to_remote',
+    -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
     -analysis_capacity => 2,
-    -parameters   => {
+    -parameters        => {
       'analysis_dir'        => $self->o('analysis_dir'),
       'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
       'file_list'           => ['#multiqc_html#'],
@@ -1063,18 +1063,18 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: collect star transcriptomic bam
   push @pipeline, {
-    -logic_name   => 'collect_star_transcriptomic_bam_for_exp',
-    -module       => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '1Gb',
+    -logic_name        => 'collect_star_transcriptomic_bam_for_exp',
+    -module            => 'ehive.runnable.process.alignment.CollectExpAnalysisChunks',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '4Gb',
     -analysis_capacity => 2,
-    -parameters   => {
-       'accu_data'      => '#star_aligned_trans_bam#',
-       'output_mode'    => 'file',
-       'base_work_dir'  => $self->o('base_work_dir'),
+    -parameters        => {
+       'accu_data'       => '#star_aligned_trans_bam#',
+       'output_mode'     => 'file',
+       'base_work_dir'   => $self->o('base_work_dir'),
       },
-    -flow_into    => {
+    -flow_into         => {
         1 => {'merge_star_transcriptomic_bams'=>{'star_run_trans_bam_list_file' => '#exp_chunk_list_file#'}},
       },
   };
@@ -1082,13 +1082,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: samtools merge transcriptomic bam
   push @pipeline, {
-    -logic_name   => 'merge_star_transcriptomic_bams',
-    -module       => 'ehive.runnable.process.alignment.RunSamtools',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb4t',
-    -analysis_capacity => 2,
-    -parameters   => {
+    -logic_name        => 'merge_star_transcriptomic_bams',
+    -module            => 'ehive.runnable.process.alignment.RunSamtools',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb4t',
+    -analysis_capacity => 20,
+    -parameters        => {
       'input_files'      => ['#star_run_trans_bam_list_file#'],
       'samtools_command' => 'merge',
       'output_prefix'    => '#experiment_igf_id#',
@@ -1098,7 +1098,7 @@ sub pipeline_analyses {
       'reference_type'   => $self->o('reference_fasta_type'),
       'threads'          => $self->o('samtools_threads'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => {'run_rsem' => {'bam_files' => '#analysis_files#'}},
       },
   };
@@ -1106,23 +1106,23 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: run rsem on star transcriptomic bam
   push @pipeline, {
-    -logic_name   => 'run_rsem',
-    -module       => 'ehive.runnable.process.alignment.RunRSEM',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '16Gb8t',
-    -analysis_capacity => 2,
-    -parameters   => {
-      'input_bams'     => '#bam_files#',
-      'rsem_exe_dir'   => $self->o('rsem_exe_dir'),
-      'base_work_dir'  => $self->o('base_work_dir'),
-      'output_prefix'  => '#experiment_igf_id#',
-      'species_name'   => '#species_name#',
-      'reference_type' => $self->o('rsem_reference_type'),
-      'threads'        => $self->o('rsem_threads'),
-      'memory_limit'   => $self->o('rsem_memory_limit'),
+    -logic_name        => 'run_rsem',
+    -module            => 'ehive.runnable.process.alignment.RunRSEM',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '16Gb8t',
+    -analysis_capacity => 20,
+    -parameters        => {
+      'input_bams'       => '#bam_files#',
+      'rsem_exe_dir'     => $self->o('rsem_exe_dir'),
+      'base_work_dir'    => $self->o('base_work_dir'),
+      'output_prefix'    => '#experiment_igf_id#',
+      'species_name'     => '#species_name#',
+      'reference_type'   => $self->o('rsem_reference_type'),
+      'threads'          => $self->o('rsem_threads'),
+      'memory_limit'     => $self->o('rsem_memory_limit'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['load_rsem_results',
               '?accu_name=rsem_logs&accu_address={experiment_igf_id}{seed_date_stamp}[]&accu_input_variable=rsem_log_file' ],
       },
@@ -1131,13 +1131,13 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: load rsem results
   push @pipeline, {
-    -logic_name   => 'load_rsem_results',
-    -module       => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb4t',
+    -logic_name        => 'load_rsem_results',
+    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
     -analysis_capacity => 2,
-    -parameters   => {
+    -parameters        => {
       'input_files'      => '#rsem_output#',
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('rsem_analysis_name'),
@@ -1146,7 +1146,7 @@ sub pipeline_analyses {
       'collection_type'  => $self->o('rsem_collection_type'),
       'collection_table' => $self->o('rsem_collection_table'),
      },
-    -flow_into    => {
+    -flow_into         => {
         1 => ['upload_rsem_results_to_irods'],
       },
   };
@@ -1154,19 +1154,19 @@ sub pipeline_analyses {
   
   ## RNA-SEQ: copy rsem results to irods
   push @pipeline, {
-    -logic_name   => 'upload_rsem_results_to_irods',
-    -module       => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
-    -language     => 'python3',
-    -meadow_type  => 'PBSPro',
-    -rc_name      => '2Gb',
+    -logic_name        => 'upload_rsem_results_to_irods',
+    -module            => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
     -analysis_capacity => 2,
-    -parameters   => {
-      'file_list'     => '#analysis_output_list#',
-      'irods_exe_dir' => $self->o('irods_exe_dir'),
-      'analysis_name' => $self->o('rsem_analysis_name'),
-      'analysis_dir'  => $self->o('analysis_dir'),
-      'dir_path_list' => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
-      'file_tag'      => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+    -parameters        => {
+      'file_list'        => '#analysis_output_list#',
+      'irods_exe_dir'    => $self->o('irods_exe_dir'),
+      'analysis_name'    => $self->o('rsem_analysis_name'),
+      'analysis_dir'     => $self->o('analysis_dir'),
+      'dir_path_list'    => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'         => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
      },
   };
   
