@@ -158,6 +158,11 @@ sub default_options {
     'ftp_cellbrowser_dir'        => 'FTP_CELLBROWSER_DIR',
     'scanpy_report_template'     => undef,
     #
+    ## UCSC CELLBROWSER
+    #---------------------------------------------------------------------------
+    'cellbrowser_dir_prefix'     => 'cellbrowser',
+    'cbImportScanpy_path'        => undef,
+    #
     ## DEMULTIPLEXING
     #---------------------------------------------------------------------------
     'demultiplexing_pipeline_name'     => undef,
@@ -1982,7 +1987,7 @@ sub pipeline_analyses {
       'base_work_dir'          => $self->o('base_work_dir'),
      },
     -flow_into         => {
-        1 => ['copy_scanpy_report_to_remote'],
+        1 => ['copy_scanpy_report_to_remote','create_cellbrowser_dir'],
       },
   };
   
@@ -2007,12 +2012,28 @@ sub pipeline_analyses {
       'collection_type'     => $self->o('ftp_scanpy_type'),
       'collection_table'    => $self->o('cellranger_collection_table'),
       },
+  };
+  
+  
+  ## SINGLECELL: create cellbrowser dir
+  push @pipeline, {
+    -logic_name        => 'create_cellbrowser_dir',
+    -module            => 'ehive.runnable.process.alignment.CreateUCSCCellBrowser',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
+    -analysis_capacity => 2,
+    -parameters        => {
+      'cellbrowser_dir_prefix' => $self->o('cellbrowser_dir_prefix'),
+      'base_work_dir'          => $self->o('base_work_dir'),
+      'cbImportScanpy_path'    => $self->o('cbImportScanpy_path'),
+      },
     -flow_into         => {
         1 => ['copy_cellbrowser_dir_to_remote'],
       },
   };
-  
-  
+
+
   ## SINGLECELL: copy cellbrowser dir to remote
   push @pipeline, {
     -logic_name        => 'copy_cellbrowser_dir_to_remote',
