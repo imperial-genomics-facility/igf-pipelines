@@ -24,6 +24,7 @@ sub default_options {
     'rna_source'                 => 'TRANSCRIPTOMIC',
     'singlecell_source'          => 'TRANSCRIPTOMIC_SINGLE_CELL',
     'tenx_exp_type'              => 'TENX-TRANSCRIPTOME',
+    'nuclei_biomaterial_type'    => 'SINGLE_NUCLEI',
     'chip_library_strategy'      => 'CHIP-SEQ',
     'atac_library_strategy'      => 'ATAC-SEQ',
     'dnase_library_strategy'     => 'DNASE-SEQ',
@@ -143,13 +144,15 @@ sub default_options {
     #
     ## CELLRANGER
     #---------------------------------------------------------------------------
-    'cellranger_exe'             => undef,
-    'cellranger_param'           => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
-    'cellranger_timeout'         => 259200,
+    'cellranger_exe'                   => undef,
+    'cellranger_param'                 => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
+    'cellranger_timeout'               => 259200,
     'cellranger_collection_table'      => 'experiment',
     'cellranger_analysis_name'         => 'cellranger_count',
     'cellranger_report_type'           => 'CELLRANGER_REPORT',
     'ftp_cellranger_report_type'       => 'FTP_CELLRANGER_REPORT',
+    'tenx_reference_type'              => 'TRANSCRIPTOME_TENX',
+    'tenx_nuclei_reference_type'       => 'TRANSCRIPTOME_TENX_NUCLEI',
     #
     ## SCANPY
     #---------------------------------------------------------------------------
@@ -1841,11 +1844,14 @@ sub pipeline_analyses {
     -rc_name           => '2Gb72hr',
     -analysis_capacity => 1,
     -parameters        => {
-      'cellranger_exe'     => $self->o('cellranger_exe'),
-      'cellranger_options' => $self->o('cellranger_param'),
-      'base_work_dir'      => $self->o('base_work_dir'),
-      'base_results_dir'   => $self->o('base_results_dir'),
-      'job_timeout'        => $self->o('cellranger_timeout'),
+      'cellranger_exe'          => $self->o('cellranger_exe'),
+      'cellranger_options'      => $self->o('cellranger_param'),
+      'base_work_dir'           => $self->o('base_work_dir'),
+      'base_results_dir'        => $self->o('base_results_dir'),
+      'job_timeout'             => $self->o('cellranger_timeout'),
+      'reference_type'          => $self->o('tenx_reference_type'),
+      'nuclei_reference_type'   => $self->o('tenx_nuclei_reference_type'),
+      'nuclei_biomaterial_type' => $self->o('nuclei_biomaterial_type'),
       },
     -flow_into         => {
         1 => ['load_cellranger_count_output_for_experiment'],
