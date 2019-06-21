@@ -82,7 +82,7 @@ sub default_options {
     ## FASTP
     #---------------------------------------------------------------------------
     'fastp_exe'                  => undef,
-    'fastp_options_list'         => ['-a=auto','--qualified_quality_phred=15','--length_required=15'],
+    'fastp_options_list'         => ['-a','auto','--qualified_quality_phred=15','--length_required=15'],
     'fastp_run_thread'           => 4,
     'split_by_lines_count'       => 5000000,
     'fastp_analysis_name'        => 'fastp',
