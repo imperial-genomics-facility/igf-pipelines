@@ -1634,7 +1634,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunPPQT',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '8Gb8t',
+    -rc_name           => '16Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'            => '#merged_bwa_genomic_bams#',
@@ -1660,7 +1660,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '8Gb8t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'analysis_dir'        => $self->o('analysis_dir'),
@@ -1686,7 +1686,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunDeeptools',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '8Gb8t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1710,7 +1710,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunDeeptools',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '8Gb8t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1737,7 +1737,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '8Gb8t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 2,
     -parameters        => {
       'analysis_dir'        => $self->o('analysis_dir'),
@@ -1762,7 +1762,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunDeeptools',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '8Gb8t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'               => '#merged_bwa_genomic_bams#',
