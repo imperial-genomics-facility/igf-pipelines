@@ -221,8 +221,8 @@ sub default_options {
                                            $self->o('scanpy_type'),
                                            $self->o('ppqt_collection_type'),
                                            $self->o('deeptool_signal_collection_type'),
-                                           $self->o('star_bw_collection_type'),
-                                           $self->o('ftp_cellbrowser_dir')],
+                                           $self->o('star_bw_collection_type')],
+                                           #$self->o('ftp_cellbrowser_dir')],
   };
 }
 
