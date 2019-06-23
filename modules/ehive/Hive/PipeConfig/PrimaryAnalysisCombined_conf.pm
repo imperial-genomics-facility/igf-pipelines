@@ -1987,7 +1987,7 @@ sub pipeline_analyses {
       'base_work_dir'          => $self->o('base_work_dir'),
      },
     -flow_into         => {
-        1 => ['copy_scanpy_report_to_remote','create_cellbrowser_dir'],
+        1 => ['copy_scanpy_report_to_remote'],#'create_cellbrowser_dir'],
       },
   };
   
@@ -2016,45 +2016,45 @@ sub pipeline_analyses {
   
   
   ## SINGLECELL: create cellbrowser dir
-  push @pipeline, {
-    -logic_name        => 'create_cellbrowser_dir',
-    -module            => 'ehive.runnable.process.alignment.CreateUCSCCellBrowser',
-    -language          => 'python3',
-    -meadow_type       => 'PBSPro',
-    -rc_name           => '2Gb',
-    -analysis_capacity => 2,
-    -parameters        => {
-      'cellbrowser_dir_prefix' => $self->o('cellbrowser_dir_prefix'),
-      'base_work_dir'          => $self->o('base_work_dir'),
-      'cbImportScanpy_path'    => $self->o('cbImportScanpy_path'),
-      },
-    -flow_into         => {
-        1 => ['copy_cellbrowser_dir_to_remote'],
-      },
-  };
+  #push @pipeline, {
+  #  -logic_name        => 'create_cellbrowser_dir',
+  #  -module            => 'ehive.runnable.process.alignment.CreateUCSCCellBrowser',
+  #  -language          => 'python3',
+  #  -meadow_type       => 'PBSPro',
+  #  -rc_name           => '2Gb',
+  #  -analysis_capacity => 2,
+  #  -parameters        => {
+  #    'cellbrowser_dir_prefix' => $self->o('cellbrowser_dir_prefix'),
+  #    'base_work_dir'          => $self->o('base_work_dir'),
+  #    'cbImportScanpy_path'    => $self->o('cbImportScanpy_path'),
+  #    },
+  #  -flow_into         => {
+  #      1 => ['copy_cellbrowser_dir_to_remote'],
+  #    },
+  #};
 
 
   ## SINGLECELL: copy cellbrowser dir to remote
-  push @pipeline, {
-    -logic_name        => 'copy_cellbrowser_dir_to_remote',
-    -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
-    -language          => 'python3',
-    -meadow_type       => 'PBSPro',
-    -rc_name           => '2Gb',
-    -analysis_capacity => 2,
-    -parameters        => {
-      'analysis_dir'        => $self->o('analysis_dir'),
-      'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
-      'file_list'           => ['#cellbrowser_dir#'],
-      'remote_user'         => $self->o('seqrun_user'),
-      'remote_host'         => $self->o('remote_host'),
-      'remote_project_path' => $self->o('remote_project_path'),
-      'collect_remote_file' => 1,
-      'collection_name'     => '#experiment_igf_id#',
-      'collection_type'     => $self->o('ftp_cellbrowser_dir'),
-      'collection_table'    => $self->o('cellranger_collection_table'),
-      },
-  };
+  #push @pipeline, {
+  #  -logic_name        => 'copy_cellbrowser_dir_to_remote',
+  #  -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+  #  -language          => 'python3',
+  #  -meadow_type       => 'PBSPro',
+  #  -rc_name           => '2Gb',
+  #  -analysis_capacity => 2,
+  #  -parameters        => {
+  #    'analysis_dir'        => $self->o('analysis_dir'),
+  #    'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+  #    'file_list'           => ['#cellbrowser_dir#'],
+  #    'remote_user'         => $self->o('seqrun_user'),
+  #    'remote_host'         => $self->o('remote_host'),
+  #    'remote_project_path' => $self->o('remote_project_path'),
+  #    'collect_remote_file' => 1,
+  #    'collection_name'     => '#experiment_igf_id#',
+  #    'collection_type'     => $self->o('ftp_cellbrowser_dir'),
+  #    'collection_table'    => $self->o('cellranger_collection_table'),
+  #    },
+  #};
 
 
   ## SINGLECELL: load cellranger report
