@@ -24,6 +24,7 @@ sub default_options {
     'rna_source'                 => 'TRANSCRIPTOMIC',
     'singlecell_source'          => 'TRANSCRIPTOMIC_SINGLE_CELL',
     'tenx_exp_type'              => 'TENX-TRANSCRIPTOME',
+    'nuclei_biomaterial_type'    => 'SINGLE_NUCLEI',
     'chip_library_strategy'      => 'CHIP-SEQ',
     'atac_library_strategy'      => 'ATAC-SEQ',
     'dnase_library_strategy'     => 'DNASE-SEQ',
@@ -81,7 +82,7 @@ sub default_options {
     ## FASTP
     #---------------------------------------------------------------------------
     'fastp_exe'                  => undef,
-    'fastp_options_list'         => ['--qualified_quality_phred=15','--length_required=15'],
+    'fastp_options_list'         => ['-a','auto','--qualified_quality_phred=15','--length_required=15'],
     'fastp_run_thread'           => 4,
     'split_by_lines_count'       => 5000000,
     'fastp_analysis_name'        => 'fastp',
@@ -143,13 +144,15 @@ sub default_options {
     #
     ## CELLRANGER
     #---------------------------------------------------------------------------
-    'cellranger_exe'             => undef,
-    'cellranger_param'           => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
-    'cellranger_timeout'         => 259200,
+    'cellranger_exe'                   => undef,
+    'cellranger_param'                 => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
+    'cellranger_timeout'               => 259200,
     'cellranger_collection_table'      => 'experiment',
     'cellranger_analysis_name'         => 'cellranger_count',
     'cellranger_report_type'           => 'CELLRANGER_REPORT',
     'ftp_cellranger_report_type'       => 'FTP_CELLRANGER_REPORT',
+    'tenx_reference_type'              => 'TRANSCRIPTOME_TENX',
+    'tenx_nuclei_reference_type'       => 'TRANSCRIPTOME_TENX_NUCLEI',
     #
     ## SCANPY
     #---------------------------------------------------------------------------
@@ -199,14 +202,14 @@ sub default_options {
     'ppqt_exe'                         => undef,
     'ppqt_collection_type'             => 'PPQT_REPORT',
     'ftp_ppqt_collection_type'         => 'FTP_PPQT_REPORT',
-    'ppqt_threads'                     => 4,
+    'ppqt_threads'                     => 8,
     #
     ## DEEPTOOLS
     #---------------------------------------------------------------------------
     'load_deeptools_signal_bigwig'     => 1,
     'blacklist_reference_type'         => 'BLACKLIST_BED',
     'deeptool_signal_collection_type'  => 'DEEPTOOLS_BIGWIG',
-    'deeptools_threads'                => 4,
+    'deeptools_threads'                => 8,
     'deeptools_params'                 => undef,
     'ftp_deeptool_signal_collection_type'  => 'FTP_DEEPTOOLS_BIGWIG',
     #
@@ -1634,7 +1637,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunPPQT',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '4Gb4t',
+    -rc_name           => '16Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'            => '#merged_bwa_genomic_bams#',
@@ -1660,7 +1663,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '4Gb4t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 2,
     -parameters   => {
       'analysis_dir'        => $self->o('analysis_dir'),
@@ -1686,7 +1689,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunDeeptools',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '4Gb4t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1710,7 +1713,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunDeeptools',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '4Gb4t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1737,7 +1740,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '4Gb4t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 2,
     -parameters        => {
       'analysis_dir'        => $self->o('analysis_dir'),
@@ -1762,7 +1765,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunDeeptools',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '4Gb4t',
+    -rc_name           => '4Gb8t',
     -analysis_capacity => 10,
     -parameters        => {
       'input_files'               => '#merged_bwa_genomic_bams#',
@@ -1841,11 +1844,14 @@ sub pipeline_analyses {
     -rc_name           => '2Gb72hr',
     -analysis_capacity => 1,
     -parameters        => {
-      'cellranger_exe'     => $self->o('cellranger_exe'),
-      'cellranger_options' => $self->o('cellranger_param'),
-      'base_work_dir'      => $self->o('base_work_dir'),
-      'base_results_dir'   => $self->o('base_results_dir'),
-      'job_timeout'        => $self->o('cellranger_timeout'),
+      'cellranger_exe'          => $self->o('cellranger_exe'),
+      'cellranger_options'      => $self->o('cellranger_param'),
+      'base_work_dir'           => $self->o('base_work_dir'),
+      'base_results_dir'        => $self->o('base_results_dir'),
+      'job_timeout'             => $self->o('cellranger_timeout'),
+      'reference_type'          => $self->o('tenx_reference_type'),
+      'nuclei_reference_type'   => $self->o('tenx_nuclei_reference_type'),
+      'nuclei_biomaterial_type' => $self->o('nuclei_biomaterial_type'),
       },
     -flow_into         => {
         1 => ['load_cellranger_count_output_for_experiment'],
