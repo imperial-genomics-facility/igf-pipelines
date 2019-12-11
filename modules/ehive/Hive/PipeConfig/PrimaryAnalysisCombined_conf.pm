@@ -19,6 +19,7 @@ sub default_options {
     ## PIPELINE
     #---------------------------------------------------------------------------
     'pipeline_name'              => 'PrimaryAnalysisCombined',
+    'analysis_pipeline_name'     => 'PrimaryAnalysisCombined',
     'pipeseed_mode'              => 'alignment',
     'genomic_source'             => 'GENOMIC',
     'rna_source'                 => 'TRANSCRIPTOMIC',
@@ -222,7 +223,7 @@ sub default_options {
                                            $self->o('ppqt_collection_type'),
                                            $self->o('deeptool_signal_collection_type'),
                                            $self->o('star_bw_collection_type')],
-                                           #$self->o('ftp_cellbrowser_dir')],
+                                           $self->o('ftp_cellbrowser_dir')],
   };
 }
 
@@ -2439,7 +2440,7 @@ sub pipeline_analyses {
       'remote_user'                  => $self->o('seqrun_user'),
       'remote_host'                  => $self->o('remote_host'),
       'demultiplexing_pipeline_name' => $self->o('demultiplexing_pipeline_name'),
-      'analysis_pipeline_name'       => $self->o('pipeline_name'),
+      'analysis_pipeline_name'       => $self->o('analysis_pipeline_name'),
     },
   };
   
