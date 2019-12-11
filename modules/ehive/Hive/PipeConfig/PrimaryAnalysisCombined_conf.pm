@@ -1880,7 +1880,7 @@ sub pipeline_analyses {
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
     -rc_name           => '64Gb16t72hr',
-    -analysis_capacity => 1,
+    -analysis_capacity => 20,
     -parameters        => {
       'cellranger_exe'          => $self->o('cellranger_exe'),
       'cellranger_options'      => $self->o('cellranger_param'),
