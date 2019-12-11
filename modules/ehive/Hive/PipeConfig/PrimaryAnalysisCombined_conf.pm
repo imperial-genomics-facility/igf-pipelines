@@ -23,7 +23,7 @@ sub default_options {
     'genomic_source'             => 'GENOMIC',
     'rna_source'                 => 'TRANSCRIPTOMIC',
     'singlecell_source'          => 'TRANSCRIPTOMIC_SINGLE_CELL',
-    'tenx_exp_type'              => 'TENX-TRANSCRIPTOME',
+    'tenx_exp_type'              => 'TENX-TRANSCRIPTOME-3P',
     'nuclei_biomaterial_type'    => 'SINGLE_NUCLEI',
     'chip_library_strategy'      => 'CHIP-SEQ',
     'atac_library_strategy'      => 'ATAC-SEQ',
@@ -145,7 +145,7 @@ sub default_options {
     ## CELLRANGER
     #---------------------------------------------------------------------------
     'cellranger_exe'                   => undef,
-    'cellranger_param'                 => '{"--nopreflight":"","--disable-ui":"","--jobmode":"pbspro","--localcores":"1","--localmem":"1","--mempercore":"4","--maxjobs":"20"}',
+    'cellranger_param'                 => '{"--nopreflight":"","--disable-ui":"","--localcores":"14","--localmem":"64"}',
     'cellranger_timeout'               => 259200,
     'cellranger_collection_table'      => 'experiment',
     'cellranger_analysis_name'         => 'cellranger_count',
@@ -1841,7 +1841,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.RunCellrangerCount',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '2Gb72hr',
+    -rc_name           => '64Gb16t72hr',
     -analysis_capacity => 1,
     -parameters        => {
       'cellranger_exe'          => $self->o('cellranger_exe'),
