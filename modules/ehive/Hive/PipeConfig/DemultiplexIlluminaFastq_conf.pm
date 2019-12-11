@@ -15,6 +15,7 @@ sub default_options {
   return {
     %{ $self->SUPER::default_options() },
     'pipeline_name'                  => 'DemultiplexIlluminaFastq',
+    'demultiplexing_pipeline_name'   => 'DemultiplexIlluminaFastq',
     'seqrun_source'                  => undef,
     'seqrun_local_dir'               => undef,
     'seqrun_server'                  => undef,
@@ -45,6 +46,7 @@ sub default_options {
     'seqruninfofile'                 => 'seqruninfofile.json',
     'samplereadcountfile'            => 'samplereadcountfile.json',
     'custom_bases_mask'              => undef,
+    'use_ephemeral_space'            => 0,
   };
 }
 
@@ -206,6 +208,7 @@ sub pipeline_analyses {
         'bcl2fastq_options' => $self->o('bcl2fastq_options'),
         'singlecell_options'=> $self->o('singlecell_options'),
         'singlecell_tag'    => $self->o('singlecell_tag'),
+        'use_ephemeral_space'            => $self->o('use_ephemeral_space'),
         'reset_mask_short_adapter_reads' => $self->o('reset_mask_short_adapter_reads'),
         },
       -flow_into         => {
@@ -223,6 +226,7 @@ sub pipeline_analyses {
       -analysis_capacity => 2,
       -parameters        => {
          'singlecell_tag'    => $self->o('singlecell_tag'),
+         'use_ephemeral_space' => $self->o('use_ephemeral_space'),
       },
       -flow_into         => {
            1 => ['check_demultiplexing_barcode']
@@ -238,6 +242,7 @@ sub pipeline_analyses {
       -analysis_capacity => 8,
       -parameters        => {
         'seqrun_local_dir' => $self->o('seqrun_local_dir'),
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => [ '?accu_name=project_fastq&accu_address={fastq_dir}&accu_input_variable=barcode_qc_stats' ],
@@ -274,6 +279,7 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'seqruninfofile'      => $self->o('seqruninfofile'),
         'samplereadcountfile' => $self->o('samplereadcountfile'),
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => ['project_fastqdir_factory'],
@@ -319,6 +325,7 @@ sub pipeline_analyses {
       -analysis_capacity => 4,
       -parameters        => {
         'irods_exe_dir' => $self->o('irods_exe_dir'),
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => ['known_fastq_factory']
@@ -354,6 +361,7 @@ sub pipeline_analyses {
         'fastqc_exe'       => $self->o('fastqc_exe'),
         'fastqc_options'   => $self->o('fastqc_options'),
         'tag'              => 'known',
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => {'copy_fastqc_results_to_remote' =>
@@ -402,6 +410,7 @@ sub pipeline_analyses {
         'fastqscreen_options' => $self->o('fastqscreen_options'),
         'fastqscreen_conf'    => $self->o('fastqscreen_conf'),
         'tag'                 => 'known',
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => {'copy_fastqscreen_results_to_remote' => 
@@ -469,6 +478,7 @@ sub pipeline_analyses {
         'tag'              => 'known',
         'tool_order_list'  => $self->o('tool_order_list'),
         'multiqc_template_file' => $self->o('multiqc_template'),
+        'use_ephemeral_space'   => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => {'copy_known_multiqc_to_remote' =>
@@ -518,6 +528,7 @@ sub pipeline_analyses {
         'page_type'           => 'sample',
         'remote_project_path' => $self->o('remote_project_path'),
         'singlecell_tag'      => $self->o('singlecell_tag'),
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => ['?accu_name=laneqc_known&accu_address={fastq_dir}&accu_input_variable=qc_file_info',],
@@ -538,6 +549,7 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'page_type'           => 'project',
         'remote_project_path' => $self->o('remote_project_path'),
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => ['update_project_info_page'],
@@ -557,7 +569,8 @@ sub pipeline_analyses {
         'remote_user'         => $self->o('seqrun_user'),
         'seqruninfofile'      => $self->o('seqruninfofile'),
         'samplereadcountfile' => $self->o('samplereadcountfile'),
-        'pipeline_name'       => $self->o('pipeline_name'),
+        'pipeline_name'       => $self->o('demultiplexing_pipeline_name'),
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         'analysis_pipeline_name' => $self->o('analysis_pipeline_name'),
       },
       -flow_into         => {
@@ -577,6 +590,7 @@ sub pipeline_analyses {
         'remote_host'     => $self->o('seqrun_server'),
         'remote_user'     => $self->o('seqrun_user'),
         'user_info_file'  => $self->o('user_info_file'),
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
   };
 
@@ -609,6 +623,7 @@ sub pipeline_analyses {
         'fastqc_exe'       => $self->o('fastqc_exe'),
         'fastqc_options'   => $self->o('fastqc_options'),
         'tag'              => 'undetermined',
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => ['run_fastqscreen_for_undetermined_fastq']
@@ -628,6 +643,7 @@ sub pipeline_analyses {
         'fastqscreen_options' => $self->o('fastqscreen_options'),
         'fastqscreen_conf'    => $self->o('fastqscreen_conf'),
         'tag'                 => 'undetermined',
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
            1 => ['?accu_name=undetermined_fastqc&accu_address={fastq_file}&accu_input_variable=fastqc',
@@ -666,6 +682,7 @@ sub pipeline_analyses {
         'tag'              => 'undetermined',
         'tool_order_list'  => $self->o('tool_order_list'),
         'multiqc_template_file' => $self->o('multiqc_template'),
+        'use_ephemeral_space'   => $self->o('use_ephemeral_space'),
         },
       -flow_into         => {
           1 => {'copy_undetermined_multiqc_to_remote' =>
@@ -711,6 +728,7 @@ sub pipeline_analyses {
         'page_type'           => 'undetermined',
         'remote_project_path' => $self->o('remote_project_path'),
         'fastq_dir'           => undef,
+        'use_ephemeral_space' => $self->o('use_ephemeral_space'),
         },
   };
 
