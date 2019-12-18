@@ -1976,7 +1976,7 @@ sub pipeline_analyses {
     -module            => 'ehive.runnable.process.alignment.ConvertBamToCram',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
-    -rc_name           => '2Gb4t',
+    -rc_name           => '32Gb4t',
     -analysis_capacity => 2,
     -parameters        => {
         'bam_files'           => ['#input_file#'],
