@@ -1642,6 +1642,10 @@ sub pipeline_analyses {
       'samtools_exe'        => $self->o('samtools_exe'),
       'reference_type'      => $self->o('reference_fasta_type'),
       'use_ephemeral_space' => $self->o('use_ephemeral_space'),
+      'chip_library_strategy'  => $self->o('chip_library_strategy'),
+      'atac_library_strategy'  => $self->o('atac_library_strategy'),
+      'dnase_library_strategy' => $self->o('dnase_library_strategy'),
+      'wgs_library_strategy'   => $self->o('wgs_library_strategy'),
      },
     -flow_into         => {
         1 => WHEN('#library_strategy# eq #chip_library_strategy#' => ['filter_bwa_bam_for_epigenome'],
