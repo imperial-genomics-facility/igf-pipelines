@@ -230,6 +230,7 @@ sub default_options {
     'bqsr_analyze_covariates_type'     => 'GATK_BQSR_PDF',
     'ftp_bqsr_analyze_covariates_type' => 'FTP_GATK_BQSR_PDF',
     'haplotype_caller_gvcf_type'       => 'GATK_HC_GVCF',
+    'wgs_gatk_exp_table'               => 'experiment',
     #
     ## ANALYSIS PAGE
     #---------------------------------------------------------------------------
@@ -1646,10 +1647,225 @@ sub pipeline_analyses {
         1 => WHEN('#library_strategy# eq #chip_library_strategy#' => ['filter_bwa_bam_for_epigenome'],
                   '#library_strategy# eq #atac_library_strategy#' => ['filter_bwa_bam_for_epigenome'],
                   '#library_strategy# eq #dnase_library_strategy#' => ['filter_bwa_bam_for_epigenome'],
+                  '#library_strategy# eq #wgs_library_strategy#' => ['gatk_bqsr_step1_for_wgs'],
                    ELSE ['multiqc_report_for_bwa']),
       },
   };
-  
+
+
+  ## DNA-SEQ: WGS BQSR step1
+  push @pipeline, {
+    -logic_name        => 'gatk_bqsr_step1_for_wgs',
+    -module            => 'ehive.runnable.process.alignment.RunGATK',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '8Gb',
+    -analysis_capacity => 10,
+    -parameters        => {
+      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_command'           => $self->o('gatk_command_bqsr'),
+      'base_work_dir'          => $self->o('base_work_dir'),
+      'reference_fasta_type'   => $self->o('reference_fasta_type'),
+      'reference_dbsnp_type'   => $self->o('reference_dbsnp_type'),
+      'reference_indel_type'   => $self->o('reference_indel_type'),
+      'java_param'             => $self->o('java_param_gatk'),
+      'options'                => $self->o('gatk_options'),
+      'input_bam'              => '#merged_bwa_genomic_bams#',
+    },
+    -flow_into         => {
+        1 => {'apply_bqsr_for_wgs' => {'before_report__bqsr_file' = > 'baseRecalibrator_table'},
+              'multiqc_report_for_bwa'},
+      },
+  };
+
+
+  ## DNA-SEQ: apply BQSR for wgs
+  push @pipeline, {
+    -logic_name        => 'apply_bqsr_for_wgs',
+    -module            => 'ehive.runnable.process.alignment.RunGATK',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '8Gb',
+    -analysis_capacity => 10,
+    -parameters        => {
+      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_command'           => $self->o('gatk_command_apply_bqsr'),
+      'base_work_dir'          => $self->o('base_work_dir'),
+      'reference_fasta_type'   => $self->o('reference_fasta_type'),
+      'java_param'             => $self->o('java_param_gatk'),
+      'options'                => $self->o('gatk_options'),
+      'input_bam'              => '#merged_bwa_genomic_bams#',
+      'bqsr_recal_file'        => '#baseRecalibrator_table#',
+    },
+    -flow_into         => {
+        1 => ['gatk_bqsr_step2_for_wgs','haplotype_caller_gvcf_wgs'],
+      },
+
+  };
+
+
+  ## DNA-SEQ: wgs haplotype caller GVCF
+  push @pipeline, {
+    -logic_name        => 'haplotype_caller_gvcf_wgs',
+    -module            => 'ehive.runnable.process.alignment.RunGATK',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '8Gb',
+    -analysis_capacity => 10,
+    -parameters        => {
+      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_command'           => $self->o('gatk_command_haplotype_caller'),
+      'base_work_dir'          => $self->o('base_work_dir'),
+      'reference_fasta_type'   => $self->o('reference_fasta_type'),
+      'reference_dbsnp_type'   => $self->o('reference_dbsnp_type'),
+      'java_param'             => $self->o('java_param_gatk'),
+      'options'                => $self->o('gatk_options'),
+      'input_bam'              => '#applyBQSR_bam#',
+    },
+    -flow_into         => {
+        1 => ['load_haplotype_caller_gvcf_wgs'],
+      },
+
+  };
+
+  ## DNA-SEQ: load gvcf to db
+  push @pipeline, {
+    -logic_name        => 'load_haplotype_caller_gvcf_wgs',
+    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
+    -analysis_capacity => 5,
+    -parameters        => {
+      'input_files'      => ['#haplotypeCaller_gvcf#'],
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('gatk_command_haplotype_caller'),
+      'collection_name'  => '#experiment_igf_id#',
+      'tag_name'         => '#species_name#',
+      'file_suffix'      => 'g.vcf.gz',
+      'collection_type'  => $self->o('haplotype_caller_gvcf_type'),
+      'collection_table' => $self->o('wgs_gatk_exp_table'),
+    },
+    -flow_into         => {
+        1 => ['upload_gatk_gvcf_to_irods'],
+      },
+  };
+
+  ## DNA-SEQ: load gvcf to irods
+  push @pipeline, {
+    -logic_name        => 'upload_gatk_gvcf_to_irods',
+    -module            => 'ehive.runnable.process.alignment.UploadAnalysisResultsToIrods',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
+    -analysis_capacity => 2,
+    -parameters        => {
+      'file_list'        => '#analysis_output_list#',
+      'irods_exe_dir'    => $self->o('irods_exe_dir'),
+      'analysis_name'    => $self->o('gatk_command_haplotype_caller'),
+      'analysis_dir'     => 'analysis',
+      'dir_path_list'    => ['#analysis_dir#','#sample_igf_id#','#experiment_igf_id#','#analysis_name#'],
+      'file_tag'         => '#sample_igf_id#'.' - '.'#experiment_igf_id#'.' - '.'#analysis_name#'.' - '.'#species_name#',
+     },
+
+  };
+
+
+  ## DNA-SEQ: wgs BQSR step2
+  push @pipeline, {
+    -logic_name        => 'gatk_bqsr_step2_for_wgs',
+    -module            => 'ehive.runnable.process.alignment.RunGATK',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '8Gb',
+    -analysis_capacity => 10,
+    -parameters        => {
+      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_command'           => $self->o('gatk_command_bqsr'),
+      'base_work_dir'          => $self->o('base_work_dir'),
+      'reference_fasta_type'   => $self->o('reference_fasta_type'),
+      'reference_dbsnp_type'   => $self->o('reference_dbsnp_type'),
+      'reference_indel_type'   => $self->o('reference_indel_type'),
+      'java_param'             => $self->o('java_param_gatk'),
+      'options'                => $self->o('gatk_options'),
+      'input_bam'              => '#applyBQSR_bam#',
+    },
+    -flow_into         => {
+        1 => {'analyze_covariates_bqsr' => 
+                {'after_report_bqsr_file' => 'baseRecalibrator_table'}},
+      },
+  };
+
+  ## DNA-SEQ: analyze covariates bqsr for wgs
+  push @pipeline, {
+    -logic_name        => 'analyze_covariates_bqsr',
+    -module            => 'ehive.runnable.process.alignment.RunGATK',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '8Gb',
+    -analysis_capacity => 10,
+    -parameters        => {
+      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_command'           => $self->o('gatk_command_analyze_covariates'),
+      'base_work_dir'          => $self->o('base_work_dir'),
+      'reference_fasta_type'   => $self->o('reference_fasta_type'),
+      'before_report_file'     => '#before_report__bqsr_file#',
+      'after_report_file'      => '#after_report_bqsr_file#',
+      'java_param'             => $self->o('java_param_gatk'),
+      'options'                => $self->o('gatk_options'),
+    },
+    -flow_into         => {
+        1 => ['load_analyze_covariates_bqsr'],
+      },
+  };
+
+
+  ## DNA-SEQ: load bqsr covariates pdf file
+  push @pipeline, {
+    -logic_name        => 'load_analyze_covariates_bqsr',
+    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
+    -analysis_capacity => 5,
+    -parameters        => {
+      'input_files'      => ['#analyzeCovariates_pdf#'],
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('gatk_command_analyze_covariates'),
+      'collection_name'  => '#experiment_igf_id#',
+      'tag_name'         => '#species_name#',
+      'collection_type'  => $self->o('bqsr_analyze_covariates_type'),
+      'collection_table' => $self->o('wgs_gatk_exp_table'),
+     },
+    -flow_into         => {
+        1 => ['copy_analyze_covariates_bqsr_to_ftp'],
+      },
+  };
+
+
+  ## DNA-SEQ: copy analyzeCovariates_pdf to ftp site
+  push @pipeline, {
+    -logic_name        => 'copy_analyze_covariates_bqsr_to_ftp',
+    -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
+    -analysis_capacity => 2,
+    -parameters   => {
+      'analysis_dir'        => $self->o('analysis_dir'),
+      'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+      'file_list'           => '#analysis_output_list#',
+      'remote_user'         => $self->o('seqrun_user'),
+      'remote_host'         => $self->o('remote_host'),
+      'remote_project_path' => $self->o('remote_project_path'),
+      'collect_remote_file' => 1,
+      'collection_name'     => '#experiment_igf_id#',
+      'collection_type'     => $self->o('ftp_bqsr_analyze_covariates_type'),
+      'collection_table'    => $self->o('wgs_gatk_exp_table'),
+      },
+  };
+
+
   ## DNA-SEQ: filter bwa bam for epigenome data
   push @pipeline, {
     -logic_name        => 'filter_bwa_bam_for_epigenome',
