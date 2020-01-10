@@ -1673,8 +1673,8 @@ sub pipeline_analyses {
       'input_bam'              => '#merged_bwa_genomic_bams#',
     },
     -flow_into         => {
-        1 => {'apply_bqsr_for_wgs' => {'before_report__bqsr_file' = > 'baseRecalibrator_table'},
-              'multiqc_report_for_bwa'},
+        1 => {'apply_bqsr_for_wgs' => {'before_report__bqsr_file' => 'baseRecalibrator_table'},
+              'multiqc_report_for_bwa' => {'before_report__bqsr_file' => 'baseRecalibrator_table'}},
       },
   };
 
