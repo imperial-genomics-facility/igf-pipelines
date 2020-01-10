@@ -29,6 +29,7 @@ sub default_options {
     'chip_library_strategy'      => 'CHIP-SEQ',
     'atac_library_strategy'      => 'ATAC-SEQ',
     'dnase_library_strategy'     => 'DNASE-SEQ',
+    'wgs_library_strategy'       => 'WGS',
     'base_work_dir'              => undef,
     'base_results_dir'           => undef,
     'seqrun_user'                => undef,
@@ -75,6 +76,8 @@ sub default_options {
     'reference_refFlat'          => 'GENE_REFFLAT',
     'reference_gtf_type'         => 'GENE_GTF',
     'two_bit_genome_type'        => 'GENOME_TWOBIT_URI',
+    'reference_dbsnp_type'       => undef,
+    'reference_indel_type'       => undef,
     #
     ## FASTQ
     #---------------------------------------------------------------------------
@@ -214,6 +217,19 @@ sub default_options {
     'deeptools_threads'                => 8,
     'deeptools_params'                 => undef,
     'ftp_deeptool_signal_collection_type'  => 'FTP_DEEPTOOLS_BIGWIG',
+    #
+    ## GATK
+    #---------------------------------------------------------------------------
+    'gatk_exe'                         => undef,
+    'java_param_gatk'                  => '-XX:ParallelGCThreads=1 -Xmx8g',
+    'gatk_options'                     => undef,
+    'gatk_command_bqsr'                => 'BaseRecalibrator',
+    'gatk_command_apply_bqsr'          => 'ApplyBQSR',
+    'gatk_command_analyze_covariates'  => 'AnalyzeCovariates',
+    'gatk_command_haplotype_caller'    => 'HaplotypeCaller',
+    'bqsr_analyze_covariates_type'     => 'GATK_BQSR_PDF',
+    'ftp_bqsr_analyze_covariates_type' => 'FTP_GATK_BQSR_PDF',
+    'haplotype_caller_gvcf_type'       => 'GATK_HC_GVCF',
     #
     ## ANALYSIS PAGE
     #---------------------------------------------------------------------------
