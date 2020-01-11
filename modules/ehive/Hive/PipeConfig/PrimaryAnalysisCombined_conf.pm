@@ -1666,7 +1666,7 @@ sub pipeline_analyses {
     -rc_name           => '8Gb',
     -analysis_capacity => 10,
     -parameters        => {
-      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_exe'               => $self->o('gatk_exe'),
       'gatk_command'           => $self->o('gatk_command_bqsr'),
       'base_work_dir'          => $self->o('base_work_dir'),
       'reference_fasta_type'   => $self->o('reference_fasta_type'),
@@ -1693,7 +1693,7 @@ sub pipeline_analyses {
     -rc_name           => '8Gb',
     -analysis_capacity => 10,
     -parameters        => {
-      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_exe'               => $self->o('gatk_exe'),
       'gatk_command'           => $self->o('gatk_command_apply_bqsr'),
       'base_work_dir'          => $self->o('base_work_dir'),
       'reference_fasta_type'   => $self->o('reference_fasta_type'),
@@ -1718,7 +1718,7 @@ sub pipeline_analyses {
     -rc_name           => '8Gb',
     -analysis_capacity => 10,
     -parameters        => {
-      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_exe'               => $self->o('gatk_exe'),
       'gatk_command'           => $self->o('gatk_command_haplotype_caller'),
       'base_work_dir'          => $self->o('base_work_dir'),
       'reference_fasta_type'   => $self->o('reference_fasta_type'),
@@ -1742,12 +1742,13 @@ sub pipeline_analyses {
     -rc_name           => '2Gb',
     -analysis_capacity => 5,
     -parameters        => {
-      'input_files'      => ['#haplotypeCaller_gvcf#'],
+      'input_bam_list'   => ['#haplotypeCaller_gvcf#'],
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('gatk_command_haplotype_caller'),
       'collection_name'  => '#experiment_igf_id#',
       'tag_name'         => '#species_name#',
       'file_suffix'      => 'g.vcf.gz',
+      'hc_gvcf'          => 1,
       'collection_type'  => $self->o('haplotype_caller_gvcf_type'),
       'collection_table' => $self->o('wgs_gatk_exp_table'),
     },
@@ -1785,7 +1786,7 @@ sub pipeline_analyses {
     -rc_name           => '8Gb',
     -analysis_capacity => 10,
     -parameters        => {
-      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_exe'               => $self->o('gatk_exe'),
       'gatk_command'           => $self->o('gatk_command_bqsr'),
       'base_work_dir'          => $self->o('base_work_dir'),
       'reference_fasta_type'   => $self->o('reference_fasta_type'),
@@ -1793,7 +1794,7 @@ sub pipeline_analyses {
       'reference_indel_type'   => $self->o('reference_indel_type'),
       'java_param'             => $self->o('java_param_gatk'),
       'options'                => $self->o('gatk_options'),
-      'input_bam'              => '#applyBQSR_bam#',
+      'input_bam_list'         => ['#applyBQSR_bam#'],
     },
     -flow_into         => {
         1 => {'analyze_covariates_bqsr' => 
@@ -1810,7 +1811,7 @@ sub pipeline_analyses {
     -rc_name           => '8Gb',
     -analysis_capacity => 10,
     -parameters        => {
-      'gatk_exe'               => => $self->o('gatk_exe'),
+      'gatk_exe'               => $self->o('gatk_exe'),
       'gatk_command'           => $self->o('gatk_command_analyze_covariates'),
       'base_work_dir'          => $self->o('base_work_dir'),
       'reference_fasta_type'   => $self->o('reference_fasta_type'),
