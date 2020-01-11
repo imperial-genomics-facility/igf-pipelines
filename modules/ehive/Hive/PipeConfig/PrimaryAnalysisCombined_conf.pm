@@ -1678,7 +1678,8 @@ sub pipeline_analyses {
     },
     -flow_into         => {
         1 => {'apply_bqsr_for_wgs' => {'before_report_bqsr_file' => '#baseRecalibrator_table#'},
-              'multiqc_report_for_bwa' => {'before_report_bqsr_file' => '#baseRecalibrator_table#'}},
+              'multiqc_report_for_bwa' => {'before_report_bqsr_file' => '#baseRecalibrator_table#',
+                                           'analysis_files' => '#analysis_files#'}},
       },
   };
 
