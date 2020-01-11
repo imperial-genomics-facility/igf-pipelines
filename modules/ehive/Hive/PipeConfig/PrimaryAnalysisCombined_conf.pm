@@ -1677,9 +1677,10 @@ sub pipeline_analyses {
       'input_bam_list'         => '#merged_bwa_genomic_bams#',
     },
     -flow_into         => {
-        1 => {'apply_bqsr_for_wgs' => {'before_report_bqsr_file' => '#baseRecalibrator_table#'},
-              'multiqc_report_for_bwa' => {'before_report_bqsr_file' => '#baseRecalibrator_table#',
-                                           'analysis_files' => '#analysis_files#'}},
+        1 => {'apply_bqsr_for_wgs' => {'before_report_bqsr_file' => '#baseRecalibrator_table#',
+                                       'analysis_files' => '#analysis_files#'}},
+              #'multiqc_report_for_bwa' => {'before_report_bqsr_file' => '#baseRecalibrator_table#',
+              #                             'analysis_files' => '#analysis_files#'}},
       },
   };
 
@@ -1797,79 +1798,82 @@ sub pipeline_analyses {
       'input_bam_list'         => ['#applyBQSR_bam#'],
     },
     -flow_into         => {
-        1 => {'analyze_covariates_bqsr' => 
-                {'after_report_bqsr_file' => '#baseRecalibrator_table#'}},
+         1 => {'multiqc_report_for_bwa' => {'after_report_bqsr_file' => '#baseRecalibrator_table#',
+                                            'analysis_files' => '#analysis_files#'}},
+        #1 => {'analyze_covariates_bqsr' => 
+        #        {'after_report_bqsr_file' => '#baseRecalibrator_table#',
+        #           'analysis_files' => '#analysis_files#'}},
       },
   };
 
-  ## DNA-SEQ: analyze covariates bqsr for wgs
-  push @pipeline, {
-    -logic_name        => 'analyze_covariates_bqsr',
-    -module            => 'ehive.runnable.process.alignment.RunGATK',
-    -language          => 'python3',
-    -meadow_type       => 'PBSPro',
-    -rc_name           => '8Gb',
-    -analysis_capacity => 10,
-    -parameters        => {
-      'gatk_exe'               => $self->o('gatk_exe'),
-      'gatk_command'           => $self->o('gatk_command_analyze_covariates'),
-      'base_work_dir'          => $self->o('base_work_dir'),
-      'reference_fasta_type'   => $self->o('reference_fasta_type'),
-      'before_report_file'     => '#before_report_bqsr_file#',
-      'after_report_file'      => '#after_report_bqsr_file#',
-      'java_param'             => $self->o('java_param_gatk'),
-      'options'                => $self->o('gatk_options'),
-    },
-    -flow_into         => {
-        1 => ['load_analyze_covariates_bqsr'],
-      },
-  };
+  ### DNA-SEQ: analyze covariates bqsr for wgs
+  #push @pipeline, {
+  #  -logic_name        => 'analyze_covariates_bqsr',
+  #  -module            => 'ehive.runnable.process.alignment.RunGATK',
+  #  -language          => 'python3',
+  #  -meadow_type       => 'PBSPro',
+  #  -rc_name           => '8Gb',
+  #  -analysis_capacity => 10,
+  #  -parameters        => {
+  #    'gatk_exe'               => $self->o('gatk_exe'),
+  #    'gatk_command'           => $self->o('gatk_command_analyze_covariates'),
+  #    'base_work_dir'          => $self->o('base_work_dir'),
+  #    'reference_fasta_type'   => $self->o('reference_fasta_type'),
+  #    'before_report_file'     => '#before_report_bqsr_file#',
+  #    'after_report_file'      => '#after_report_bqsr_file#',
+  #    'java_param'             => $self->o('java_param_gatk'),
+  #    'options'                => $self->o('gatk_options'),
+  #  },
+  #  -flow_into         => {
+  #      1 => ['load_analyze_covariates_bqsr'],
+  #    },
+  #};
 
 
-  ## DNA-SEQ: load bqsr covariates pdf file
-  push @pipeline, {
-    -logic_name        => 'load_analyze_covariates_bqsr',
-    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
-    -language          => 'python3',
-    -meadow_type       => 'PBSPro',
-    -rc_name           => '2Gb',
-    -analysis_capacity => 5,
-    -parameters        => {
-      'input_files'      => ['#analyzeCovariates_pdf#'],
-      'base_results_dir' => $self->o('base_results_dir'),
-      'analysis_name'    => $self->o('gatk_command_analyze_covariates'),
-      'collection_name'  => '#experiment_igf_id#',
-      'tag_name'         => '#species_name#',
-      'collection_type'  => $self->o('bqsr_analyze_covariates_type'),
-      'collection_table' => $self->o('wgs_gatk_exp_table'),
-     },
-    -flow_into         => {
-        1 => ['copy_analyze_covariates_bqsr_to_ftp'],
-      },
-  };
+ # ## DNA-SEQ: load bqsr covariates pdf file
+ # push @pipeline, {
+ #   -logic_name        => 'load_analyze_covariates_bqsr',
+ #   -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
+ #   -language          => 'python3',
+ #   -meadow_type       => 'PBSPro',
+ #   -rc_name           => '2Gb',
+ #   -analysis_capacity => 5,
+ #   -parameters        => {
+ #     'input_files'      => ['#analyzeCovariates_pdf#'],
+ #     'base_results_dir' => $self->o('base_results_dir'),
+ #     'analysis_name'    => $self->o('gatk_command_analyze_covariates'),
+ #     'collection_name'  => '#experiment_igf_id#',
+ #     'tag_name'         => '#species_name#',
+ #     'collection_type'  => $self->o('bqsr_analyze_covariates_type'),
+ #     'collection_table' => $self->o('wgs_gatk_exp_table'),
+ #    },
+ #   -flow_into         => {
+ #       1 => ['copy_analyze_covariates_bqsr_to_ftp'],
+ #     },
+ # };
 
 
-  ## DNA-SEQ: copy analyzeCovariates_pdf to ftp site
-  push @pipeline, {
-    -logic_name        => 'copy_analyze_covariates_bqsr_to_ftp',
-    -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
-    -language          => 'python3',
-    -meadow_type       => 'PBSPro',
-    -rc_name           => '2Gb',
-    -analysis_capacity => 2,
-    -parameters   => {
-      'analysis_dir'        => $self->o('analysis_dir'),
-      'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
-      'file_list'           => '#analysis_output_list#',
-      'remote_user'         => $self->o('seqrun_user'),
-      'remote_host'         => $self->o('remote_host'),
-      'remote_project_path' => $self->o('remote_project_path'),
-      'collect_remote_file' => 1,
-      'collection_name'     => '#experiment_igf_id#',
-      'collection_type'     => $self->o('ftp_bqsr_analyze_covariates_type'),
-      'collection_table'    => $self->o('wgs_gatk_exp_table'),
-      },
-  };
+ # ## DNA-SEQ: copy analyzeCovariates_pdf to ftp site
+ # push @pipeline, {
+ #   -logic_name        => 'copy_analyze_covariates_bqsr_to_ftp',
+ #   -module            => 'ehive.runnable.process.alignment.CopyAnalysisFilesToRemote',
+ #   -language          => 'python3',
+ #   -meadow_type       => 'PBSPro',
+ #  -rc_name           => '2Gb',
+ #   -analysis_capacity => 2,
+ #   -parameters   => {
+ #     'analysis_dir'        => $self->o('analysis_dir'),
+ #     'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
+ #     'file_list'           => '#analysis_output_list#',
+ #     'remote_user'         => $self->o('seqrun_user'),
+ #     'remote_host'         => $self->o('remote_host'),
+ #     'remote_project_path' => $self->o('remote_project_path'),
+ #     'collect_remote_file' => 1,
+ #     'collection_name'     => '#experiment_igf_id#',
+ #     'collection_type'     => $self->o('ftp_bqsr_analyze_covariates_type'),
+ #     'collection_table'    => $self->o('wgs_gatk_exp_table'),
+ #     },
+ # };
 
 
   ## DNA-SEQ: filter bwa bam for epigenome data
