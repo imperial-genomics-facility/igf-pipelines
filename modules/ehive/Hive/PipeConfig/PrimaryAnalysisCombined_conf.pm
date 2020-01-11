@@ -1677,8 +1677,8 @@ sub pipeline_analyses {
       'input_bam_list'         => '#merged_bwa_genomic_bams#',
     },
     -flow_into         => {
-        1 => {'apply_bqsr_for_wgs' => {'before_report__bqsr_file' => 'baseRecalibrator_table'},
-              'multiqc_report_for_bwa' => {'before_report__bqsr_file' => 'baseRecalibrator_table'}},
+        1 => {'apply_bqsr_for_wgs' => {'before_report_bqsr_file' => '#baseRecalibrator_table#'},
+              'multiqc_report_for_bwa' => {'before_report_bqsr_file' => '#baseRecalibrator_table#'}},
       },
   };
 
@@ -1699,7 +1699,7 @@ sub pipeline_analyses {
       'java_param'             => $self->o('java_param_gatk'),
       'options'                => $self->o('gatk_options'),
       'input_bam_list'         => '#merged_bwa_genomic_bams#',
-      'bqsr_recal_file'        => '#baseRecalibrator_table#',
+      'bqsr_recal_file'        => '#before_report_bqsr_file#',
     },
     -flow_into         => {
         1 => ['gatk_bqsr_step2_for_wgs','haplotype_caller_gvcf_wgs'],
@@ -1796,7 +1796,7 @@ sub pipeline_analyses {
     },
     -flow_into         => {
         1 => {'analyze_covariates_bqsr' => 
-                {'after_report_bqsr_file' => 'baseRecalibrator_table'}},
+                {'after_report_bqsr_file' => '#baseRecalibrator_table#'}},
       },
   };
 
@@ -1813,7 +1813,7 @@ sub pipeline_analyses {
       'gatk_command'           => $self->o('gatk_command_analyze_covariates'),
       'base_work_dir'          => $self->o('base_work_dir'),
       'reference_fasta_type'   => $self->o('reference_fasta_type'),
-      'before_report_file'     => '#before_report__bqsr_file#',
+      'before_report_file'     => '#before_report_bqsr_file#',
       'after_report_file'      => '#after_report_bqsr_file#',
       'java_param'             => $self->o('java_param_gatk'),
       'options'                => $self->o('gatk_options'),
