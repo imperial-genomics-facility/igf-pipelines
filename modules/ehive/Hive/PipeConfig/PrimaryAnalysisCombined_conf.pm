@@ -76,8 +76,8 @@ sub default_options {
     'reference_refFlat'          => 'GENE_REFFLAT',
     'reference_gtf_type'         => 'GENE_GTF',
     'two_bit_genome_type'        => 'GENOME_TWOBIT_URI',
-    'reference_dbsnp_type'       => undef,
-    'reference_indel_type'       => undef,
+    'reference_dbsnp_type'       => 'DBSNP_VCF',
+    'reference_indel_type'       => 'INDEL_LIST_VCF',
     #
     ## FASTQ
     #---------------------------------------------------------------------------
