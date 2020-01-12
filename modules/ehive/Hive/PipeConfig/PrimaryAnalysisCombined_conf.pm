@@ -1743,7 +1743,7 @@ sub pipeline_analyses {
     -rc_name           => '2Gb',
     -analysis_capacity => 5,
     -parameters        => {
-      'input_bam_list'   => ['#haplotypeCaller_gvcf#'],
+      'input_files'      => ['#haplotypeCaller_gvcf#'],
       'base_results_dir' => $self->o('base_results_dir'),
       'analysis_name'    => $self->o('gatk_command_haplotype_caller'),
       'collection_name'  => '#experiment_igf_id#',
