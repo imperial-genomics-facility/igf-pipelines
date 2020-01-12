@@ -67,7 +67,7 @@ sub default_options {
     'tool_order_list_dnaseq'     => ['fastp','picard','samtools'],
     'tool_order_list_rnaseq'     => ['fastp','star','picard','samtools','featureCounts'],
     'tool_order_list_singlecell' => ['picard','samtools'],
-    'tool_order_list'            => ['fastp','star','picard','samtools','featureCounts','phantompeakqualtools','deeptools'],
+    'tool_order_list'            => ['fastp','star','picard','samtools','gatk','featureCounts','phantompeakqualtools','deeptools'],
     'multiqc_template_file'      => undef,
     #
     ## REF GENOME
