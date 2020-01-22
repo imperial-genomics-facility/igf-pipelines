@@ -165,6 +165,9 @@ sub default_options {
     'ftp_scanpy_type'            => 'FTP_SCANPY_RESULTS',
     'ftp_cellbrowser_dir'        => 'FTP_CELLBROWSER_DIR',
     'scanpy_report_template'     => undef,
+    'scanpy_notebook_template'   => undef,
+    'scanpy_notebook_image'      => undef,
+    'scanpy_h5ad_path'           => '/tmp/scanpy_output.h5ad',
     #
     ## UCSC CELLBROWSER
     #---------------------------------------------------------------------------
@@ -2259,25 +2262,72 @@ sub pipeline_analyses {
   };
   
   
-  ## SINGLECELL: scanpy report
+  ## SINGLECELL: scanpy notebook report
   push @pipeline, {
     -logic_name        => 'scanpy_report_generation',
-    -module            => 'ehive.runnable.process.alignment.RunScanpy',
+    -module            => 'ehive.runnable.process.alignment.NotebookRunner',
+    -language          => 'python3',
+    -meadow_type       => 'PBSPro',
+    -rc_name           => '2Gb',
+    -analysis_capacity => 5,
+    -parameters        => {
+      'singularity_image_path' => $self->o('scanpy_notebook_image'),
+      'input_param_map'        => {'PROJECT_IGF_ID'     => '#project_igf_id#',
+                                   'SAMPLE_IGF_ID'      => '#sample_igf_id#', 
+                                   'SCANPY_H5AD'        => $self->o('scanpy_h5ad_path'),
+                                   'CELLRANGER_RESULTS' => '#cellranger_output#'},
+      'output_param_map'       => {'SCANPY_H5AD'        => $self->o('scanpy_h5ad_path')},
+      'date_tag'               => 'DATE_TAG',
+      'notebook_template'      => $self->o('scanpy_notebook_template'),
+      'use_ephemeral_space'    => $self->o('use_ephemeral_space'),
+    },
+    -flow_into         => {
+      1 => {'load_scanpy_report' => {'scanpy_html_report' => '#notebook#'},
+            'create_cellbrowser_dir' => {'scanpy_h5ad_path' => '#SCANPY_H5AD#'}},
+    },
+  };
+
+## SINGLECELL: load scanpy notebook report
+  push @pipeline, {
+    -logic_name        => 'load_scanpy_report',
+    -module            => 'ehive.runnable.process.alignment.CollectAnalysisFiles',
     -language          => 'python3',
     -meadow_type       => 'PBSPro',
     -rc_name           => '2Gb',
     -analysis_capacity => 2,
     -parameters        => {
-      'report_template_file'   => $self->o('scanpy_report_template'),
-      'base_result_dir'        => $self->o('base_results_dir'),
-      'scanpy_collection_type' => $self->o('scanpy_type'),
-      'base_work_dir'          => $self->o('base_work_dir'),
-      'use_ephemeral_space'    => $self->o('use_ephemeral_space'),
+      'input_files'      => ['#scanpy_html_report#'],
+      'base_results_dir' => $self->o('base_results_dir'),
+      'analysis_name'    => $self->o('cellranger_analysis_name'),
+      'collection_name'  => '#experiment_igf_id#',
+      'tag_name'         => '#species_name#',
+      'collection_type'  => $self->o('scanpy_type'),
+      'collection_table' => $self->o('cellranger_collection_table'),
      },
     -flow_into         => {
-        1 => ['copy_scanpy_report_to_remote','create_cellbrowser_dir'],
+        1 => ['copy_scanpy_report_to_remote'],
       },
   };
+
+  ## SINGLECELL: scanpy report
+  #push @pipeline, {
+  #  -logic_name        => 'scanpy_report_generation',
+  #  -module            => 'ehive.runnable.process.alignment.RunScanpy',
+  #  -language          => 'python3',
+  #  -meadow_type       => 'PBSPro',
+  #  -rc_name           => '2Gb',
+  #  -analysis_capacity => 2,
+  #  -parameters        => {
+  #    'report_template_file'   => $self->o('scanpy_report_template'),
+  #    'base_result_dir'        => $self->o('base_results_dir'),
+  #    'scanpy_collection_type' => $self->o('scanpy_type'),
+  #    'base_work_dir'          => $self->o('base_work_dir'),
+  #    'use_ephemeral_space'    => $self->o('use_ephemeral_space'),
+  #   },
+  #  -flow_into         => {
+  #      1 => ['copy_scanpy_report_to_remote','create_cellbrowser_dir'],
+  #    },
+  #};
   
   
   ## SINGLECELL: copy scanpy report to remote
