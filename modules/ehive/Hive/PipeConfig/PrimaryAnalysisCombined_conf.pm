@@ -2278,7 +2278,6 @@ sub pipeline_analyses {
                                    'CELLRANGER_RESULTS' => '#analysis_output_list#'},
       'output_param_map'       => {'SCANPY_H5AD'        => $self->o('scanpy_h5ad_path')},
       'date_tag'               => 'DATE_TAG',
-      'input_list'             => '#analysis_output_list#',
       'notebook_template'      => $self->o('scanpy_notebook_template'),
       'use_ephemeral_space'    => $self->o('use_ephemeral_space'),
       'base_work_dir'          => $self->o('base_work_dir'),
