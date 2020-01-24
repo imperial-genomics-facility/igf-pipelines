@@ -2342,7 +2342,7 @@ sub pipeline_analyses {
     -parameters        => {
       'analysis_dir'        => $self->o('analysis_dir'),
       'dir_labels'          => ['#analysis_dir#','#sample_igf_id#'],
-      'file_list'           => ['#output_report#'],
+      'file_list'           => '#analysis_output_list#',
       'remote_user'         => $self->o('seqrun_user'),
       'remote_host'         => $self->o('remote_host'),
       'remote_project_path' => $self->o('remote_project_path'),
