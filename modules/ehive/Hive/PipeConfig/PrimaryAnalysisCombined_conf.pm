@@ -2280,6 +2280,7 @@ sub pipeline_analyses {
       'date_tag'               => 'DATE_TAG',
       'notebook_template'      => $self->o('scanpy_notebook_template'),
       'use_ephemeral_space'    => $self->o('use_ephemeral_space'),
+      'base_work_dir'          => $self->o('base_work_dir'),
     },
     -flow_into         => {
       1 => {'load_scanpy_report' => {'scanpy_html_report' => '#notebook#'},
