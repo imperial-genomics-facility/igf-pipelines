@@ -168,6 +168,7 @@ sub default_options {
     'scanpy_notebook_template'   => undef,
     'scanpy_notebook_image'      => undef,
     'scanpy_h5ad_path'           => '/tmp/scanpy_output.h5ad',
+    'scanpy_analysis_name'       => 'scanpy',
     #
     ## UCSC CELLBROWSER
     #---------------------------------------------------------------------------
@@ -2299,9 +2300,10 @@ sub pipeline_analyses {
     -parameters        => {
       'input_files'      => ['#scanpy_html_report#'],
       'base_results_dir' => $self->o('base_results_dir'),
-      'analysis_name'    => $self->o('cellranger_analysis_name'),
+      'analysis_name'    => $self->o('scanpy_analysis_name'),
       'collection_name'  => '#experiment_igf_id#',
       'tag_name'         => '#species_name#',
+      'file_suffix'      => 'html',
       'collection_type'  => $self->o('scanpy_type'),
       'collection_table' => $self->o('cellranger_collection_table'),
      },
