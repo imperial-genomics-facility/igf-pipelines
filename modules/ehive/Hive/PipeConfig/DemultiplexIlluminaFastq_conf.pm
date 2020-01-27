@@ -355,7 +355,7 @@ sub pipeline_analyses {
       -language          => 'python3',
       -meadow_type       => 'PBSPro',
       -rc_name           => '8Gb2t',
-      -analysis_capacity => 50,
+      -analysis_capacity => 30,
       -parameters        => {
         'base_results_dir' => $self->o('base_results_dir'),
         'fastqc_exe'       => $self->o('fastqc_exe'),
@@ -403,7 +403,7 @@ sub pipeline_analyses {
       -language          => 'python3',
       -meadow_type       => 'PBSPro',
       -rc_name           => '8Gb2t',
-      -analysis_capacity => 50,
+      -analysis_capacity => 30,
       -parameters        => {
         'base_results_dir'    => $self->o('base_results_dir'),
         'fastqscreen_exe'     => $self->o('fastqscreen_exe'),
