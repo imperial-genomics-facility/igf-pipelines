@@ -42,6 +42,7 @@ sub default_options {
     'center_name'                => 'Imperial BRC Genomics Facility',
     'load_metrics_to_cram'       => 1,
     'use_ephemeral_space'        => 0,
+    'pbs_queue'                  => 'pqcgi',
     #
     ## IRODS
     #---------------------------------------------------------------------------
